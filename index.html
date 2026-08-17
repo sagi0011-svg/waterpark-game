@@ -3,31 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a0d12">
+<meta name="theme-color" content="#0b84d6">
 <title>ספלאש בלאגן — סימולציית פארק מים</title>
 <style>
 :root{
-  --bg:#0a0d12;
-  --bg2:#0d1117;
-  --card:#161b22;
-  --card2:#1c2330;
-  --border:#262e3a;
-  --text:#f2f5f8;
-  --dim:#8b96a5;
-  --dim2:#5f6b7a;
-  --accent:#22d3ee;
-  --accent2:#0ea5e9;
-  --good:#34d399;
-  --bad:#f87171;
-  --warn:#fbbf24;
-  --gold:#fbbf24;
+  --sky1:#7bdcff;
+  --sky2:#0b84d6;
+  --bg:var(--sky2);
+  --bg2:#f4fbfe;
+  --card:#ffffff;
+  --card2:#eaf6fb;
+  --border:#d3ecf5;
+  --text:#0a324c;
+  --dim:#5c7a8c;
+  --dim2:#93aebc;
+  --accent:#00bfb3;
+  --accent2:#00969c;
+  --good:#16a34a;
+  --bad:#d9362b;
+  --warn:#c9790a;
+  --gold:#b8790a;
+  --coral:#ff6b4a;
+  --coral2:#ff5252;
+  --pink:#ec4fa0;
+  --leaf:#3fb950;
+  --violet:#9b6bff;
+  --slate:#3d5a72;
   --radius:20px;
   --radius-sm:14px;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);}
+html,body{margin:0;padding:0;background:var(--sky2);color:var(--text);}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Assistant,Arial,sans-serif;
   overscroll-behavior-y:none;
@@ -36,7 +44,7 @@ body{
   min-height:100dvh;
 }
 button{font-family:inherit;}
-::selection{background:var(--accent);color:#000;}
+::selection{background:var(--accent);color:#fff;}
 #app{
   max-width:520px;
   margin:0 auto;
@@ -45,11 +53,16 @@ button{font-family:inherit;}
   position:relative;
   display:flex;
   flex-direction:column;
-  background:linear-gradient(180deg,var(--bg2),var(--bg) 400px);
+  background:linear-gradient(180deg,var(--sky1) 0,var(--sky2) 460px,#075c87 1400px);
 }
 
 /* ---------- generic bits ---------- */
-.screen{display:flex;flex-direction:column;flex:1;padding-bottom:calc(24px + var(--safe-bottom));animation:fadein .25s ease;}
+.screen{display:flex;flex-direction:column;flex:1;padding-bottom:calc(24px + var(--safe-bottom));animation:fadein .25s ease;position:relative;}
+.scene-host{position:relative;overflow:hidden;}
+.scene-backdrop{position:absolute;left:0;right:0;bottom:0;height:min(50vh,380px);z-index:0;}
+.scene-backdrop svg{width:100%;height:100%;display:block;}
+.scene-backdrop::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,132,214,0) 0%,rgba(6,60,92,.45) 55%,rgba(3,26,40,.82) 100%);}
+.scene-content{position:relative;z-index:1;}
 @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .px{padding-left:16px;padding-right:16px;}
 .card{
@@ -82,18 +95,19 @@ h1,h2,h3,p{margin:0;}
   white-space:nowrap;
 }
 .btn:active{transform:scale(.96);}
-.btn-primary{background:linear-gradient(135deg,#f5f9ff,#dbe9f7);color:#0a0d12;}
-.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04222b;}
+.btn-primary{background:linear-gradient(135deg,var(--coral),var(--coral2));color:#fff;box-shadow:0 6px 16px rgba(255,82,82,.35);}
+.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 6px 16px rgba(0,150,156,.3);}
 .btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border);}
-.btn-good{background:linear-gradient(135deg,#4ade80,#22c55e);color:#062012;}
-.btn-bad{background:linear-gradient(135deg,#fb7185,#ef4444);color:#2a0505;}
+.btn-good{background:linear-gradient(135deg,#4ade80,#22c55e);color:#052e14;}
+.btn-bad{background:linear-gradient(135deg,#fb7185,#ef4444);color:#3a0303;}
 .btn-block{width:100%;}
 .btn-lg{padding:18px 22px;font-size:17px;border-radius:22px;}
-.btn:disabled{opacity:.35;filter:grayscale(.4);cursor:not-allowed;transform:none;}
+.btn:disabled{opacity:.4;filter:grayscale(.3);cursor:not-allowed;transform:none;box-shadow:none;}
 .btn-sm{padding:9px 14px;font-size:13px;border-radius:999px;}
 .icon-btn{
-  width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);
+  width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text);cursor:pointer;
+  box-shadow:0 2px 8px rgba(8,48,74,.12);
 }
 
 /* badges */
@@ -102,53 +116,57 @@ h1,h2,h3,p{margin:0;}
   padding:5px 10px;border-radius:999px;font-size:12.5px;font-weight:700;
   background:var(--card2);border:1px solid var(--border);color:var(--text);
 }
-.badge-good{background:rgba(52,211,153,.15);color:#4ade80;border-color:rgba(52,211,153,.3);}
-.badge-bad{background:rgba(248,113,113,.15);color:#fb7185;border-color:rgba(248,113,113,.3);}
-.badge-warn{background:rgba(251,191,36,.15);color:#fbbf24;border-color:rgba(251,191,36,.3);}
-.badge-gold{background:rgba(251,191,36,.12);color:var(--gold);border-color:rgba(251,191,36,.35);}
+.badge-good{background:rgba(22,163,74,.12);color:var(--good);border-color:rgba(22,163,74,.3);}
+.badge-bad{background:rgba(217,54,43,.1);color:var(--bad);border-color:rgba(217,54,43,.28);}
+.badge-warn{background:rgba(201,121,10,.12);color:var(--warn);border-color:rgba(201,121,10,.3);}
+.badge-gold{background:rgba(184,121,10,.12);color:var(--gold);border-color:rgba(184,121,10,.3);}
 
 /* progress dots (wizard) */
 .progress-dots{display:flex;gap:6px;justify-content:center;padding:14px 0 4px;}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:.2s;}
-.dot.active{background:var(--accent);width:22px;border-radius:5px;}
-.dot.done{background:var(--dim2);}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);transition:.2s;}
+.dot.active{background:#fff;width:22px;border-radius:5px;}
+.dot.done{background:rgba(255,255,255,.6);}
 
 /* top bar */
 .topbar{
   position:sticky;top:0;z-index:20;
   padding:calc(10px + var(--safe-top)) 16px 10px;
-  background:rgba(10,13,18,.85);
+  background:rgba(255,255,255,.82);
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
-.park-id{font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.park-id{font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);}
 
 /* hero seasonal card */
 .hero{
   margin:12px 16px 0;
   border-radius:24px;
-  padding:22px 18px 18px;
+  padding:0;
   position:relative;overflow:hidden;
   border:1px solid var(--border);
-  min-height:140px;
+  min-height:150px;
   display:flex;flex-direction:column;justify-content:flex-end;
+  box-shadow:0 10px 28px rgba(6,40,62,.22);
 }
-.hero::before{content:"";position:absolute;inset:0;opacity:.9;}
-.hero .hero-emoji{position:absolute;top:14px;left:16px;font-size:34px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));}
-.hero .hero-content{position:relative;z-index:1;}
-.hero .hero-month{font-size:20px;font-weight:800;}
-.hero .hero-sub{font-size:12.5px;opacity:.85;margin-top:2px;}
-.season-winter{background:radial-gradient(120% 100% at 20% 0%,#2a3a52,#0e1420 70%);}
-.season-spring{background:radial-gradient(120% 100% at 20% 0%,#1f5c4a,#0e1420 70%);}
-.season-summer{background:radial-gradient(120% 100% at 20% 0%,#ff9142,#0891b2 55%,#0e1420 100%);}
-.season-autumn{background:radial-gradient(120% 100% at 20% 0%,#a5652b,#164e5e 65%,#0e1420 100%);}
+.hero-scene{position:absolute;inset:0;transition:filter .4s ease;}
+.hero-scene svg{width:100%;height:100%;display:block;}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:75%;background:linear-gradient(0deg,rgba(3,26,40,.8),rgba(3,26,40,0));pointer-events:none;}
+.hero .hero-emoji{position:absolute;top:14px;left:16px;font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));z-index:2;background:rgba(255,255,255,.25);backdrop-filter:blur(4px);border-radius:14px;padding:4px 8px;}
+.hero .hero-content{position:relative;z-index:2;padding:18px 18px 16px;color:#fff;}
+.hero .hero-month{font-size:20px;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.4);}
+.hero .hero-sub{font-size:12.5px;opacity:.92;margin-top:2px;text-shadow:0 1px 6px rgba(0,0,0,.35);}
+.hero-scene.season-winter{filter:saturate(.45) brightness(.78) hue-rotate(15deg);}
+.hero-scene.season-spring{filter:saturate(1.05) brightness(1.02);}
+.hero-scene.season-summer{filter:saturate(1.3) brightness(1.08) hue-rotate(-6deg);}
+.hero-scene.season-autumn{filter:saturate(.8) brightness(.9) sepia(.15) hue-rotate(8deg);}
 
 /* KPI row */
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 16px 0;}
 .kpi{
   background:var(--card);border:1px solid var(--border);border-radius:16px;
   padding:12px 8px;text-align:center;
+  box-shadow:0 3px 10px rgba(8,48,74,.08);
 }
 .kpi .kpi-label{font-size:11px;color:var(--dim);margin-bottom:4px;}
 .kpi .kpi-value{font-size:16.5px;font-weight:800;}
@@ -159,6 +177,7 @@ h1,h2,h3,p{margin:0;}
 .action-card{
   background:var(--card);border:1px solid var(--border);border-radius:18px;
   padding:16px 12px;text-align:center;cursor:pointer;transition:.1s;
+  box-shadow:0 3px 10px rgba(8,48,74,.08);
 }
 .action-card:active{transform:scale(.96);background:var(--card2);}
 .action-card .ac-emoji{font-size:26px;display:block;margin-bottom:6px;}
@@ -168,17 +187,17 @@ h1,h2,h3,p{margin:0;}
 .sticky-cta{
   position:sticky;bottom:0;z-index:20;
   padding:12px 16px calc(12px + var(--safe-bottom));
-  background:linear-gradient(0deg,var(--bg) 55%,transparent);
+  background:linear-gradient(0deg,var(--sky2) 55%,transparent);
   margin-top:auto;
 }
 
 /* list section */
-.section-title{font-size:13px;font-weight:800;color:var(--dim);margin:18px 16px 8px;letter-spacing:.02em;}
+.section-title{font-size:13px;font-weight:800;color:rgba(255,255,255,.9);margin:18px 16px 8px;letter-spacing:.02em;text-shadow:0 1px 4px rgba(0,0,0,.2);}
 
 /* warning banner */
 .banner{margin:12px 16px 0;padding:12px 14px;border-radius:14px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center;}
-.banner-bad{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:#fca5a5;}
-.banner-warn{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fcd34d;}
+.banner-bad{background:#fff0ee;border:1px solid rgba(217,54,43,.3);color:var(--bad);}
+.banner-warn{background:#fff8ea;border:1px solid rgba(201,121,10,.3);color:var(--warn);}
 
 /* tabs */
 .tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px;scrollbar-width:none;}
@@ -186,18 +205,25 @@ h1,h2,h3,p{margin:0;}
 .tab{
   flex:0 0 auto;padding:9px 16px;border-radius:999px;font-size:13.5px;font-weight:700;
   background:var(--card);border:1px solid var(--border);color:var(--dim);cursor:pointer;white-space:nowrap;
+  box-shadow:0 2px 6px rgba(8,48,74,.08);
 }
-.tab.active{background:var(--accent);color:#04222b;border-color:var(--accent);}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tab.active.tab-facility{background:var(--accent);border-color:var(--accent);}
+.tab.active.tab-food{background:var(--coral);border-color:var(--coral);}
+.tab.active.tab-seating{background:var(--violet);border-color:var(--violet);}
+.tab.active.tab-expansion{background:var(--leaf);border-color:var(--leaf);}
+.tab.active.tab-marketing{background:var(--pink);border-color:var(--pink);}
+.tab.active.tab-security{background:var(--slate);border-color:var(--slate);}
 
 .side-panel{display:flex;gap:8px;margin:8px 16px 6px;}
-.side-stat{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:8px 10px;text-align:center;}
+.side-stat{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(8,48,74,.08);}
 .side-stat .ss-label{font-size:10px;color:var(--dim);}
 .side-stat .ss-value{font-size:13.5px;font-weight:800;margin-top:2px;}
 
 .item-list{display:flex;flex-direction:column;gap:10px;padding:8px 16px 10px;}
-.item-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;}
-.item-card.building{border-color:rgba(251,191,36,.4);}
-.item-card.disabled{opacity:.5;}
+.item-card{background:var(--card);border:1px solid var(--border);border-inline-start:4px solid var(--border);border-radius:18px;padding:14px;box-shadow:0 3px 10px rgba(8,48,74,.08);}
+.item-card.building{border-color:rgba(201,121,10,.4);border-inline-start-color:var(--warn);}
+.item-card.disabled{opacity:.55;}
 .item-title{font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px;}
 .item-meta{font-size:12px;color:var(--dim);margin-top:4px;}
 .item-actions{display:flex;gap:8px;margin-top:10px;}
@@ -221,6 +247,7 @@ h1,h2,h3,p{margin:0;}
   padding:10px 18px calc(20px + var(--safe-bottom));
   max-height:88vh;overflow-y:auto;
   animation:slideup .25s cubic-bezier(.2,.9,.3,1);
+  color:var(--text);
 }
 @keyframes slideup{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .sheet-handle{width:38px;height:4px;border-radius:2px;background:var(--border);margin:6px auto 14px;}
@@ -231,9 +258,9 @@ h1,h2,h3,p{margin:0;}
 .event-choices{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
 
 /* news card */
-.news-card{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:12px 14px;}
-.news-card.bad{border-left-color:var(--bad);}
-.news-card.good{border-left-color:var(--good);}
+.news-card{background:var(--card);border:1px solid var(--border);border-inline-start:4px solid var(--accent);border-radius:12px;padding:12px 14px;box-shadow:0 2px 8px rgba(8,48,74,.06);}
+.news-card.bad{border-inline-start-color:var(--bad);}
+.news-card.good{border-inline-start-color:var(--good);}
 .news-title{font-weight:800;font-size:13.5px;}
 .news-sub{font-size:12px;color:var(--dim);margin-top:3px;}
 
@@ -249,29 +276,32 @@ h1,h2,h3,p{margin:0;}
 .opt-card{
   background:var(--card);border:2px solid var(--border);border-radius:18px;
   padding:14px 16px;cursor:pointer;transition:.12s;display:flex;align-items:center;gap:12px;
+  box-shadow:0 3px 10px rgba(8,48,74,.08);
 }
-.opt-card.selected{border-color:var(--accent);background:rgba(34,211,238,.08);}
+.opt-card.selected{border-color:var(--accent);background:rgba(0,191,179,.08);}
 .opt-emoji{font-size:26px;}
 .opt-title{font-weight:800;font-size:14.5px;}
 .opt-sub{font-size:12px;color:var(--dim);margin-top:2px;}
 
 input[type=text],input[type=number]{
-  width:100%;background:var(--card2);border:1px solid var(--border);border-radius:14px;
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;
   padding:14px 16px;color:var(--text);font-size:16px;outline:none;
 }
 input[type=text]:focus,input[type=number]:focus{border-color:var(--accent);}
 
-.logo-hero{font-size:56px;text-align:center;margin-bottom:6px;}
-.title-xl{font-size:24px;font-weight:900;text-align:center;line-height:1.3;}
-.subtitle{font-size:14px;color:var(--dim);text-align:center;margin-top:6px;line-height:1.5;}
+.logo-hero{font-size:56px;text-align:center;margin-bottom:6px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));}
+.title-xl{font-size:24px;font-weight:900;text-align:center;line-height:1.3;color:#fff;text-shadow:0 2px 10px rgba(3,26,40,.35);}
+.subtitle{font-size:14px;color:rgba(255,255,255,.88);text-align:center;margin-top:6px;line-height:1.5;text-shadow:0 1px 6px rgba(3,26,40,.3);}
+.title-xl.on-card{color:var(--text);text-shadow:none;}
+.subtitle.on-card{color:var(--dim);text-shadow:none;}
 
 .sparkline{width:100%;height:60px;margin-top:6px;}
 
 .toast{
   position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%);
-  background:var(--card2);border:1px solid var(--border);color:var(--text);
+  background:var(--text);color:#fff;
   padding:11px 18px;border-radius:999px;font-size:13px;font-weight:700;z-index:200;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
   animation:toastin .2s ease, toastout .3s ease 1.8s forwards;
 }
 @keyframes toastin{from{opacity:0;transform:translate(-50%,10px);}to{opacity:1;transform:translate(-50%,0);}}
@@ -296,6 +326,41 @@ function seasonClass(mIdx){ // 0-based month index
   if([8,9].includes(mIdx)) return "season-autumn";
   return "season-winter";
 }
+
+/* illustrated water-park scene, reused as hero art + screen backdrops.
+   season variety comes from a CSS filter on the wrapper, not separate art. */
+const SCENE_SVG = `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fe0ff"/>
+      <stop offset="1" stop-color="#2196d8"/>
+    </linearGradient>
+    <linearGradient id="waterG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#00c2c7"/>
+      <stop offset="1" stop-color="#00838f"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="400" height="220" fill="url(#skyG)"/>
+  <circle cx="335" cy="42" r="46" fill="#ffd54a" opacity=".28"/>
+  <circle cx="335" cy="42" r="26" fill="#ffca3c"/>
+  <ellipse cx="70" cy="38" rx="34" ry="13" fill="#fff" opacity=".85"/>
+  <ellipse cx="105" cy="46" rx="26" ry="10" fill="#fff" opacity=".75"/>
+  <ellipse cx="220" cy="26" rx="28" ry="10" fill="#fff" opacity=".7"/>
+  <path d="M46,190 C42,150 52,110 62,86" stroke="#8b5a2b" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <g fill="#3fb950">
+    <path d="M62,86 C40,70 18,74 6,92 C30,88 48,92 62,86 Z"/>
+    <path d="M62,86 C48,62 54,40 74,28 C64,52 62,70 62,86 Z"/>
+    <path d="M62,86 C82,66 106,66 122,80 C98,80 78,82 62,86 Z"/>
+    <path d="M62,86 C70,60 92,48 116,50 C94,58 78,70 62,86 Z"/>
+  </g>
+  <rect x="300" y="60" width="14" height="70" fill="#e8e8e8"/>
+  <path d="M307,60 C270,78 258,104 288,122 C312,136 292,156 258,168" stroke="#fff" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <path d="M307,60 C270,78 258,104 288,122 C312,136 292,156 258,168" stroke="#ff6b4a" stroke-width="20" fill="none" stroke-linecap="round" stroke-dasharray="4 22"/>
+  <circle cx="270" cy="150" r="6" fill="#ffde59"/>
+  <path d="M0,150 C40,138 80,162 120,150 C160,138 200,162 240,150 C280,138 320,162 360,150 C380,144 400,150 400,150 L400,220 L0,220 Z" fill="url(#waterG)"/>
+  <path d="M0,164 C40,154 80,174 120,164 C160,154 200,174 240,164 C280,154 320,174 360,164 C380,159 400,164 400,164 L400,220 L0,220 Z" fill="#00a7ae" opacity=".6"/>
+  <circle cx="150" cy="182" r="14" fill="none" stroke="#ff4fa3" stroke-width="7"/>
+</svg>`;
 
 const FACILITIES = [
   {id:"toddler_pool", cat:"facility", group:"kids", name:'בריכת פעוטות', emoji:"🧒", cost:15000, weeks:4, maint:500, capacity:80, slots:2, tierLabel:"נמוכה, בטוחה"},
@@ -840,11 +905,14 @@ function on(node, ev, fn){ node.addEventListener(ev, fn); return node; }
    ========================================================= */
 function renderWelcome(){
   const saved = loadGame();
-  const wrap = el(`<div class="screen px" style="justify-content:center;padding-top:${saved?60:80}px;">
-    <div class="logo-hero">🏊‍♂️💦</div>
-    <div class="title-xl">סימולציית פארק מים</div>
-    <div class="subtitle">נהלו פארק מים ישראלי — כיסאות כתר, חופש גדול, ותור אינסופי לגלידה.</div>
-    <div class="stack gap12" style="margin-top:34px;"></div>
+  const wrap = el(`<div class="screen scene-host">
+    <div class="scene-backdrop">${SCENE_SVG}</div>
+    <div class="scene-content px" style="justify-content:center;padding-top:${saved?60:80}px;display:flex;flex-direction:column;flex:1;">
+      <div class="logo-hero">🏊‍♂️💦</div>
+      <div class="title-xl">סימולציית פארק מים</div>
+      <div class="subtitle">נהלו פארק מים ישראלי — כיסאות כתר, חופש גדול, ותור אינסופי לגלידה.</div>
+      <div class="stack gap12" style="margin-top:34px;"></div>
+    </div>
   </div>`);
   const stack = wrap.querySelector(".stack");
   if(saved){
@@ -1008,7 +1076,8 @@ function renderDashboard(){
   }
 
   const sClass = seasonClass(G.monthIdx);
-  const hero = el(`<div class="hero ${sClass}">
+  const hero = el(`<div class="hero">
+    <div class="hero-scene ${sClass}">${SCENE_SVG}</div>
     <div class="hero-emoji">${MONTH_EMOJI[G.monthIdx]}</div>
     <div class="hero-content">
       <div class="hero-month">${MONTHS[G.monthIdx]} · שנה ${G.year}</div>
@@ -1021,13 +1090,13 @@ function renderDashboard(){
     const last = G.history[G.history.length-1];
     if(!last || last.visitorsDeltaPct==null) return "";
     const up = last.visitorsDeltaPct>=0;
-    return `<div class="kpi-delta" style="color:${up?'#4ade80':'#fb7185'}">${up?'▲':'▼'} ${Math.abs(last.visitorsDeltaPct)}%</div>`;
+    return `<div class="kpi-delta" style="color:${up?'var(--good)':'var(--bad)'}">${up?'▲':'▼'} ${Math.abs(last.visitorsDeltaPct)}%</div>`;
   })();
 
   const kpis = el(`<div class="kpi-row">
     <div class="kpi"><div class="kpi-label">👥 מבקרים</div><div class="kpi-value">${G.lastVisitors.toLocaleString('he-IL')}</div>${deltaBadge}</div>
     <div class="kpi"><div class="kpi-label">⭐ דירוג</div><div class="kpi-value">${stars(G.rating)}</div><div class="kpi-delta muted">שביעות רצון ${G.satisfaction}</div></div>
-    <div class="kpi"><div class="kpi-label">💰 כסף</div><div class="kpi-value" style="color:${G.money<0?'#fb7185':'inherit'}">${fmtMoney(G.money)}</div></div>
+    <div class="kpi"><div class="kpi-label">💰 כסף</div><div class="kpi-value" style="color:${G.money<0?'var(--bad)':'inherit'}">${fmtMoney(G.money)}</div></div>
   </div>`);
   wrap.appendChild(kpis);
 
@@ -1042,7 +1111,7 @@ function renderDashboard(){
   if(!G.quickUI){
     wrap.appendChild(el(`<div class="section-title">מגמת מבקרים — 6 חודשים אחרונים</div>`));
     const sparkWrap = el(`<div class="px"></div>`);
-    sparkWrap.appendChild(sparkline(G.history.slice(-6).map(h=>h.visitors)));
+    sparkWrap.appendChild(sparkline(G.history.slice(-6).map(h=>h.visitors), true));
     wrap.appendChild(sparkWrap);
   }
 
@@ -1109,8 +1178,8 @@ function openMenu(){
 
 function escapeHtml(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
-function sparkline(values){
-  if(values.length<2){ return el(`<div class="muted small">עוד אין מספיק נתונים.</div>`); }
+function sparkline(values, light){
+  if(values.length<2){ return el(`<div class="small" style="color:${light?'rgba(255,255,255,.85)':'var(--dim)'};text-shadow:${light?'0 1px 4px rgba(3,26,40,.3)':'none'};">עוד אין מספיק נתונים.</div>`); }
   const w=480,h=60,pad=4;
   const max=Math.max(...values,1), min=Math.min(...values,0);
   const range = (max-min)||1;
@@ -1119,10 +1188,15 @@ function sparkline(values){
     const y = h-pad - ((v-min)/range)*(h-pad*2);
     return `${x},${y}`;
   }).join(" ");
+  const stroke = light? "#ffffff" : "#ff6b4a";
   const svg = el(`<svg class="sparkline" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-    <polyline points="${pts}" fill="none" stroke="#22d3ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 3px rgba(3,26,40,.3));"/>
   </svg>`);
   return svg;
+}
+
+function catColor(cat){
+  return ({facility:"var(--accent)", food:"var(--coral)", seating:"var(--violet)", expansion:"var(--leaf)", marketing:"var(--pink)", security:"var(--slate)"})[cat] || "var(--border)";
 }
 
 function buildingCard(b){
@@ -1168,7 +1242,7 @@ function renderBuild(){
 
   const tabs = el(`<div class="tabs"></div>`);
   BUILD_TABS.forEach(t=>{
-    const tb = el(`<div class="tab ${G.buildTab===t.id?'active':''}">${t.label}</div>`);
+    const tb = el(`<div class="tab tab-${t.id} ${G.buildTab===t.id?'active':''}">${t.label}</div>`);
     on(tb,"click",()=>{ G.buildTab=t.id; render(); });
     tabs.appendChild(tb);
   });
@@ -1206,7 +1280,7 @@ function renderBuild(){
   }
 
   if(list.children.length===0){
-    list.appendChild(el(`<div class="muted center small" style="padding:30px 0;">אין פריטים בקטגוריה הזו כרגע.</div>`));
+    list.appendChild(el(`<div class="center small" style="padding:30px 0;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(3,26,40,.3);">אין פריטים בקטגוריה הזו כרגע.</div>`));
   }
   wrap.appendChild(list);
   return wrap;
@@ -1216,7 +1290,7 @@ function existingCard(b){
   const d = defOf(b.defId);
   const age = Math.max(0, G.turn - (b.builtAtTurn||G.turn));
   const maintLevel = b.monthsSinceMaint<=2 ? "🟢 תקין" : (b.monthsSinceMaint<=6 ? "🟡 בינוני" : "🔴 מוזנח");
-  const card = el(`<div class="item-card">
+  const card = el(`<div class="item-card" style="border-inline-start-color:${catColor(d.cat)};">
     <div class="item-title">${d.emoji} ${d.name}</div>
     <div class="item-meta">מצב: פעיל ✅ · בנוי לפני: ${age} חודשים · תחזוקה: ${maintLevel}</div>
     <div class="item-actions"></div>
@@ -1251,9 +1325,9 @@ function existingCard(b){
 function closedCard(b){
   const d = defOf(b.defId);
   const weeks = Math.ceil((b.closedWeeksLeft||0)/4)||1;
-  const card = el(`<div class="item-card" style="border-color:rgba(248,113,113,.4);">
+  const card = el(`<div class="item-card" style="border-color:rgba(217,54,43,.35);border-inline-start-color:var(--bad);">
     <div class="item-title">${d.emoji} ${d.name}</div>
-    <div class="item-meta" style="color:#fb7185;">🚧 סגור לתיקון — נותרו כ-${weeks} חודשים</div>
+    <div class="item-meta" style="color:var(--bad);">🚧 סגור לתיקון — נותרו כ-${weeks} חודשים</div>
     <div class="item-actions"></div>
   </div>`);
   const fixCost = Math.round((d.maint||1000)*4);
@@ -1272,7 +1346,7 @@ function availableCard(d){
   const disabled = noSpace || noMoney;
   let extra = "";
   if(d.id==="umbrellas"){ extra = ` · ₪1,500 ליחידה (כאן = 4 יח')`; }
-  const card = el(`<div class="item-card ${disabled?'disabled':''}">
+  const card = el(`<div class="item-card ${disabled?'disabled':''}" style="border-inline-start-color:${catColor(d.cat)};">
     <div class="item-title">${d.emoji} ${d.name}</div>
     <div class="item-meta">${fmtMoney(d.cost)} · ${d.weeks>0?Math.ceil(d.weeks/4)+' חודשים בנייה':'זמין מיידית'}${d.capacity?` · קיבולת ${d.capacity}/יום`:''}${needsSlot?` · ${d.slots} יח' שטח`:''}${extra}</div>
     <div class="item-actions"></div>
@@ -1290,13 +1364,13 @@ function availableCard(d){
     render();
   });
   card.querySelector(".item-actions").appendChild(btn);
-  if(noSpace) card.querySelector(".item-meta").insertAdjacentHTML("beforeend", ` · <span style="color:#fb7185;">אין שטח פנוי</span>`);
+  if(noSpace) card.querySelector(".item-meta").insertAdjacentHTML("beforeend", ` · <span style="color:var(--bad);">אין שטח פנוי</span>`);
   return card;
 }
 
 function marketingCard(m){
   const active = G.campaigns.find(c=>c.id===m.id+"_active");
-  const card = el(`<div class="item-card">
+  const card = el(`<div class="item-card" style="border-inline-start-color:var(--pink);">
     <div class="item-title">${m.emoji} ${m.name}</div>
     <div class="item-meta">${fmtMoney(m.cost)} · משך השפעה: ${Math.ceil(m.weeksDuration/4)} חודש/ים · +${Math.round(m.boost*100)}% מבקרים</div>
     <div class="item-actions"></div>
@@ -1321,7 +1395,7 @@ function marketingCard(m){
 
 function securityCard(s){
   const owned = G.security[s.id];
-  const card = el(`<div class="item-card">
+  const card = el(`<div class="item-card" style="border-inline-start-color:var(--slate);">
     <div class="item-title">${s.emoji} ${s.name}</div>
     <div class="item-meta">${fmtMoney(s.cost)} + ${fmtMoney(s.monthly)}/חודש · ${s.desc}</div>
     <div class="item-actions"></div>
@@ -1363,7 +1437,7 @@ function renderHistory(){
 
   wrap.appendChild(el(`<div class="section-title">מגמת מבקרים ושביעות רצון</div>`));
   const chartWrap = el(`<div class="px"></div>`);
-  chartWrap.appendChild(sparkline(G.history.map(h=>h.visitors)));
+  chartWrap.appendChild(sparkline(G.history.map(h=>h.visitors), true));
   wrap.appendChild(chartWrap);
 
   wrap.appendChild(el(`<div class="section-title">טבלת חודשים</div>`));
@@ -1375,7 +1449,7 @@ function renderHistory(){
       <span>${MONTHS[h.monthIdx].slice(0,3)}' ${h.year}</span>
       <span>${h.visitors.toLocaleString('he-IL')}</span>
       <span>${stars(h.rating)}</span>
-      <span style="color:${h.profit>=0?'#4ade80':'#fb7185'}">${fmtMoney(h.profit)}</span>
+      <span style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</span>
     </div>`);
     card.appendChild(row);
   });
@@ -1426,12 +1500,12 @@ function renderReportOverlay(){
   sheet.appendChild(el(`<div class="sheet-handle"></div>`));
   sheet.appendChild(el(`<div class="row-between"><div style="font-weight:800;">📅 ${MONTHS[h.monthIdx]} ${h.year}</div><div class="muted small">${G.parkName}</div></div>`));
 
-  const deltaColor = (h.visitorsDeltaPct==null)?'var(--dim)':(h.visitorsDeltaPct>=0?'#4ade80':'#fb7185');
+  const deltaColor = (h.visitorsDeltaPct==null)?'var(--dim)':(h.visitorsDeltaPct>=0?'var(--good)':'var(--bad)');
   const deltaTxt = (h.visitorsDeltaPct==null)?'':` (${h.visitorsDeltaPct>=0?'+':''}${h.visitorsDeltaPct}%)`;
   sheet.appendChild(el(`<div class="kpi-row" style="margin:14px 0 0;">
     <div class="kpi"><div class="kpi-label">👥 מבקרים</div><div class="kpi-value">${h.visitors.toLocaleString('he-IL')}</div><div class="kpi-delta" style="color:${deltaColor}">${deltaTxt}</div></div>
     <div class="kpi"><div class="kpi-label">⭐ דירוג</div><div class="kpi-value">${stars(h.rating)}</div></div>
-    <div class="kpi"><div class="kpi-label">💰 רווח נקי</div><div class="kpi-value" style="color:${h.profit>=0?'#4ade80':'#fb7185'}">${fmtMoney(h.profit)}</div></div>
+    <div class="kpi"><div class="kpi-label">💰 רווח נקי</div><div class="kpi-value" style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</div></div>
   </div>`));
 
   // financial breakdown (collapsible)
@@ -1443,7 +1517,7 @@ function renderReportOverlay(){
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">💎 VIP</span><span>${fmtMoney(h.vipIncome)}</span></div>`));
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">🔧 תחזוקה</span><span>-${fmtMoney(h.maintenance).replace('₪','₪')}</span></div>`));
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">🛡️ אבטחה</span><span>-${fmtMoney(h.securityMonthly)}</span></div>`));
-  finBody.appendChild(el(`<div class="finance-row total"><span>רווח נקי</span><span style="color:${h.profit>=0?'#4ade80':'#fb7185'}">${fmtMoney(h.profit)}</span></div>`));
+  finBody.appendChild(el(`<div class="finance-row total"><span>רווח נקי</span><span style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</span></div>`));
   finBody.style.display = G.quickUI ? "none" : "flex";
   finBox.appendChild(finHeader); finBox.appendChild(finBody);
   on(finHeader,"click",()=>{
@@ -1491,7 +1565,11 @@ function renderReportOverlay(){
    ========================================================= */
 function renderGameOver(){
   const win = G.over.type==="win";
-  const wrap = el(`<div class="screen px" style="justify-content:center;padding-top:60px;"></div>`);
+  const outer = el(`<div class="screen scene-host">
+    <div class="scene-backdrop">${SCENE_SVG}</div>
+    <div class="scene-content px" style="justify-content:center;padding-top:60px;display:flex;flex-direction:column;flex:1;"></div>
+  </div>`);
+  const wrap = outer.querySelector(".scene-content");
   wrap.appendChild(el(`<div class="logo-hero">${win?'🏆':'💧😢'}</div>`));
   wrap.appendChild(el(`<div class="title-xl">${win?'ניצחתם!':'המשחק נגמר'}</div>`));
   let msg = "";
@@ -1512,7 +1590,7 @@ function renderGameOver(){
     render();
   });
   wrap.appendChild(btn);
-  return wrap;
+  return outer;
 }
 
 /* =========================================================
