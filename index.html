@@ -514,6 +514,42 @@ function buildEventPool(){
       chance: 0.02,
       headline:'טיקטוק של "התור הכי ארוך בישראל" עושה מיליון צפיות',
       apply(){ addSat(-9); return "הדירוג צונח זמנית עד שהרוחות ירגעו."; }},
+    {id:"pool_poop", light:true, name:"אירוע חום בבריכה", emoji:"💩",
+      chance: capacityTotal()>0 ? 0.07 : 0,
+      headline:'אזעקת "דגל חום" — כל הבריכה מתפנה בבהלה תוך 40 שנייה',
+      apply(){ const fine = randi(2000,7000)*diff.fineMult; G.money -= fine; addSat(-6);
+        return `ריקון ומילוי מחדש של כל המים. קנס תברואה ${fmtMoney(fine)}.`; }},
+    {id:"nargila_fire", light:false, name:"שריפה מנרגילה בפינת ישיבה", emoji:"🔥",
+      chance: allBuilt("seating").some(b=>b.status!=="closed") ? 0.03 : 0,
+      headline:'"מי השאיר את הפחמים ככה?!" — פינת ישיבה עולה באש',
+      apply(){
+        const fine = randi(4000,11000)*diff.fineMult; G.money -= fine; addSat(-7);
+        const seats = G.built.filter(b=>defOf(b.defId).cat==="seating" && b.status!=="closed");
+        if(seats.length){ const idx = G.built.indexOf(pick(seats)); if(idx>-1) G.built.splice(idx,1); }
+        return `קנס כבאות ${fmtMoney(fine)}, ופינת ישיבה שלמה ירדה לטמיון.`;
+      }},
+    {id:"falafel_poisoning", light:true, name:"הרעלת מזון מהפלאפל", emoji:"🤢",
+      chance: G.built.some(b=>b.defId==="falafel" && b.status==="active") ? 0.05 : 0,
+      headline:'"החומוס ההוא לא היה טרי" — משפחה שלמה בחדר מיון',
+      apply(){
+        const fine = randi(3000,9000)*diff.fineMult; G.money -= fine; addSat(-7);
+        const stand = G.built.find(b=>b.defId==="falafel" && b.status==="active");
+        if(stand){ stand.status="closed"; stand.closedWeeksLeft = randi(2,4); }
+        return `דוכן הפלאפל נסגר לבדיקה, וקנס משרד הבריאות: ${fmtMoney(fine)}.`;
+      }},
+    {id:"slide_stuck_kid", light:true, name:"ילד נתקע במגלשה", emoji:"🛝",
+      chance: hasSlideActive() ? 0.05 : 0,
+      headline:'"תוציאו אותו משם!" — ילד תקוע באמצע המגלשה 20 דקות',
+      apply(){ addSat(-6); return 'האמא כתבה ביקורת זועמת עם שלושה תמונות מטושטשות.'; }},
+    {id:"tube_stuck_kid", light:true, name:"ילד נתקע באבוב", emoji:"🛟",
+      chance: G.built.some(b=>b.status==="active" && (b.defId==="lazy_river"||b.defId==="family_pool")) ? 0.05 : 0,
+      headline:'ילד תקוע בתוך האבוב מול הזרם — הצלה דרמטית בנהר העצלן',
+      apply(){ addSat(-5); return "עוד ביקורת שלילית ברשת, הפעם עם אימוג'י בוכה."; }},
+    {id:"chair_riot", light:false, name:'מהומה המונית על כיסאות "כתר"', emoji:"🥊",
+      chance: chairsCount>=2 ? 0.03 : 0,
+      headline:'כיסאות "כתר" עפים באוויר — מהומה כללית ליד הבריכה, אבטחה נכנסה לתמונה',
+      apply(){ const fine = randi(8000,25000)*diff.fineMult; G.money -= fine; addSat(-14);
+        return `אנשי האבטחה ספגו כמה מכות, ואתם ספגתם קנס ענק: ${fmtMoney(fine)}.`; }},
   ];
 
   const GREEN = [
@@ -536,6 +572,15 @@ function buildEventPool(){
     {id:"council_grant", name:"תרומה/מענק ממועצה", emoji:"🏛️", chance:0.02,
       headline:"המועצה המקומית מעניקה מענק לפארק",
       apply(){ const grant = randi(8000,25000); G.money += grant; return `מענק של ${fmtMoney(grant)} התקבל בחשבון.`; }},
+    {id:"influencer_story", name:"משפיענית פרסמה סטורי מפרגן", emoji:"🤳", chance:0.05,
+      headline:'"האמת שזה ממש כיף פה" — משפיענית מוכרת מעלה סטורי לחצי מיליון עוקבים',
+      apply(){ addSat(4); G.campaigns.push({id:"influencer_story_boost", weeksLeft:4, boost:0.15}); return "גל כניסות מהעוקבים שלה כל השבוע."; }},
+    {id:"water_billing_glitch", name:"תקלת חיוב מים — חודש חינם", emoji:"💧", chance:0.02,
+      headline:'תאגיד המים מודה בטעות בחיוב — "החודש על חשבוננו"',
+      apply(){ const refund = randi(3000,9000); G.money += refund; return `זיכוי של ${fmtMoney(refund)} התקבל בחשבון בלי לבקש.`; }},
+    {id:"influencer_friend", name:"משפיענית הביאה חברה לפארק", emoji:"👯", chance:0.04,
+      headline:"משפיענית השיקה חברה חדשה בפארק — התיוגים לא נגמרים",
+      apply(){ G.campaigns.push({id:"influencer_friend_boost", weeksLeft:4, boost:0.10}); return "עוד גל מבקרים בעקבות התיוג."; }},
   ];
 
   return {RED, GREEN};
