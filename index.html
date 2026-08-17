@@ -268,6 +268,34 @@ h1,h2,h3,p{margin:0;}
 .finance-row{display:flex;justify-content:space-between;font-size:13.5px;padding:5px 0;}
 .finance-row.total{border-top:1px solid var(--border);margin-top:6px;padding-top:9px;font-weight:800;font-size:15px;}
 
+/* ---- ticket price control ---- */
+.price-card{margin:0 16px 14px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;box-shadow:0 4px 14px rgba(3,26,40,.10);}
+.price-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.price-head .lbl{font-size:13px;font-weight:700;color:var(--dim);}
+.price-value{font-size:26px;font-weight:900;color:var(--accent2);font-variant-numeric:tabular-nums;}
+.price-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.price-step{flex:0 0 auto;width:38px;height:38px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card2);color:var(--text);font-size:20px;font-weight:800;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.price-step:active{transform:scale(.94);}
+.price-step:disabled{opacity:.35;cursor:default;}
+.price-slider{flex:1 1 auto;-webkit-appearance:none;appearance:none;height:8px;border-radius:99px;
+  background:linear-gradient(90deg,var(--leaf),var(--warn),var(--bad));outline:none;}
+.price-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;
+  border-radius:50%;background:#fff;border:3px solid var(--accent);cursor:pointer;
+  box-shadow:0 2px 8px rgba(3,26,40,.28);}
+.price-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;
+  border:3px solid var(--accent);cursor:pointer;box-shadow:0 2px 8px rgba(3,26,40,.28);}
+.price-slider:focus-visible{box-shadow:0 0 0 3px rgba(0,191,179,.4);}
+.price-hint{margin-top:9px;font-size:12.5px;color:var(--dim);line-height:1.5;}
+.price-hint b{color:var(--text);}
+.price-tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:800;}
+.price-tag.cheap{background:rgba(63,185,80,.15);color:var(--good);}
+.price-tag.fair{background:rgba(0,191,179,.15);color:var(--accent2);}
+.price-tag.steep{background:rgba(217,54,43,.13);color:var(--bad);}
+@media (prefers-reduced-motion:reduce){.price-step:active{transform:none;}}
+
 /* history table */
 .hist-row{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
 .hist-row:last-child{border-bottom:none;}
@@ -363,43 +391,76 @@ const SCENE_SVG = `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg"
 </svg>`;
 
 const FACILITIES = [
-  {id:"toddler_pool", cat:"facility", group:"kids", name:'בריכת פעוטות', emoji:"🧒", cost:15000, weeks:4, maint:500, capacity:80, slots:2, tierLabel:"נמוכה, בטוחה"},
-  {id:"family_pool", cat:"facility", group:"family", name:'בריכה משפחתית', emoji:"👨‍👩‍👧", cost:40000, weeks:4, maint:1200, capacity:180, slots:2, tierLabel:"בינונית"},
-  {id:"family_slide", cat:"facility", group:"family", name:'מגלשה משפחתית', emoji:"🛝", cost:60000, weeks:8, maint:1500, capacity:150, slots:2, isSlide:true, tierLabel:"טובה"},
-  {id:"death_slide", cat:"facility", group:"extreme", name:'מגלשת "פחד מוות"', emoji:"💀", cost:150000, weeks:12, maint:4000, capacity:120, slots:3, isSlide:true, riskMult:2, tierLabel:"גבוהה מאוד"},
-  {id:"lazy_river", cat:"facility", group:"chill", name:"נהר עצלן", emoji:"🏞️", cost:90000, weeks:8, maint:2000, capacity:220, slots:3, tierLabel:"גבוהה"},
-  {id:"vip_jacuzzi", cat:"facility", group:"vip", name:"ג'קוזי VIP", emoji:"💎", cost:35000, weeks:4, maint:800, capacity:40, slots:1, vip:true, tierLabel:"ניש"},
+  {id:"toddler_pool", cat:"facility", group:"kids", name:'בריכת פעוטות', emoji:"🧒", cost:165000, weeks:4, maint:4500, capacity:80, slots:2, appeal:6, tierLabel:"נמוכה, בטוחה"},
+  {id:"family_pool", cat:"facility", group:"family", name:'בריכה משפחתית', emoji:"👨‍👩‍👧", cost:440000, weeks:4, maint:11000, capacity:180, slots:2, appeal:14, tierLabel:"בינונית"},
+  {id:"family_slide", cat:"facility", group:"family", name:'מגלשה משפחתית', emoji:"🛝", cost:660000, weeks:8, maint:13500, capacity:150, slots:2, isSlide:true, appeal:26, tierLabel:"טובה"},
+  {id:"death_slide", cat:"facility", group:"extreme", name:'מגלשת "פחד מוות"', emoji:"💀", cost:1650000, weeks:12, maint:36000, capacity:120, slots:3, isSlide:true, riskMult:2, appeal:75, tierLabel:"גבוהה מאוד"},
+  {id:"lazy_river", cat:"facility", group:"chill", name:"נהר עצלן", emoji:"🏞️", cost:990000, weeks:8, maint:18000, capacity:220, slots:3, appeal:32, tierLabel:"גבוהה"},
+  {id:"vip_jacuzzi", cat:"facility", group:"vip", name:"ג'קוזי VIP", emoji:"💎", cost:385000, weeks:4, maint:7200, capacity:40, slots:1, vip:true, appeal:18, tierLabel:"ניש"},
 ];
 const FOOD = [
-  {id:"falafel", cat:"food", name:"דוכן פלאפל", emoji:"🧆", cost:10000, weeks:2, maint:300, spend:3, slots:1},
-  {id:"keter_stand", cat:"food", name:'מזנון "כתר"', emoji:"🥤", cost:8000, weeks:2, maint:200, spend:2, slots:1},
-  {id:"ice_cream", cat:"food", name:"גלידרייה", emoji:"🍦", cost:20000, weeks:4, maint:500, spend:3, summerBoost:1.7, slots:1},
-  {id:"restaurant", cat:"food", name:"מסעדה מוצלת", emoji:"🍽️", cost:45000, weeks:8, maint:1000, spend:5, slots:2},
+  {id:"falafel", cat:"food", name:"דוכן פלאפל", emoji:"🧆", cost:110000, weeks:2, maint:2700, spend:3, slots:1},
+  {id:"keter_stand", cat:"food", name:'מזנון "כתר"', emoji:"🥤", cost:88000, weeks:2, maint:1800, spend:2, slots:1},
+  {id:"ice_cream", cat:"food", name:"גלידרייה", emoji:"🍦", cost:220000, weeks:4, maint:4500, spend:3, summerBoost:1.7, slots:1},
+  {id:"restaurant", cat:"food", name:"מסעדה מוצלת", emoji:"🍽️", cost:495000, weeks:8, maint:9000, spend:5, slots:2},
 ];
 const SEATING = [
-  {id:"chairs", cat:"seating", name:'כיסאות "כתר" (10 יח\')', emoji:"🪑", cost:2000, weeks:0, maint:0, seatCap:30, chairRisk:true, slots:0},
-  {id:"umbrellas", cat:"seating", name:"שמשיות", emoji:"⛱️", cost:1500, weeks:0, maint:0, seatCap:10, shade:true, slots:0},
-  {id:"vip_pergola", cat:"seating", name:"פרגולת VIP", emoji:"🏖️", cost:12000, weeks:2, maint:400, seatCap:20, shade:true, vip:true, slots:1},
+  {id:"chairs", cat:"seating", name:'כיסאות "כתר" (10 יח\')', emoji:"🪑", cost:22000, weeks:0, maint:0, seatCap:30, chairRisk:true, slots:0},
+  {id:"umbrellas", cat:"seating", name:"שמשיות", emoji:"⛱️", cost:16500, weeks:0, maint:0, seatCap:10, shade:true, slots:0},
+  {id:"vip_pergola", cat:"seating", name:"פרגולת VIP", emoji:"🏖️", cost:132000, weeks:2, maint:3600, seatCap:20, shade:true, vip:true, slots:1},
 ];
 const EXPANSION = [
-  {id:"extra_dunam", cat:"expansion", name:"דונם נוסף", emoji:"📐", cost:100000, weeks:12, slots:4, repeatable:true},
+  {id:"extra_dunam", cat:"expansion", name:"דונם נוסף", emoji:"📐", cost:1100000, weeks:12, slots:4, repeatable:true},
 ];
 const MARKETING = [
-  {id:"fb_post", cat:"marketing", name:"פוסט בפייסבוק", emoji:"📱", cost:500, weeksDuration:4, boost:0.05},
-  {id:"road_sign", cat:"marketing", name:"שילוט כביש", emoji:"🪧", cost:3000, weeksDuration:12, boost:0.10},
-  {id:"radio", cat:"marketing", name:"קמפיין רדיו", emoji:"📻", cost:8000, weeksDuration:4, boost:0.20},
+  {id:"fb_post", cat:"marketing", name:"פוסט בפייסבוק", emoji:"📱", cost:12000, weeksDuration:4, boost:0.05},
+  {id:"road_sign", cat:"marketing", name:"שילוט כביש", emoji:"🪧", cost:60000, weeksDuration:12, boost:0.10},
+  {id:"radio", cat:"marketing", name:"קמפיין רדיו", emoji:"📻", cost:150000, weeksDuration:4, boost:0.20},
 ];
 const SECURITY = [
-  {id:"guards", cat:"security", name:"מאבטחים בכניסה", emoji:"🕴️", cost:15000, monthly:2000, weeks:2, desc:"-30% סיכוי לקטטות/גניבות"},
-  {id:"cameras", cat:"security", name:"מצלמות אבטחה", emoji:"📹", cost:25000, monthly:1000, weeks:4, desc:"מזהה אירועים מהר → נזק קטן יותר"},
-  {id:"lifeguard", cat:"security", name:"מציל ייעודי", emoji:"🛟", cost:40000, monthly:3000, weeks:6, desc:'כמעט מונע "ילד נעדר", +שביעות רצון הורים'},
-  {id:"full", cat:"security", name:"חבילת אבטחה מלאה", emoji:"🛡️", cost:90000, monthly:6000, weeks:12, desc:"הכל לעיל + כמעט אוטומטי מול משרד הבריאות"},
+  {id:"guards", cat:"security", name:"מאבטחים בכניסה", emoji:"🕴️", cost:165000, monthly:18000, weeks:2, desc:"-30% סיכוי לקטטות/גניבות"},
+  {id:"cameras", cat:"security", name:"מצלמות אבטחה", emoji:"📹", cost:275000, monthly:9000, weeks:4, desc:"מזהה אירועים מהר → נזק קטן יותר"},
+  {id:"lifeguard", cat:"security", name:"מציל ייעודי", emoji:"🛟", cost:440000, monthly:27000, weeks:6, desc:'כמעט מונע "ילד נעדר", +שביעות רצון הורים'},
+  {id:"full", cat:"security", name:"חבילת אבטחה מלאה", emoji:"🛡️", cost:990000, monthly:54000, weeks:12, desc:"הכל לעיל + כמעט אוטומטי מול משרד הבריאות"},
 ];
 
+/* ---------------------------------------------------------
+   ECON — the economic model.
+   Demand comes from a limited MARKET (stars, attractions,
+   word of mouth), not from capacity. Capacity only caps it.
+   --------------------------------------------------------- */
+const ECON = {
+  // ticket pricing
+  ticketMin:15, ticketMax:60, ticketDefault:32,
+  ticketRef:35,          // price at which demand factor == 1
+  elasticity:1.25,       // >1 ⇒ raising price loses more heads than it gains ₪
+
+  // market size (visitors per day at seasonMult 1, sat 100)
+  marketBase:50,         // people who'd come to any pool
+  marketPerStar:125,     // reputation is the main growth engine
+  womCap:90,             // word-of-mouth ceiling
+  womDiv:260,            // √cumulativeVisitors / womDiv × womCap
+  appealScale:2.6,       // headline attractions widen the market
+
+  // payroll — scales with capacity, throttled by season
+  lifeguardPer:70,   lifeguardCost:16000,
+  staffPer:55,       staffCost:12500,
+  staffFloor:0.35,   staffPeak:1.5,   // winter skeleton crew … full crew at seasonMult ≥1.5
+
+  // fixed overhead
+  arnonaPerCapacity:85,
+  adminBase:9000,
+  insuranceBase:8000, insurancePerRisk:6000,
+  insuranceSpikeMult:1.6, insuranceSpikeMonths:12,
+
+  // satisfaction equilibrium (NOT 100 — a park earns its stars)
+  satBase:50,
+};
+
 const DIFFICULTY = {
-  easy:   {label:"קליל", emoji:"🟢", maintOn:false, fineMult:0.5, freqMult:0.5, lightOnly:true, startMoney:250000},
-  normal: {label:"רגיל", emoji:"🟡", maintOn:true,  fineMult:1,   freqMult:1,   lightOnly:false, startMoney:150000},
-  hard:   {label:"יאללה בלאגן", emoji:"🔴", maintOn:true, fineMult:2, freqMult:1.5, lightOnly:false, startMoney:80000, neglect:true, doubleChance:0.3},
+  easy:   {label:"קליל", emoji:"🟢", maintOn:false, fineMult:0.5, freqMult:0.5, lightOnly:true, startMoney:1800000, opexMult:0.75},
+  normal: {label:"רגיל", emoji:"🟡", maintOn:true,  fineMult:1,   freqMult:1,   lightOnly:false, startMoney:1200000, opexMult:1},
+  hard:   {label:"יאללה בלאגן", emoji:"🔴", maintOn:true, fineMult:2, freqMult:1.5, lightOnly:false, startMoney:800000, opexMult:1.3, neglect:true, doubleChance:0.3},
 };
 const PACE = {
   fast: {label:"מהיר", emoji:"🐇", quickUI:true, seasonLen:12},
@@ -450,6 +511,8 @@ function newGame(draft){
     pendingDilemma: null,
     justUpgradedThisTurn: false,
     buildTab: "facility",
+    ticketPrice: ECON.ticketDefault,
+    insuranceSpikeUntil: 0, // turn number until which the premium is loaded
     over: null, // {type:'win'|'lose', reason}
   };
 }
@@ -458,7 +521,18 @@ function saveGame(){
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(G)); }catch(e){}
 }
 function loadGame(){
-  try{ const s = localStorage.getItem(SAVE_KEY); return s? JSON.parse(s): null; }catch(e){ return null; }
+  try{
+    const s = localStorage.getItem(SAVE_KEY);
+    if(!s) return null;
+    return migrateSave(JSON.parse(s));
+  }catch(e){ return null; }
+}
+// Saves from before the economy rewrite lack the new fields.
+function migrateSave(g){
+  if(!g || typeof g!=="object") return g;
+  if(g.ticketPrice==null) g.ticketPrice = ECON.ticketDefault;
+  if(g.insuranceSpikeUntil==null) g.insuranceSpikeUntil = 0;
+  return g;
 }
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
 
@@ -511,6 +585,66 @@ function capacityTotal(){
 function hasSlideActive(){
   return G.built.some(b=>b.status==="active" && defOf(b.defId).isSlide);
 }
+
+/* ---------- ECONOMY ---------- */
+function appealTotal(){
+  return G.built.filter(b=>b.status==="active")
+                .reduce((s,b)=>s+(defOf(b.defId).appeal||0),0);
+}
+function wordOfMouth(){
+  return Math.min(ECON.womCap, Math.sqrt(G.cumulativeVisitors)/ECON.womDiv*ECON.womCap);
+}
+// How many people WANT to come per day, before capacity is applied.
+function marketPerDay(monthIdx){
+  const base = ECON.marketBase
+             + G.rating*ECON.marketPerStar
+             + wordOfMouth()
+             + appealTotal()*ECON.appealScale;
+  const ads = G.campaigns.reduce((s,c)=>s+c.boost,0);
+  return base * SEASON_MULT[monthIdx] * (1+ads) * (G.satisfaction/100) * priceFactor();
+}
+// Demand response to ticket price. >1 below the reference price, <1 above it.
+function priceFactor(){
+  return Math.pow(ECON.ticketRef/(G.ticketPrice||ECON.ticketDefault), ECON.elasticity);
+}
+function staffingLoad(monthIdx){
+  return clamp(SEASON_MULT[monthIdx]/ECON.staffPeak, ECON.staffFloor, 1);
+}
+function staffCounts(){
+  const cap = capacityTotal();
+  if(cap<=0) return {lifeguards:0, staff:0};
+  return {
+    lifeguards: Math.ceil(cap/ECON.lifeguardPer),
+    staff:      Math.ceil(cap/ECON.staffPer),
+  };
+}
+function payrollFor(monthIdx){
+  const {lifeguards, staff} = staffCounts();
+  const full = lifeguards*ECON.lifeguardCost + staff*ECON.staffCost;
+  return Math.round(full * staffingLoad(monthIdx));
+}
+function riskyCount(){
+  return G.built.filter(b=>b.status==="active" && (defOf(b.defId).isSlide||defOf(b.defId).riskMult)).length;
+}
+function insuranceMonthly(){
+  let p = ECON.insuranceBase + riskyCount()*ECON.insurancePerRisk;
+  if(G.turn < (G.insuranceSpikeUntil||0)) p *= ECON.insuranceSpikeMult;
+  return Math.round(p);
+}
+function bumpInsurance(){
+  G.insuranceSpikeUntil = Math.max(G.insuranceSpikeUntil||0, G.turn + ECON.insuranceSpikeMonths);
+}
+function arnonaMonthly(){ return Math.round(capacityTotal()*ECON.arnonaPerCapacity); }
+// Every recurring cost except maintenance and the security packages.
+function overheadBreakdown(monthIdx){
+  const opex = DIFFICULTY[G.difficulty].opexMult||1;
+  return {
+    payroll:   Math.round(payrollFor(monthIdx)*opex),
+    arnona:    Math.round(arnonaMonthly()*opex),
+    admin:     Math.round(ECON.adminBase*opex),
+    insurance: Math.round(insuranceMonthly()*opex),
+  };
+}
 function toast(msg){
   const el = document.createElement("div");
   el.className="toast"; el.textContent = msg;
@@ -529,12 +663,15 @@ function buildEventPool(){
   const lifeguardMult = (G.security.lifeguard||G.security.full) ? 0.15 : 1;
   const neglectFactor = worstNeglectFactor();
   const autumnWinter = [8,9,10,11].includes(G.monthIdx) ? 1.6 : 1;
+  // A bargain ticket brings a rowdier crowd; a steep one keeps it quiet.
+  const price = G.ticketPrice||ECON.ticketDefault;
+  const rowdy = price<25 ? 1+(25-price)*0.045 : (price>45 ? 0.85 : 1);
 
   const RED = [
     {id:"chair_fight", light:true, name:'קטטת כיסאות "כתר"', emoji:"🥊",
-      chance:(0.08 + chairsCount*0.01) * guardMult,
+      chance:(0.08 + chairsCount*0.01) * guardMult * rowdy,
       headline:'קרב אגרוף על כיסא בצל — "היד שלי הייתה שם קודם!"',
-      apply(){ const fine = randi(3000,10000)*diff.fineMult; G.money -= fine; addSat(-8);
+      apply(){ const fine = randi(33000,110000)*diff.fineMult; G.money -= fine; addSat(-8);
         return `קנס ${fmtMoney(fine)} ופוסט זועם בקבוצת הוואטסאפ השכונתית.`; }},
     {id:"slide_malfunction", light:false, name:"תקלה במגלשה", emoji:"🔧",
       chance: hasSlideActive() ? (0.06 * neglectFactor) : 0,
@@ -545,7 +682,7 @@ function buildEventPool(){
         const s = pick(slides);
         const weeks = randi(2,6);
         s.status="closed"; s.closedWeeksLeft = weeks;
-        addSat(-10);
+        addSat(-10); bumpInsurance();
         return `${defOf(s.defId).emoji} ${defOf(s.defId).name} נסגרה ל-${weeks} שבועות לתיקון.`;
       }},
     {id:"bad_review", light:true, name:"ביקורת הרסנית ברשת", emoji:"📉",
@@ -556,10 +693,10 @@ function buildEventPool(){
       chance: 0.05 * neglectFactor,
       headline:"פקחי משרד הבריאות בשער — בדיקת פתע!",
       apply(){
-        if(G.security.full){ G.money += 4000; addSat(4); return '"תעודת הצטיינות"! חבילת האבטחה המלאה עשתה את העבודה.'; }
+        if(G.security.full){ G.money += 44000; addSat(4); return '"תעודת הצטיינות"! חבילת האבטחה המלאה עשתה את העבודה.'; }
         const pass = chance(clamp(G.satisfaction/100 - neglectFactor*0.1 + 0.3,0.1,0.9));
         if(pass){ addSat(3); return "עבר בשן ובעין. הצוות נושם לרווחה."; }
-        const fine = randi(5000,15000)*diff.fineMult; G.money -= fine; addSat(-7);
+        const fine = randi(55000,165000)*diff.fineMult; G.money -= fine; addSat(-7);
         return `כשל בביקורת. קנס ${fmtMoney(fine)}.`;
       }},
     {id:"lost_child", light:true, name:"ילד נעדר", emoji:"🚨",
@@ -569,26 +706,26 @@ function buildEventPool(){
     {id:"weather_damage", light:false, name:"הצפה/נזק ממזג אוויר", emoji:"🌧️",
       chance: 0.03 * autumnWinter,
       headline:"סופה פתאומית משטפת את הפארק",
-      apply(){ const cost = randi(3000,12000)*diff.fineMult; G.money -= cost; addSat(-3);
+      apply(){ const cost = randi(33000,132000)*diff.fineMult; G.money -= cost; addSat(-3); bumpInsurance();
         return `נזק בעלות ${fmtMoney(cost)} לתיקון.`; }},
     {id:"theft", light:true, name:"גניבת אבזרי בריכה", emoji:"🕵️",
-      chance: 0.03 * guardMult * camMult,
+      chance: 0.03 * guardMult * camMult * rowdy,
       headline:"מצילה נעלמה בלילה — מי גנב את הגלגלים המתנפחים?",
-      apply(){ const cost = randi(800,3000); G.money -= cost; return `עלות החלפה: ${fmtMoney(cost)}.`; }},
+      apply(){ const cost = randi(9000,33000); G.money -= cost; return `עלות החלפה: ${fmtMoney(cost)}.`; }},
     {id:"viral_negative", light:true, name:"וידאו ויראלי שלילי", emoji:"📹",
       chance: 0.02,
       headline:'טיקטוק של "התור הכי ארוך בישראל" עושה מיליון צפיות',
       apply(){ addSat(-9); return "הדירוג צונח זמנית עד שהרוחות ירגעו."; }},
     {id:"pool_poop", light:true, name:"אירוע חום בבריכה", emoji:"💩",
-      chance: capacityTotal()>0 ? 0.07 : 0,
+      chance: capacityTotal()>0 ? 0.07*rowdy : 0,
       headline:'אזעקת "דגל חום" — כל הבריכה מתפנה בבהלה תוך 40 שנייה',
-      apply(){ const fine = randi(2000,7000)*diff.fineMult; G.money -= fine; addSat(-6);
+      apply(){ const fine = randi(22000,77000)*diff.fineMult; G.money -= fine; addSat(-6);
         return `ריקון ומילוי מחדש של כל המים. קנס תברואה ${fmtMoney(fine)}.`; }},
     {id:"nargila_fire", light:false, name:"שריפה מנרגילה בפינת ישיבה", emoji:"🔥",
-      chance: allBuilt("seating").some(b=>b.status!=="closed") ? 0.03 : 0,
+      chance: allBuilt("seating").some(b=>b.status!=="closed") ? 0.03*rowdy : 0,
       headline:'"מי השאיר את הפחמים ככה?!" — פינת ישיבה עולה באש',
       apply(){
-        const fine = randi(4000,11000)*diff.fineMult; G.money -= fine; addSat(-7);
+        const fine = randi(44000,121000)*diff.fineMult; G.money -= fine; addSat(-7); bumpInsurance();
         const seats = G.built.filter(b=>defOf(b.defId).cat==="seating" && b.status!=="closed");
         if(seats.length){ const idx = G.built.indexOf(pick(seats)); if(idx>-1) G.built.splice(idx,1); }
         return `קנס כבאות ${fmtMoney(fine)}, ופינת ישיבה שלמה ירדה לטמיון.`;
@@ -597,7 +734,7 @@ function buildEventPool(){
       chance: G.built.some(b=>b.defId==="falafel" && b.status==="active") ? 0.05 : 0,
       headline:'"החומוס ההוא לא היה טרי" — משפחה שלמה בחדר מיון',
       apply(){
-        const fine = randi(3000,9000)*diff.fineMult; G.money -= fine; addSat(-7);
+        const fine = randi(33000,99000)*diff.fineMult; G.money -= fine; addSat(-7); bumpInsurance();
         const stand = G.built.find(b=>b.defId==="falafel" && b.status==="active");
         if(stand){ stand.status="closed"; stand.closedWeeksLeft = randi(2,4); }
         return `דוכן הפלאפל נסגר לבדיקה, וקנס משרד הבריאות: ${fmtMoney(fine)}.`;
@@ -605,15 +742,15 @@ function buildEventPool(){
     {id:"slide_stuck_kid", light:true, name:"ילד נתקע במגלשה", emoji:"🛝",
       chance: hasSlideActive() ? 0.05 : 0,
       headline:'"תוציאו אותו משם!" — ילד תקוע באמצע המגלשה 20 דקות',
-      apply(){ addSat(-6); return 'האמא כתבה ביקורת זועמת עם שלושה תמונות מטושטשות.'; }},
+      apply(){ addSat(-6); bumpInsurance(); return 'האמא כתבה ביקורת זועמת עם שלושה תמונות מטושטשות.'; }},
     {id:"tube_stuck_kid", light:true, name:"ילד נתקע באבוב", emoji:"🛟",
       chance: G.built.some(b=>b.status==="active" && (b.defId==="lazy_river"||b.defId==="family_pool")) ? 0.05 : 0,
       headline:'ילד תקוע בתוך האבוב מול הזרם — הצלה דרמטית בנהר העצלן',
       apply(){ addSat(-5); return "עוד ביקורת שלילית ברשת, הפעם עם אימוג'י בוכה."; }},
     {id:"chair_riot", light:false, name:'מהומה המונית על כיסאות "כתר"', emoji:"🥊",
-      chance: chairsCount>=2 ? 0.03 : 0,
+      chance: chairsCount>=2 ? 0.03*rowdy : 0,
       headline:'כיסאות "כתר" עפים באוויר — מהומה כללית ליד הבריכה, אבטחה נכנסה לתמונה',
-      apply(){ const fine = randi(8000,25000)*diff.fineMult; G.money -= fine; addSat(-14);
+      apply(){ const fine = randi(90000,275000)*diff.fineMult; G.money -= fine; addSat(-14); bumpInsurance();
         return `אנשי האבטחה ספגו כמה מכות, ואתם ספגתם קנס ענק: ${fmtMoney(fine)}.`; }},
   ];
 
@@ -630,19 +767,19 @@ function buildEventPool(){
     {id:"ad_overperform", name:"מבצע פרסומי הצליח מעל המצופה", emoji:"📈",
       chance: G.campaigns.length>0 ? 0.15 : 0,
       headline:"הקמפיין תפס — יותר טוב מהמתוכנן!",
-      apply(){ const bonus = randi(4000,12000); G.money += bonus; return `בונוס הכנסה חד-פעמי: ${fmtMoney(bonus)}.`; }},
+      apply(){ const bonus = randi(44000,132000); G.money += bonus; return `בונוס הכנסה חד-פעמי: ${fmtMoney(bonus)}.`; }},
     {id:"travel_mag", name:"ביקורת מעולה במגזין טיולים", emoji:"🧳", chance:0.03,
       headline:'"חובה לבקר" — מגזין טיולים מדרג אתכם גבוה',
       apply(){ addSat(8); G.campaigns.push({id:"mag_boost", weeksLeft:12, boost:0.1}); return "דירוג יציב לכמה חודשים קדימה."; }},
     {id:"council_grant", name:"תרומה/מענק ממועצה", emoji:"🏛️", chance:0.02,
       headline:"המועצה המקומית מעניקה מענק לפארק",
-      apply(){ const grant = randi(8000,25000); G.money += grant; return `מענק של ${fmtMoney(grant)} התקבל בחשבון.`; }},
+      apply(){ const grant = randi(90000,275000); G.money += grant; return `מענק של ${fmtMoney(grant)} התקבל בחשבון.`; }},
     {id:"influencer_story", name:"משפיענית פרסמה סטורי מפרגן", emoji:"🤳", chance:0.05,
       headline:'"האמת שזה ממש כיף פה" — משפיענית מוכרת מעלה סטורי לחצי מיליון עוקבים',
       apply(){ addSat(4); G.campaigns.push({id:"influencer_story_boost", weeksLeft:4, boost:0.15}); return "גל כניסות מהעוקבים שלה כל השבוע."; }},
     {id:"water_billing_glitch", name:"תקלת חיוב מים — חודש חינם", emoji:"💧", chance:0.02,
       headline:'תאגיד המים מודה בטעות בחיוב — "החודש על חשבוננו"',
-      apply(){ const refund = randi(3000,9000); G.money += refund; return `זיכוי של ${fmtMoney(refund)} התקבל בחשבון בלי לבקש.`; }},
+      apply(){ const refund = randi(33000,99000); G.money += refund; return `זיכוי של ${fmtMoney(refund)} התקבל בחשבון בלי לבקש.`; }},
     {id:"influencer_friend", name:"משפיענית הביאה חברה לפארק", emoji:"👯", chance:0.04,
       headline:"משפיענית השיקה חברה חדשה בפארק — התיוגים לא נגמרים",
       apply(){ G.campaigns.push({id:"influencer_friend_boost", weeksLeft:4, boost:0.10}); return "עוד גל מבקרים בעקבות התיוג."; }},
@@ -670,7 +807,7 @@ const DILEMMAS = [
     headline:'מנהלת בית ספר מתקשרת: "אפשר הנחה קבוצתית ל-40 ילדים?"',
     desc:"קבוצה גדולה מבקשת הנחה. לאשר יעלה קצת בהכנסה החודש אבל ישפר יחסי ציבור. לסרב שומר על המחיר אבל עלול להסתובב ברשת.",
     choices:[
-      {label:"✅ לאשר הנחה", apply(){ const cost = randi(2000,5000); G.money -= cost; addSat(5); return `ההנחה אושרה (-${fmtMoney(cost)}), אבל הקבוצה חזרה מרוצה ומספרת לכולם.`; }},
+      {label:"✅ לאשר הנחה", apply(){ const cost = randi(22000,55000); G.money -= cost; addSat(5); return `ההנחה אושרה (-${fmtMoney(cost)}), אבל הקבוצה חזרה מרוצה ומספרת לכולם.`; }},
       {label:"❌ לסרב", apply(){ addSat(-2); return "המחיר נשמר, אבל מנהלת בית הספר קצת נעלבה."; }},
     ]},
   {id:"old_slide_choice", name:"המגלשה הישנה מתחילה לחרוק", emoji:"🪛",
@@ -678,8 +815,8 @@ const DILEMMAS = [
     desc:"אפשר לתקן זול ומהיר (אבל הבעיה עלולה לחזור), או לשדרג ביסודיות (יקר ואיטי אך פותר לטווח ארוך).",
     requiresSlide:true,
     choices:[
-      {label:"🔧 תיקון זול ומהיר", apply(){ G.money -= 2500; return "תוקן זמנית ב-₪2,500. נקווה שיחזיק מעמד."; }},
-      {label:"💰 שדרוג יסודי", apply(){ G.money -= 20000; addSat(5);
+      {label:"🔧 תיקון זול ומהיר", apply(){ G.money -= 27500; return "תוקן זמנית ב-₪27,500. נקווה שיחזיק מעמד."; }},
+      {label:"💰 שדרוג יסודי", apply(){ G.money -= 220000; addSat(5);
           const slides = G.built.filter(b=>defOf(b.defId).isSlide);
           if(slides.length) pick(slides).monthsSinceMaint = 0;
           return "שודרג ביסודיות ב-₪20,000. המבקרים כבר מרגישים בהבדל."; }},
@@ -715,18 +852,19 @@ function resolveMonth(){
   // --- tick campaigns ---
   G.campaigns = G.campaigns.filter(c=>{ c.weeksLeft -= 4; return c.weeksLeft>0; });
 
-  // --- capacity & demand ---
+  // --- market & demand ---
+  // Demand is set by the MARKET (stars, attractions, word of mouth, price).
+  // Capacity no longer creates customers — it only limits how many you can serve.
   const capacity = capacityTotal();
-  const seasonMult = SEASON_MULT[G.monthIdx];
-  const adEffect = G.campaigns.reduce((s,c)=>s+c.boost,0);
-  const demandPerDay = capacity * seasonMult * (1+adEffect) * (G.satisfaction/100);
-  const visitorsPerDay = Math.min(demandPerDay, capacity*1.2);
+  const demandPerDay = marketPerDay(G.monthIdx);
+  const visitorsPerDay = capacity>0 ? Math.min(demandPerDay, capacity) : 0;
   const crowding = capacity>0 ? demandPerDay/capacity : 0;
+  const turnedAway = Math.round(Math.max(0, demandPerDay-capacity) * 30);
   const visitorsMonth = Math.round(visitorsPerDay * 30);
   const prevVisitors = G.lastVisitors;
 
   // --- income ---
-  const ticketIncome = Math.round(visitorsMonth * 28);
+  const ticketIncome = Math.round(visitorsMonth * G.ticketPrice);
   let foodSpend = 0;
   activeBuilt("food").forEach(b=>{
     const d = defOf(b.defId);
@@ -749,10 +887,14 @@ function resolveMonth(){
       if(diff.neglect && b.monthsSinceMaint>6) m *= 1.5;
       maintenance += m;
     });
+    maintenance = Math.round(maintenance * (diff.opexMult||1));
   }
   let securityMonthly = 0;
   SECURITY.forEach(s=>{ if(G.security[s.id]) securityMonthly += s.monthly; });
-  let expenses = maintenance + securityMonthly;
+  // payroll, arnona, admin, insurance — the costs that don't care if anyone shows up
+  const oh = overheadBreakdown(G.monthIdx);
+  const overhead = oh.payroll + oh.arnona + oh.admin + oh.insurance;
+  let expenses = maintenance + securityMonthly + overhead;
 
   // --- random events ---
   const pool = buildEventPool();
@@ -807,12 +949,23 @@ function resolveMonth(){
   const anyClosed = G.built.some(b=>b.status==="closed");
   if(anyClosed) neg += 10;
   if(crowding>1.3) neg += 5; // long queue
-  neg += Math.max(0, -(G._satDelta||0)===0?0:0); // placeholder no-op (kept for clarity)
+
+  // headline attractions and security are a standing draw
+  pos += Math.min(12, Math.round(appealTotal()/12));
+  if(G.security.lifeguard||G.security.full) pos += 4;
+  if(G.security.guards||G.security.full) pos += 2;
+
+  // price perception — "יקר מדי" vs "מחיר הוגן"
+  const price = G.ticketPrice||ECON.ticketDefault;
+  if(price > 40) neg += (price-40)*0.40;
+  else if(price < 25) pos += (25-price)*0.30;
 
   // event-driven sat deltas already applied via addSat -> _satDelta (can be + or -)
   const eventDelta = G._satDelta||0;
 
-  const factorSum = 100 + pos - neg + eventDelta;
+  // NOTE: the baseline is ECON.satBase, not 100. With a baseline of 100 every park
+  // — even an empty one — drifted to 5 stars, which broke the whole economy.
+  const factorSum = ECON.satBase + pos - neg + eventDelta;
   const newSat = clamp(G.satisfaction*0.7 + factorSum*0.3, 0, 100);
 
   // fold event-driven money changes already applied directly to G.money above (inside apply())
@@ -832,6 +985,8 @@ function resolveMonth(){
     visitors:visitorsMonth, visitorsDeltaPct,
     satisfaction:G.satisfaction, rating:G.rating,
     income, expenses, maintenance, securityMonthly, ticketIncome, foodIncome, vipIncome,
+    payroll:oh.payroll, arnona:oh.arnona, admin:oh.admin, insurance:oh.insurance,
+    ticketPrice:G.ticketPrice, turnedAway, capacity, demand:Math.round(demandPerDay),
     profit, money:G.money,
   });
   if(G.history.length>36) G.history.shift();
@@ -853,7 +1008,7 @@ function shuffled(arr){
 }
 
 function checkEndConditions(){
-  if(G.money < -3000 && G.winCondition!=="sandbox"){
+  if(G.money < -200000 && G.winCondition!=="sandbox"){
     G.over = {type:"lose", reason:"bankrupt"};
     return true;
   }
@@ -924,7 +1079,7 @@ function renderWelcome(){
   on(btnNew,"click",()=>{
     if(saved && !confirm("להתחיל משחק חדש? המשחק השמור יימחק.")) return;
     clearSave();
-    G = {screen:"wizard", step:0, draft:{managerName:"", parkName:"", winCondition:"season", difficulty:"normal", pace:"fast", goalType:"money", goalValue:500000}};
+    G = {screen:"wizard", step:0, draft:{managerName:"", parkName:"", winCondition:"season", difficulty:"normal", pace:"fast", goalType:"money", goalValue:5000000}};
     render();
   });
   stack.appendChild(btnNew);
@@ -994,7 +1149,7 @@ function renderWizard(){
       });
       goalBox.appendChild(el(`<div class="small muted">בחרו יעד:</div>`));
       goalBox.appendChild(typeRow);
-      const defaults = {money:500000, stars:5, visitors:20000};
+      const defaults = {money:5000000, stars:5, visitors:150000};
       if(!G.draft.goalValue) G.draft.goalValue = defaults[G.draft.goalType];
       const numInput = el(`<input type="number" min="1" style="margin-top:6px;">`);
       numInput.value = G.draft.goalValue;
@@ -1100,6 +1255,8 @@ function renderDashboard(){
   </div>`);
   wrap.appendChild(kpis);
 
+  wrap.appendChild(priceCard());
+
   const grid = el(`<div class="action-grid">
     <div class="action-card" id="goBuild"><span class="ac-emoji">🏗️</span><span class="ac-label">בנייה ושדרוגים</span></div>
     <div class="action-card" id="goHistory"><span class="ac-emoji">📊</span><span class="ac-label">היסטוריה ודוחות</span></div>
@@ -1138,6 +1295,78 @@ function renderDashboard(){
   return wrap;
 }
 
+/* Ticket price — the player's main revenue dial.
+   Cheap fills the park but invites בלאגן; steep empties it and annoys people. */
+function priceCard(){
+  const price = G.ticketPrice||ECON.ticketDefault;
+  const card = el(`<div class="price-card">
+    <div class="price-head">
+      <span class="lbl">🎟️ מחיר כרטיס</span>
+      <span class="price-value" id="priceVal">₪${price}</span>
+    </div>
+    <div class="price-row">
+      <button class="price-step" id="priceDown" aria-label="הורדת מחיר">−</button>
+      <input class="price-slider" id="priceSlider" type="range"
+             min="${ECON.ticketMin}" max="${ECON.ticketMax}" step="1" value="${price}"
+             aria-label="מחיר כרטיס בשקלים">
+      <button class="price-step" id="priceUp" aria-label="העלאת מחיר">+</button>
+    </div>
+    <div class="price-hint" id="priceHint"></div>
+  </div>`);
+
+  const valEl   = card.querySelector("#priceVal");
+  const hintEl  = card.querySelector("#priceHint");
+  const slider  = card.querySelector("#priceSlider");
+  const btnDown = card.querySelector("#priceDown");
+  const btnUp   = card.querySelector("#priceUp");
+
+  function refresh(){
+    const p = G.ticketPrice;
+    valEl.textContent = `₪${p}`;
+    slider.value = p;
+    btnDown.disabled = p<=ECON.ticketMin;
+    btnUp.disabled   = p>=ECON.ticketMax;
+
+    const cap    = capacityTotal();
+    const demand = Math.round(marketPerDay(G.monthIdx));
+
+    let tag;
+    if(p < 25)      tag = `<span class="price-tag cheap">זול</span> קהל גדול וקצת פרוע.`;
+    else if(p > 40) tag = `<span class="price-tag steep">יקר</span> יותר מכל ראש, פחות סבלנות בביקורות.`;
+    else            tag = `<span class="price-tag fair">בינוני</span> אף אחד לא מתלונן.`;
+
+    // The real lesson: the right price depends on whether capacity is the bottleneck.
+    let load;
+    if(cap<=0){
+      load = "אין עדיין מתקנים פעילים — המחיר לא משנה עד שתבנו משהו.";
+    } else if(demand > cap*1.05){
+      const away = Math.round((demand-cap)*30).toLocaleString('he-IL');
+      load = `ביקוש <b>${demand.toLocaleString('he-IL')}</b>/יום מול קיבולת <b>${cap.toLocaleString('he-IL')}</b> — `
+           + `<span style="color:var(--warn)">${away} אנשים יחזרו הביתה החודש</span>. `
+           + `<b style="color:var(--good)">כדאי להעלות מחיר או להרחיב.</b>`;
+    } else if(demand < cap*0.8){
+      const pct = Math.round(demand/cap*100);
+      load = `ביקוש <b>${demand.toLocaleString('he-IL')}</b>/יום — רק <b>${pct}%</b> מהקיבולת, `
+           + `ואת המשכורות משלמים בכל מקרה. <b style="color:var(--good)">כדאי להוריד מחיר.</b>`;
+    } else {
+      const pct = Math.round(demand/cap*100);
+      load = `ביקוש <b>${demand.toLocaleString('he-IL')}</b>/יום — <b>${pct}%</b> מהקיבולת. `
+           + `<b style="color:var(--good)">מחיר מכויל יפה.</b>`;
+    }
+    hintEl.innerHTML = `${tag}<br>${load}`;
+  }
+
+  function setPrice(v){
+    G.ticketPrice = clamp(Math.round(v), ECON.ticketMin, ECON.ticketMax);
+    refresh(); saveGame();
+  }
+  on(slider,"input",()=>setPrice(+slider.value));
+  on(btnDown,"click",()=>setPrice(G.ticketPrice-1));
+  on(btnUp,"click",()=>setPrice(G.ticketPrice+1));
+  refresh();
+  return card;
+}
+
 function renderTopbar(){
   const bar = el(`<div class="topbar">
     <div class="park-id">🏊 ${escapeHtml(G.parkName)}</div>
@@ -1168,7 +1397,7 @@ function openMenu(){
   on(overlay.querySelector("#menuNewGame"),"click",()=>{
     if(confirm("להתחיל משחק חדש? ההתקדמות הנוכחית תימחק.")){
       clearSave();
-      G = {screen:"wizard", step:0, draft:{managerName:"", parkName:"", winCondition:"season", difficulty:"normal", pace:"fast", goalType:"money", goalValue:500000}};
+      G = {screen:"wizard", step:0, draft:{managerName:"", parkName:"", winCondition:"season", difficulty:"normal", pace:"fast", goalType:"money", goalValue:5000000}};
       overlay.remove(); render();
     }
   });
@@ -1345,10 +1574,19 @@ function availableCard(d){
   const noMoney = G.money < d.cost;
   const disabled = noSpace || noMoney;
   let extra = "";
-  if(d.id==="umbrellas"){ extra = ` · ₪1,500 ליחידה (כאן = 4 יח')`; }
+  if(d.id==="umbrellas"){ extra = ` · ₪16,500 ליחידה (כאן = 4 יח')`; }
+  // What this costs you every single month, and how much new demand it pulls in.
+  const runMonthly = (d.maint||0) + (d.capacity||0)*ECON.arnonaPerCapacity
+    + (d.capacity? Math.ceil(d.capacity/ECON.lifeguardPer)*ECON.lifeguardCost
+                 + Math.ceil(d.capacity/ECON.staffPer)*ECON.staffCost : 0);
+  const runLine = runMonthly>0
+    ? `<div class="item-meta" style="color:var(--bad);">💸 עד ${fmtMoney(runMonthly)}/חודש בשיא העונה</div>` : "";
+  const drawLine = d.appeal
+    ? `<div class="item-meta" style="color:var(--good);">🧲 מושך ~${Math.round(d.appeal*ECON.appealScale)} מבקרים/יום נוספים לשוק</div>` : "";
   const card = el(`<div class="item-card ${disabled?'disabled':''}" style="border-inline-start-color:${catColor(d.cat)};">
     <div class="item-title">${d.emoji} ${d.name}</div>
     <div class="item-meta">${fmtMoney(d.cost)} · ${d.weeks>0?Math.ceil(d.weeks/4)+' חודשים בנייה':'זמין מיידית'}${d.capacity?` · קיבולת ${d.capacity}/יום`:''}${needsSlot?` · ${d.slots} יח' שטח`:''}${extra}</div>
+    ${drawLine}${runLine}
     <div class="item-actions"></div>
   </div>`);
   const btn = el(`<button class="btn btn-sm ${disabled?'btn-ghost':'btn-accent'} btn-block">🔨 בנה</button>`);
@@ -1512,12 +1750,20 @@ function renderReportOverlay(){
   const finBox = el(`<div class="card" style="margin-top:14px;"></div>`);
   const finHeader = el(`<div class="row-between" style="cursor:pointer;"><span style="font-weight:700;font-size:13.5px;">💵 פירוט כספי</span><span id="finArrow">${G.quickUI?'▼':'▲'}</span></div>`);
   const finBody = el(`<div class="stack" style="margin-top:10px;"></div>`);
-  finBody.appendChild(el(`<div class="finance-row"><span class="muted">🎟️ כרטיסים</span><span>${fmtMoney(h.ticketIncome)}</span></div>`));
+  finBody.appendChild(el(`<div class="finance-row"><span class="muted">🎟️ כרטיסים <span style="opacity:.7">(₪${h.ticketPrice??ECON.ticketDefault})</span></span><span>${fmtMoney(h.ticketIncome)}</span></div>`));
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">🍔 הסעדה</span><span>${fmtMoney(h.foodIncome)}</span></div>`));
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">💎 VIP</span><span>${fmtMoney(h.vipIncome)}</span></div>`));
-  finBody.appendChild(el(`<div class="finance-row"><span class="muted">🔧 תחזוקה</span><span>-${fmtMoney(h.maintenance).replace('₪','₪')}</span></div>`));
-  finBody.appendChild(el(`<div class="finance-row"><span class="muted">🛡️ אבטחה</span><span>-${fmtMoney(h.securityMonthly)}</span></div>`));
+  const outRow = (label,val)=>`<div class="finance-row"><span class="muted">${label}</span><span style="color:var(--bad)">-${fmtMoney(val)}</span></div>`;
+  finBody.appendChild(el(outRow(`🧑‍✈️ שכר עובדים <span style="opacity:.7">(${staffCounts().lifeguards} מצילים · ${staffCounts().staff} עובדים)</span>`, h.payroll||0)));
+  finBody.appendChild(el(outRow("🔧 תחזוקה", h.maintenance)));
+  finBody.appendChild(el(outRow("🏛️ ארנונה", h.arnona||0)));
+  finBody.appendChild(el(outRow(`📋 ביטוח${G.turn < (G.insuranceSpikeUntil||0) ? ' <span style="opacity:.7">(מוטען אחרי תאונה)</span>' : ''}`, h.insurance||0)));
+  finBody.appendChild(el(outRow("🗄️ מנהלה ורישוי", h.admin||0)));
+  finBody.appendChild(el(outRow("🛡️ אבטחה", h.securityMonthly)));
   finBody.appendChild(el(`<div class="finance-row total"><span>רווח נקי</span><span style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</span></div>`));
+  if(h.turnedAway>0){
+    finBody.appendChild(el(`<div class="finance-row" style="border-top:1px dashed var(--border);margin-top:6px;padding-top:8px;"><span class="muted">🚧 נשלחו הביתה (אין מקום)</span><span style="color:var(--warn)">${h.turnedAway.toLocaleString('he-IL')}</span></div>`));
+  }
   finBody.style.display = G.quickUI ? "none" : "flex";
   finBox.appendChild(finHeader); finBox.appendChild(finBody);
   on(finHeader,"click",()=>{
@@ -1586,7 +1832,7 @@ function renderGameOver(){
   const btn = el(`<button class="btn btn-primary btn-lg btn-block" style="margin-top:24px;">🆕 משחק חדש</button>`);
   on(btn,"click",()=>{
     clearSave();
-    G = {screen:"wizard", step:0, draft:{managerName:G.managerName, parkName:"", winCondition:"season", difficulty:"normal", pace:"fast", goalType:"money", goalValue:500000}};
+    G = {screen:"wizard", step:0, draft:{managerName:G.managerName, parkName:"", winCondition:"season", difficulty:"normal", pace:"fast", goalType:"money", goalValue:5000000}};
     render();
   });
   wrap.appendChild(btn);
