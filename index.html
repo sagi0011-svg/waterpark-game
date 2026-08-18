@@ -296,6 +296,26 @@ h1,h2,h3,p{margin:0;}
 .price-tag.steep{background:rgba(217,54,43,.13);color:var(--bad);}
 @media (prefers-reduced-motion:reduce){.price-step:active{transform:none;}}
 
+/* capacity vs demand */
+.cap-card{margin:14px 16px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;box-shadow:0 4px 14px rgba(3,26,40,.10);}
+.cap-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.cap-head .lbl{font-size:12.5px;font-weight:700;color:var(--dim);}
+.cap-nums{font-size:13.5px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent2);}
+.cap-nums.over{color:var(--bad);}
+.cap-bar{height:8px;border-radius:5px;background:var(--card2);overflow:hidden;margin-top:9px;
+  border:1px solid var(--border);}
+.cap-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--leaf),var(--accent));
+  transition:width .3s;}
+.cap-fill.over{background:linear-gradient(90deg,var(--warn),var(--bad));}
+.cap-hint{margin-top:8px;font-size:12px;color:var(--dim);line-height:1.5;}
+
+/* satisfaction breakdown in the monthly report */
+.sat-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;font-weight:700;}
+.sat-row .up{color:var(--good);}
+.sat-row .down{color:var(--bad);}
+.gap4{gap:4px;}
+
 /* history table */
 .hist-row{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
 .hist-row:last-child{border-bottom:none;}
@@ -334,6 +354,81 @@ input[type=text]:focus,input[type=number]:focus{border-color:var(--accent);}
 }
 @keyframes toastin{from{opacity:0;transform:translate(-50%,10px);}to{opacity:1;transform:translate(-50%,0);}}
 @keyframes toastout{to{opacity:0;transform:translate(-50%,10px);}}
+
+/* =========================================================
+   ONBOARDING — spotlight tour · contextual tips · glossary
+   ========================================================= */
+.tour-overlay{position:fixed;inset:0;z-index:9998;background:transparent;}
+.tour-hole{
+  position:fixed;left:0;top:0;width:0;height:0;border-radius:14px;
+  box-shadow:0 0 0 9999px rgba(3,26,40,.75);
+  transition:left .3s ease,top .3s ease,width .3s ease,height .3s ease;
+  pointer-events:none;
+}
+.tour-hole::after{
+  content:"";position:absolute;inset:-3px;border-radius:inherit;
+  border:2px solid var(--sky2);animation:tourpulse 1.7s ease-in-out infinite;
+}
+@keyframes tourpulse{0%,100%{opacity:.95;}50%{opacity:.3;}}
+
+.tour-bubble{
+  position:fixed;z-index:9999;top:0;left:0;
+  width:min(320px,calc(100vw - 32px));
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:14px 16px 12px;box-shadow:0 14px 40px rgba(3,26,40,.4);
+  color:var(--text);text-align:start;animation:fadein2 .18s ease;
+}
+.tour-bubble.as-sheet{
+  left:0;right:0;top:auto;bottom:0;width:100%;max-width:520px;margin:0 auto;
+  border-radius:22px 22px 0 0;padding-bottom:calc(14px + var(--safe-bottom));
+}
+.tour-arrow{position:absolute;width:16px;height:16px;z-index:-1;}
+.tour-arrow i{display:block;width:16px;height:16px;background:var(--card);
+  border:1px solid var(--border);border-radius:3px;transform:rotate(45deg);}
+.tour-arrow.at-top{top:-8px;animation:tourfloatup 1.2s ease-in-out infinite;}
+.tour-arrow.at-bottom{bottom:-8px;animation:tourfloatdown 1.2s ease-in-out infinite;}
+.tour-arrow.at-left{left:-8px;animation:tourfloatleft 1.2s ease-in-out infinite;}
+.tour-arrow.at-right{right:-8px;animation:tourfloatright 1.2s ease-in-out infinite;}
+@keyframes tourfloatup{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+@keyframes tourfloatdown{0%,100%{transform:translateY(0);}50%{transform:translateY(3px);}}
+@keyframes tourfloatleft{0%,100%{transform:translateX(0);}50%{transform:translateX(-3px);}}
+@keyframes tourfloatright{0%,100%{transform:translateX(0);}50%{transform:translateX(3px);}}
+
+.tour-head{display:flex;align-items:center;gap:7px;font-weight:800;font-size:15.5px;line-height:1.3;}
+.tour-body{font-size:13.5px;line-height:1.55;color:var(--dim);margin-top:6px;}
+.tour-fx{display:flex;flex-direction:column;gap:3px;margin-top:10px;font-size:12.5px;font-weight:700;}
+.tour-fx .fx-up{color:var(--good);}
+.tour-fx .fx-down{color:var(--bad);}
+.tour-more{display:inline-block;margin-top:9px;font-size:12.5px;font-weight:800;color:var(--accent2);
+  background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;font-family:inherit;}
+.tour-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;}
+.tour-foot .tour-btns{display:flex;gap:8px;}
+.tour-meta{display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
+.tour-count{font-size:11.5px;font-weight:800;color:var(--dim2);font-variant-numeric:tabular-nums;}
+.tour-skip{font-size:11.5px;color:var(--dim);background:none;border:none;padding:0;cursor:pointer;
+  text-decoration:underline;font-family:inherit;}
+
+/* glossary */
+.gl-list{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.gl-item{border:1px solid var(--border);border-radius:14px;background:var(--card);overflow:hidden;}
+.gl-item.open{border-color:var(--accent);}
+.gl-head{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;font-weight:800;font-size:14.5px;}
+.gl-head .gl-chev{margin-inline-start:auto;color:var(--dim2);font-size:12px;}
+.gl-body{padding:0 14px 14px;}
+.gl-def{font-size:12.5px;line-height:1.6;color:var(--dim);}
+.gl-table{margin-top:10px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.gl-tr{display:flex;justify-content:space-between;gap:10px;padding:7px 11px;font-size:12.5px;
+  border-bottom:1px solid var(--border);}
+.gl-tr:last-child{border-bottom:none;}
+.gl-tr.gl-th{font-weight:800;background:var(--card2);}
+.gl-up .gl-th{color:var(--good);}
+.gl-down .gl-th{color:var(--bad);}
+.gl-w{color:var(--dim);font-weight:700;white-space:nowrap;}
+.gl-note{margin-top:10px;background:var(--card2);border:1px solid var(--border);border-radius:12px;
+  padding:10px 12px;font-size:12.5px;line-height:1.55;}
+@media (prefers-reduced-motion:reduce){
+  .tour-hole,.tour-hole::after,.tour-arrow{animation:none;transition:none;}
+}
 </style>
 </head>
 <body>
@@ -455,6 +550,18 @@ const ECON = {
 
   // satisfaction equilibrium (NOT 100 — a park earns its stars)
   satBase:50,
+};
+
+/* Satisfaction weights. The glossary in the tutorial reads these same
+   numbers, so the explanation can never drift from the simulation. */
+const SAT_W = {
+  crowdFit:10, crowdSlope:30, crowdMax:15,
+  variety:5, seating:5, foodVariety:5,
+  freshBuild:10, ratingUp:3,
+  appealMax:12, appealDiv:12,
+  lifeguard:4, guards:2,
+  noShade:8, closedRide:10, queue:5, queueAt:1.3,
+  priceHigh:40, pricyPerShekel:0.40, priceLow:25, cheapPerShekel:0.30,
 };
 
 const DIFFICULTY = {
@@ -862,6 +969,13 @@ function resolveMonth(){
   const turnedAway = Math.round(Math.max(0, demandPerDay-capacity) * 30);
   const visitorsMonth = Math.round(visitorsPerDay * 30);
   const prevVisitors = G.lastVisitors;
+  // How many heads the current ticket price won or cost us, against the
+  // reference price where the demand factor is exactly 1.
+  const pf = priceFactor();
+  const demandAtRef = pf>0 ? demandPerDay/pf : demandPerDay;
+  const visitorsAtRef = capacity>0 ? Math.round(Math.min(demandAtRef, capacity)*30) : 0;
+  const priceVisitorDelta = visitorsMonth - visitorsAtRef;          // what it cost at the gate
+  const priceDemandDelta = Math.round((demandPerDay-demandAtRef)*30); // what it did to demand itself
 
   // --- income ---
   const ticketIncome = Math.round(visitorsMonth * G.ticketPrice);
@@ -930,38 +1044,51 @@ function resolveMonth(){
   }
 
   // --- satisfaction factors ---
+  // Every factor is also written to satLog so the monthly report can say WHY
+  // the score moved, instead of dropping a new number on the player.
   let pos = 0, neg = 0;
+  const satLog = [];
+  const bump = (label, delta)=>{
+    if(!delta) return;
+    if(delta>0) pos += delta; else neg += -delta;
+    satLog.push({label, v:delta});
+  };
   if(capacity>0){
-    if(crowding<=1) pos += Math.round(10*(1-Math.abs(1-crowding)));
-    else neg += clamp(Math.round((crowding-1)*30),0,15);
+    if(crowding<=1) bump("איזון טוב בין מבקרים לקיבולת", Math.round(SAT_W.crowdFit*(1-Math.abs(1-crowding))));
+    else bump("צפיפות יתר", -clamp(Math.round((crowding-1)*SAT_W.crowdSlope),0,SAT_W.crowdMax));
   }
   const groups = new Set(G.built.filter(b=>b.status==="active").map(b=>defOf(b.defId).group).filter(Boolean));
-  if(groups.size>=2) pos += 5;
+  if(groups.size>=2) bump("מגוון מתקנים לכל הגילאים", SAT_W.variety);
   const seatCap = allBuilt("seating").filter(b=>b.status!=="closed").reduce((s,b)=>s+(defOf(b.defId).seatCap||0),0);
-  if(seatCap*10 >= visitorsPerDay*0.4) pos += 5;
+  if(seatCap*10 >= visitorsPerDay*0.4) bump("מספיק מקומות ישיבה", SAT_W.seating);
   const foodVariety = activeBuilt("food").length;
-  if(foodVariety>=2) pos += 5;
-  if(G.justUpgradedThisTurn) pos += 10;
-  if(G.rating>G.prevRating) pos += 3;
+  if(foodVariety>=2) bump("מגוון הסעדה", SAT_W.foodVariety);
+  if(G.justUpgradedThisTurn) bump("משהו חדש נפתח החודש", SAT_W.freshBuild);
+  if(G.rating>G.prevRating) bump("הדירוג עלה מהחודש שעבר", SAT_W.ratingUp);
 
   const shadeCap = allBuilt("seating").filter(b=>b.status!=="closed" && defOf(b.defId).shade).reduce((s,b)=>s+(defOf(b.defId).seatCap||0),0);
-  if([5,6,7].includes(G.monthIdx) && shadeCap*10 < visitorsPerDay*0.25) neg += 8;
+  if([5,6,7].includes(G.monthIdx) && shadeCap*10 < visitorsPerDay*0.25) bump("אין מספיק צל בשיא הקיץ", -SAT_W.noShade);
   const anyClosed = G.built.some(b=>b.status==="closed");
-  if(anyClosed) neg += 10;
-  if(crowding>1.3) neg += 5; // long queue
+  if(anyClosed) bump("מתקן סגור או מקולקל", -SAT_W.closedRide);
+  if(crowding>SAT_W.queueAt) bump("תורים ארוכים", -SAT_W.queue);
 
   // headline attractions and security are a standing draw
-  pos += Math.min(12, Math.round(appealTotal()/12));
-  if(G.security.lifeguard||G.security.full) pos += 4;
-  if(G.security.guards||G.security.full) pos += 2;
+  bump("מתקני הדגל של הפארק", Math.min(SAT_W.appealMax, Math.round(appealTotal()/SAT_W.appealDiv)));
+  if(G.security.lifeguard||G.security.full) bump("מציל ייעודי", SAT_W.lifeguard);
+  if(G.security.guards||G.security.full) bump("מאבטחים בכניסה", SAT_W.guards);
 
   // price perception — "יקר מדי" vs "מחיר הוגן"
   const price = G.ticketPrice||ECON.ticketDefault;
-  if(price > 40) neg += (price-40)*0.40;
-  else if(price < 25) pos += (25-price)*0.30;
+  if(price > SAT_W.priceHigh) bump("המחיר נתפס כיקר מדי", -(price-SAT_W.priceHigh)*SAT_W.pricyPerShekel);
+  else if(price < SAT_W.priceLow) bump("המחיר נתפס כמשתלם", (SAT_W.priceLow-price)*SAT_W.cheapPerShekel);
 
   // event-driven sat deltas already applied via addSat -> _satDelta (can be + or -)
   const eventDelta = G._satDelta||0;
+  if(eventDelta) satLog.push({label:"אירועי החודש", v:eventDelta});
+  const satRanked = satLog.slice().sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
+  const satUp = satRanked.filter(f=>f.v>0).slice(0,2).map(f=>({label:f.label, v:Math.round(f.v)}));
+  const satDown = satRanked.filter(f=>f.v<0).slice(0,2).map(f=>({label:f.label, v:Math.round(f.v)}));
+  const satBefore = G.satisfaction;
 
   // NOTE: the baseline is ECON.satBase, not 100. With a baseline of 100 every park
   // — even an empty one — drifted to 5 stars, which broke the whole economy.
@@ -987,6 +1114,8 @@ function resolveMonth(){
     income, expenses, maintenance, securityMonthly, ticketIncome, foodIncome, vipIncome,
     payroll:oh.payroll, arnona:oh.arnona, admin:oh.admin, insurance:oh.insurance,
     ticketPrice:G.ticketPrice, turnedAway, capacity, demand:Math.round(demandPerDay),
+    priceFactorVal:Math.round(pf*100)/100, priceVisitorDelta, priceDemandDelta,
+    satBefore, satUp, satDown,
     profit, money:G.money,
   });
   if(G.history.length>36) G.history.shift();
@@ -1046,6 +1175,7 @@ function render(){
     else if(G._showDilemma){ app.appendChild(renderDilemmaOverlay()); }
   }
   saveGame();
+  Tour.flushTips();
 }
 
 function el(html){
@@ -1209,7 +1339,9 @@ function renderWizard(){
     if(step==="park" && !G.draft.parkName.trim()){ toast("צריך שם לפארק 🙂"); return; }
     if(step==="review"){
       G = newGame(G.draft);
+      Tour.onNewGame();
       render();
+      Tour.startOpening();
       return;
     }
     G.step += 1; render();
@@ -1249,16 +1381,17 @@ function renderDashboard(){
   })();
 
   const kpis = el(`<div class="kpi-row">
-    <div class="kpi"><div class="kpi-label">👥 מבקרים</div><div class="kpi-value">${G.lastVisitors.toLocaleString('he-IL')}</div>${deltaBadge}</div>
-    <div class="kpi"><div class="kpi-label">⭐ דירוג</div><div class="kpi-value">${stars(G.rating)}</div><div class="kpi-delta muted">שביעות רצון ${G.satisfaction}</div></div>
-    <div class="kpi"><div class="kpi-label">💰 כסף</div><div class="kpi-value" style="color:${G.money<0?'var(--bad)':'inherit'}">${fmtMoney(G.money)}</div></div>
+    <div class="kpi" data-tour="kpi-visitors"><div class="kpi-label">👥 מבקרים</div><div class="kpi-value">${G.lastVisitors.toLocaleString('he-IL')}</div>${deltaBadge}</div>
+    <div class="kpi" data-tour="kpi-rating"><div class="kpi-label">⭐ דירוג</div><div class="kpi-value">${stars(G.rating)}</div><div class="kpi-delta muted">שביעות רצון ${G.satisfaction}</div></div>
+    <div class="kpi" data-tour="kpi-money"><div class="kpi-label">💰 כסף</div><div class="kpi-value" style="color:${G.money<0?'var(--bad)':'inherit'}">${fmtMoney(G.money)}</div></div>
   </div>`);
   wrap.appendChild(kpis);
+  wrap.appendChild(capacityCard());
 
   wrap.appendChild(priceCard());
 
   const grid = el(`<div class="action-grid">
-    <div class="action-card" id="goBuild"><span class="ac-emoji">🏗️</span><span class="ac-label">בנייה ושדרוגים</span></div>
+    <div class="action-card" id="goBuild" data-tour="nav-build"><span class="ac-emoji">🏗️</span><span class="ac-label">בנייה ושדרוגים</span></div>
     <div class="action-card" id="goHistory"><span class="ac-emoji">📊</span><span class="ac-label">היסטוריה ודוחות</span></div>
   </div>`);
   wrap.appendChild(grid);
@@ -1282,9 +1415,10 @@ function renderDashboard(){
 
   wrap.appendChild(el(`<div class="spacer"></div>`));
   const cta = el(`<div class="sticky-cta">
-    <button class="btn btn-primary btn-lg btn-block" id="nextMonthBtn">➡️ המשך לחודש הבא</button>
+    <button class="btn btn-primary btn-lg btn-block" id="nextMonthBtn" data-tour="next-month-btn">➡️ המשך לחודש הבא</button>
   </div>`);
   on(cta.querySelector("#nextMonthBtn"),"click",()=>{
+    if(Tour.isActive) return; // the game is frozen while the tutorial is up
     resolveMonth();
     if(G.pendingDilemma){ G._showDilemma = true; }
     else { G._showReport = true; }
@@ -1292,7 +1426,43 @@ function renderDashboard(){
   });
   wrap.appendChild(cta);
 
+  Tour.trigger("FIRST_NEXT_MONTH");
+  if(G.satisfaction<40) Tour.trigger("SATISFACTION_BELOW_40");
+  if(G.money<0) Tour.trigger("NEGATIVE_BALANCE");
+
   return wrap;
+}
+
+/* Capacity is the real bottleneck of the park, and until now it only showed up
+   on the build screen. This puts next month's demand next to what we can serve,
+   plus how many people we already sent home. */
+function capacityCard(){
+  const cap = capacityTotal();
+  const last = G.history[G.history.length-1];
+  const demand = Math.round(marketPerDay(G.monthIdx));
+  const pct = cap>0 ? Math.min(100, Math.round(demand/cap*100)) : 0;
+  const over = cap>0 && demand>cap;
+  const turned = last ? (last.turnedAway||0) : 0;
+  const card = el(`<div class="cap-card">
+    <div class="cap-head">
+      <span class="lbl">🏊 ביקוש מול קיבולת · ${MONTHS[G.monthIdx]}</span>
+      <span class="cap-nums ${over?'over':''}">${demand.toLocaleString('he-IL')} מול ${cap.toLocaleString('he-IL')} ליום</span>
+    </div>
+    <div class="cap-bar"><div class="cap-fill ${over?'over':''}" style="width:${cap>0?pct:0}%"></div></div>
+    <div class="cap-hint"></div>
+  </div>`);
+  const hint = card.querySelector(".cap-hint");
+  if(cap<=0){
+    hint.innerHTML = `אין עדיין מתקנים פעילים — אף אחד לא יכול להיכנס.`;
+  } else if(over){
+    hint.innerHTML = `<b style="color:var(--bad);">הפארק מלא.</b> ~${Math.round(demand-cap).toLocaleString('he-IL')} אנשים ביום לא נכנסים — וזה מוריד שביעות רצון.`;
+  } else {
+    hint.innerHTML = `יש מקום ל-${Math.round(cap-demand).toLocaleString('he-IL')} מבקרים נוספים ביום.`;
+  }
+  if(turned>0){
+    hint.insertAdjacentHTML("beforeend", `<br><span style="color:var(--warn);">בחודש שעבר ${turned.toLocaleString('he-IL')} מבקרים חזרו הביתה.</span>`);
+  }
+  return card;
 }
 
 /* Ticket price — the player's main revenue dial.
@@ -1369,12 +1539,14 @@ function priceCard(){
 
 function renderTopbar(){
   const bar = el(`<div class="topbar">
-    <div class="park-id">🏊 ${escapeHtml(G.parkName)}</div>
+    <div class="park-id" data-tour="park-header">🏊 ${escapeHtml(G.parkName)}</div>
     <div class="row gap8">
       <span class="badge badge-gold">💰 ${fmtMoney(G.money)}</span>
+      <button class="icon-btn" id="helpBtn" data-tour="help-btn" aria-label="עזרה והדרכה">❓</button>
       <button class="icon-btn" id="menuBtn">☰</button>
     </div>
   </div>`);
+  on(bar.querySelector("#helpBtn"),"click",()=>Tour.openHelp());
   on(bar.querySelector("#menuBtn"),"click",()=>openMenu());
   return bar;
 }
@@ -1435,7 +1607,7 @@ function buildingCard(b){
   const card = el(`<div class="item-card building">
     <div class="item-title">🚧 ${d.emoji} ${d.name}</div>
     <div class="item-meta">בבנייה — נותרו ${Math.ceil(b.weeksLeft/4)} חודשים (${Math.max(0,b.weeksLeft)} שבועות)</div>
-    <div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>
+    <div class="progress-bar" data-tour="construction-progress"><div class="fill" style="width:${pct}%"></div></div>
     <div class="item-actions"></div>
   </div>`);
   const speedCost = Math.round((b.weeksLeft/4) * (d.cost/Math.max(1,totalWeeks/4)) * 0.6);
@@ -1464,12 +1636,16 @@ function renderBuild(){
   const bar = el(`<div class="topbar">
     <button class="icon-btn" id="backBtn">➡️</button>
     <div class="park-id">🏗️ בנייה ושדרוגים</div>
-    <span class="badge badge-gold">💰 ${fmtMoney(G.money)}</span>
+    <div class="row gap8">
+      <span class="badge badge-gold">💰 ${fmtMoney(G.money)}</span>
+      <button class="icon-btn" id="helpBtn" data-tour="help-btn" aria-label="עזרה והדרכה">❓</button>
+    </div>
   </div>`);
+  on(bar.querySelector("#helpBtn"),"click",()=>Tour.openHelp());
   on(bar.querySelector("#backBtn"),"click",()=>{ G.screen="dashboard"; render(); });
   wrap.appendChild(bar);
 
-  const tabs = el(`<div class="tabs"></div>`);
+  const tabs = el(`<div class="tabs" data-tour="build-tabs"></div>`);
   BUILD_TABS.forEach(t=>{
     const tb = el(`<div class="tab tab-${t.id} ${G.buildTab===t.id?'active':''}">${t.label}</div>`);
     on(tb,"click",()=>{ G.buildTab=t.id; render(); });
@@ -1512,6 +1688,9 @@ function renderBuild(){
     list.appendChild(el(`<div class="center small" style="padding:30px 0;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(3,26,40,.3);">אין פריטים בקטגוריה הזו כרגע.</div>`));
   }
   wrap.appendChild(list);
+
+  Tour.trigger("FIRST_BUILD_SCREEN_OPEN");
+
   return wrap;
 }
 
@@ -1576,11 +1755,14 @@ function availableCard(d){
   let extra = "";
   if(d.id==="umbrellas"){ extra = ` · ₪16,500 ליחידה (כאן = 4 יח')`; }
   // What this costs you every single month, and how much new demand it pulls in.
-  const runMonthly = (d.maint||0) + (d.capacity||0)*ECON.arnonaPerCapacity
-    + (d.capacity? Math.ceil(d.capacity/ECON.lifeguardPer)*ECON.lifeguardCost
-                 + Math.ceil(d.capacity/ECON.staffPer)*ECON.staffCost : 0);
+  const runPayroll = d.capacity? Math.ceil(d.capacity/ECON.lifeguardPer)*ECON.lifeguardCost
+                              + Math.ceil(d.capacity/ECON.staffPer)*ECON.staffCost : 0;
+  const runFixed = (d.maint||0) + (d.capacity||0)*ECON.arnonaPerCapacity;
+  const runMonthly = runFixed + runPayroll;
+  // Payroll shrinks to a skeleton crew in winter, arnona and maintenance don't.
+  const runWinter = Math.round(runFixed + runPayroll*ECON.staffFloor);
   const runLine = runMonthly>0
-    ? `<div class="item-meta" style="color:var(--bad);">💸 עד ${fmtMoney(runMonthly)}/חודש בשיא העונה</div>` : "";
+    ? `<div class="item-meta" style="color:var(--bad);">💸 עד ${fmtMoney(runMonthly)}/חודש בשיא העונה · ${fmtMoney(runWinter)} בחורף</div>` : "";
   const drawLine = d.appeal
     ? `<div class="item-meta" style="color:var(--good);">🧲 מושך ~${Math.round(d.appeal*ECON.appealScale)} מבקרים/יום נוספים לשוק</div>` : "";
   const card = el(`<div class="item-card ${disabled?'disabled':''}" style="border-inline-start-color:${catColor(d.cat)};">
@@ -1600,6 +1782,7 @@ function availableCard(d){
     G.built.push(b);
     toast(`🔨 בונים ${d.name}...`);
     render();
+    if(d.weeks>0) Tour.trigger("FIRST_CONSTRUCTION_START");
   });
   card.querySelector(".item-actions").appendChild(btn);
   if(noSpace) card.querySelector(".item-meta").insertAdjacentHTML("beforeend", ` · <span style="color:var(--bad);">אין שטח פנוי</span>`);
@@ -1668,8 +1851,12 @@ function renderHistory(){
   const bar = el(`<div class="topbar">
     <button class="icon-btn" id="backBtn">➡️</button>
     <div class="park-id">📊 היסטוריה</div>
-    <span class="badge">${G.history.length} חודשים</span>
+    <div class="row gap8">
+      <span class="badge">${G.history.length} חודשים</span>
+      <button class="icon-btn" id="helpBtn" data-tour="help-btn" aria-label="עזרה והדרכה">❓</button>
+    </div>
   </div>`);
+  on(bar.querySelector("#helpBtn"),"click",()=>Tour.openHelp());
   on(bar.querySelector("#backBtn"),"click",()=>{ G.screen="dashboard"; render(); });
   wrap.appendChild(bar);
 
@@ -1705,7 +1892,7 @@ function renderDilemmaOverlay(){
   const sheet = overlay.querySelector(".sheet");
   sheet.appendChild(el(`<div class="sheet-handle"></div>`));
   sheet.appendChild(el(`<span class="event-emoji">${dil.emoji}</span>`));
-  sheet.appendChild(el(`<div class="event-headline">${dil.headline}</div>`));
+  sheet.appendChild(el(`<div class="event-headline" data-tour="event-sheet">${dil.headline}</div>`));
   if(!G.quickUI){
     sheet.appendChild(el(`<div class="event-desc">${dil.desc}</div>`));
   }
@@ -1725,6 +1912,9 @@ function renderDilemmaOverlay(){
     choicesWrap.appendChild(btn);
   });
   sheet.appendChild(choicesWrap);
+
+  Tour.trigger("FIRST_RANDOM_EVENT");
+
   return overlay;
 }
 
@@ -1746,11 +1936,49 @@ function renderReportOverlay(){
     <div class="kpi"><div class="kpi-label">💰 רווח נקי</div><div class="kpi-value" style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</div></div>
   </div>`));
 
+  // why the satisfaction score moved — the factors resolveMonth just weighed
+  if(h.satUp || h.satDown){
+    const satDelta = (h.satBefore!=null) ? h.satisfaction-h.satBefore : null;
+    const dColor = satDelta==null? 'var(--dim)' : (satDelta>=0? 'var(--good)':'var(--bad)');
+    const satBox = el(`<div class="card" style="margin-top:14px;">
+      <div class="row-between">
+        <span style="font-weight:700;font-size:13.5px;">😊 שביעות רצון</span>
+        <span style="font-weight:800;font-size:13.5px;">${h.satBefore!=null?`${h.satBefore} → `:''}${h.satisfaction}
+          ${satDelta!=null?`<span style="color:${dColor};">(${satDelta>=0?'+':''}${satDelta})</span>`:''}</span>
+      </div>
+      <div class="stack gap4" style="margin-top:9px;"></div>
+    </div>`);
+    const rows = satBox.querySelector(".stack");
+    (h.satUp||[]).forEach(f=>rows.appendChild(el(`<div class="sat-row"><span class="up">↑ ${f.label}</span><span class="up">+${f.v}</span></div>`)));
+    (h.satDown||[]).forEach(f=>rows.appendChild(el(`<div class="sat-row"><span class="down">↓ ${f.label}</span><span class="down">${f.v}</span></div>`)));
+    if(!(h.satUp||[]).length && !(h.satDown||[]).length){
+      rows.appendChild(el(`<div class="muted small">חודש בלי אירועים מיוחדים.</div>`));
+    }
+    const more = el(`<button class="tour-more" style="margin-top:6px;">הסבר מלא ←</button>`);
+    on(more,"click",()=>Tour.openGlossary("satisfaction"));
+    satBox.appendChild(more);
+    sheet.appendChild(satBox);
+  }
+
   // financial breakdown (collapsible)
-  const finBox = el(`<div class="card" style="margin-top:14px;"></div>`);
+  const finBox = el(`<div class="card" data-tour="report-financials" style="margin-top:14px;"></div>`);
   const finHeader = el(`<div class="row-between" style="cursor:pointer;"><span style="font-weight:700;font-size:13.5px;">💵 פירוט כספי</span><span id="finArrow">${G.quickUI?'▼':'▲'}</span></div>`);
   const finBody = el(`<div class="stack" style="margin-top:10px;"></div>`);
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">🎟️ כרטיסים <span style="opacity:.7">(₪${h.ticketPrice??ECON.ticketDefault})</span></span><span>${fmtMoney(h.ticketIncome)}</span></div>`));
+  if(h.priceFactorVal!=null && h.priceFactorVal!==1){
+    let label = `↳ מקדם מחיר ×${h.priceFactorVal}`, value, color;
+    if(h.priceVisitorDelta){
+      const up = h.priceVisitorDelta>0;
+      value = `${up?'+':''}${h.priceVisitorDelta.toLocaleString('he-IL')} מבקרים`;
+      color = up? 'var(--good)' : 'var(--bad)';
+    } else {
+      // demand was above capacity either way — the price cost nothing at the gate
+      label += ` <span style="opacity:.7">(הקיבולת חסמה ממילא)</span>`;
+      value = "0 מבקרים";
+      color = 'var(--dim)';
+    }
+    finBody.appendChild(el(`<div class="finance-row"><span class="muted" style="padding-inline-start:14px;">${label}</span><span style="color:${color}">${value}</span></div>`));
+  }
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">🍔 הסעדה</span><span>${fmtMoney(h.foodIncome)}</span></div>`));
   finBody.appendChild(el(`<div class="finance-row"><span class="muted">💎 VIP</span><span>${fmtMoney(h.vipIncome)}</span></div>`));
   const outRow = (label,val)=>`<div class="finance-row"><span class="muted">${label}</span><span style="color:var(--bad)">-${fmtMoney(val)}</span></div>`;
@@ -1803,6 +2031,8 @@ function renderReportOverlay(){
   });
   sheet.appendChild(cont);
 
+  Tour.trigger("FIRST_MONTHLY_REPORT");
+
   return overlay;
 }
 
@@ -1829,6 +2059,26 @@ function renderGameOver(){
     .forEach(([k,v])=>stat.appendChild(el(`<div class="row-between"><span class="muted small">${k}</span><span style="font-weight:800;">${v}</span></div>`)));
   wrap.appendChild(stat);
 
+  // what actually happened over the season — peak, trough, and where it all went
+  if(G.history.length){
+    const hs = G.history;
+    const peak = hs.reduce((a,b)=>b.money>a.money?b:a);
+    const low  = hs.reduce((a,b)=>b.money<a.money?b:a);
+    const best = hs.reduce((a,b)=>b.visitors>a.visitors?b:a);
+    const costs = {payroll:"🧑‍✈️ שכר עובדים", maintenance:"🔧 תחזוקה", arnona:"🏛️ ארנונה",
+                   insurance:"📋 ביטוח", admin:"🗄️ מנהלה", securityMonthly:"🛡️ אבטחה"};
+    const totals = Object.keys(costs).map(k=>[k, hs.reduce((s,x)=>s+(x[k]||0),0)]).sort((a,b)=>b[1]-a[1]);
+    const summary = el(`<div class="card stack gap8" style="margin-top:14px;"></div>`);
+    summary.appendChild(el(`<div style="font-weight:800;font-size:13.5px;">📖 מה קרה לכסף שלך</div>`));
+    [
+      ["📈 שיא בקופה", `${fmtMoney(peak.money)} · ${MONTHS[peak.monthIdx]}`],
+      ["📉 שפל בקופה", `${fmtMoney(low.money)} · ${MONTHS[low.monthIdx]}`],
+      ["🔥 החודש הכי חזק", `${best.visitors.toLocaleString('he-IL')} מבקרים · ${MONTHS[best.monthIdx]}`],
+      ["💸 ההוצאה הגדולה", `${costs[totals[0][0]]} — ${fmtMoney(totals[0][1])}`],
+    ].forEach(([k,v])=>summary.appendChild(el(`<div class="row-between"><span class="muted small">${k}</span><span style="font-weight:700;font-size:12.5px;">${v}</span></div>`)));
+    wrap.appendChild(summary);
+  }
+
   const btn = el(`<button class="btn btn-primary btn-lg btn-block" style="margin-top:24px;">🆕 משחק חדש</button>`);
   on(btn,"click",()=>{
     clearSave();
@@ -1853,6 +2103,705 @@ resolveMonth = function(){
     }
   });
 };
+
+
+/* =========================================================
+   ONBOARDING — TOUR · TIPS · GLOSSARY (content)
+   Every string lives here; the engine below holds no copy.
+   Numbers are read from ECON / SAT_W / SEASON_MULT /
+   DIFFICULTY / SECURITY so the tutorial can never drift
+   away from the actual balance.
+   ========================================================= */
+const TOUR_KEY = "waterpark_tour_state";
+const TOUR_VERSION = 2;
+
+let tourState = (function loadTourState(){
+  const fresh = {version:TOUR_VERSION, seenSteps:[], toursCompleted:[], tipsDisabled:false};
+  try{
+    const raw = localStorage.getItem(TOUR_KEY);
+    if(!raw) return fresh;
+    const s = JSON.parse(raw);
+    if(!s || typeof s!=="object" || s.version!==TOUR_VERSION) return fresh;
+    return {
+      version: TOUR_VERSION,
+      seenSteps: Array.isArray(s.seenSteps)? s.seenSteps : [],
+      toursCompleted: Array.isArray(s.toursCompleted)? s.toursCompleted : [],
+      tipsDisabled: !!s.tipsDisabled,
+    };
+  }catch(e){ return fresh; }
+})();
+function saveTourState(){ try{ localStorage.setItem(TOUR_KEY, JSON.stringify(tourState)); }catch(e){} }
+
+/* ---------- the opening tour — 4 steps, all advance on "next" ---------- */
+const TOUR_STEPS = {
+  opening: [
+    {
+      id:"welcome", target:'[data-tour="park-header"]', icon:"🏝️",
+      title:"ברוך הבא ל{{parkName}}",
+      body:"מהיום אתה המנהל, {{managerName}}. אלוהים יעזור למבקרים.",
+      placement:"bottom", advanceOn:"next", spotlightPadding:8,
+      effects:null, glossaryKey:null,
+    },
+    {
+      id:"money", target:'[data-tour="kpi-money"]', icon:"💰",
+      title:"הכסף",
+      body:"כל שקל נחשב. אם תרד למינוס — הפארק נסגר ואתה חוזר לעבוד אצל אבא.",
+      bodyByDifficulty:{ hard:"התקציב שלך דק. מאוד. בהצלחה." },
+      placement:"bottom", advanceOn:"next", spotlightPadding:4,
+      effects:{ up:["כרטיסים","מזנונים","VIP"], down:["שכר ותחזוקה","קנסות","בנייה"] },
+      glossaryKey:"money",
+    },
+    {
+      id:"satisfaction", target:'[data-tour="kpi-rating"]', icon:"⭐",
+      title:"שביעות רצון ודירוג",
+      body:"המבקרים מדרגים אותך בלי רחמים, בדיוק כמו בקבוצת הוואטסאפ של השכונה.",
+      placement:"bottom", advanceOn:"next", spotlightPadding:4,
+      effects:{ up:["צל","מגוון מתקנים","חידושים"], down:["צפיפות","תקלות","תורים"] },
+      glossaryKey:"satisfaction",
+    },
+    {
+      id:"visitors", target:'[data-tour="kpi-visitors"]', icon:"👥",
+      title:"מבקרים",
+      body:"באוגוסט הם באים בהמונים. בינואר תשמע צרצרים. תתכנן בהתאם.",
+      placement:"bottom", advanceOn:"next", spotlightPadding:4,
+      effects:{ up:["עונה חמה","פרסום","דירוג גבוה"], down:["חורף","דירוג נמוך","מחיר גבוה"] },
+      glossaryKey:"visitors",
+    },
+  ],
+};
+
+/* ---------- contextual tips — one-off, at most one per game month ---------- */
+const TIPS = [
+  { id:"tip-build-screen", trigger:"FIRST_BUILD_SCREEN_OPEN", target:'[data-tour="build-tabs"]',
+    icon:"🔨", title:"מסך הבנייה",
+    body:"פה בונים הכול. אפור = אין תקציב או אין שטח. בנייה לוקחת חודשים — תכנן מראש.",
+    placement:"bottom", glossaryKey:null },
+  { id:"tip-construction", trigger:"FIRST_CONSTRUCTION_START", target:'[data-tour="construction-progress"]',
+    icon:"🚧", title:"בבנייה",
+    body:"אפשר להאיץ בתשלום, או פשוט לנשום ולחכות.",
+    placement:"bottom", glossaryKey:"capacity" },
+  { id:"tip-random-event", trigger:"FIRST_RANDOM_EVENT", target:'[data-tour="event-sheet"]',
+    icon:"📰", title:"קרה משהו",
+    body:"כל חודש קורה משהו. לכל בחירה יש מחיר — ולפעמים גם לחוסר בחירה.",
+    placement:"top", glossaryKey:null },
+  { id:"tip-monthly-report", trigger:"FIRST_MONTHLY_REPORT", target:'[data-tour="report-financials"]',
+    icon:"📊", title:"הדוח החודשי",
+    body:"מכאן הכסף בא, לכאן הוא הלך.",
+    placement:"top", glossaryKey:"money" },
+  { id:"tip-low-satisfaction", trigger:"SATISFACTION_BELOW_40", target:'[data-tour="kpi-rating"]',
+    icon:"😐", title:"המבקרים מתלוננים",
+    body:"צל, מקום וישיבה — זה בדרך כלל הפתרון.",
+    placement:"bottom", glossaryKey:"satisfaction" },
+  { id:"tip-negative-balance", trigger:"NEGATIVE_BALANCE", target:'[data-tour="kpi-money"]',
+    icon:"🔴", title:"אתה במינוס",
+    body:"עוד חודש כזה ונגמר הסיפור.",
+    placement:"bottom", glossaryKey:"money" },
+  { id:"tip-next-month", trigger:"FIRST_NEXT_MONTH", target:'[data-tour="next-month-btn"]',
+    icon:"➡️", title:"סיימת לחודש?",
+    body:"כשסיימת — לוחץ פה והחודש מתקדם. אין חזרה אחורה.",
+    placement:"top", glossaryKey:null },
+];
+
+/* ---------- glossary — what raises and what lowers every metric ---------- */
+const GLOSSARY = [
+  {
+    key:"satisfaction", icon:"😊", title:"שביעות רצון (0–100)",
+    definition:`ציון שאומר כמה המבקרים אהבו את הביקור. יש לו זיכרון: 70% מהחודש הקודם + 30% ממה שקרה עכשיו, סביב בסיס של ${ECON.satBase}.`,
+    up:[
+      {label:"יחס מבקרים/קיבולת תקין (לא צפוף)", weight:`עד +${SAT_W.crowdFit}`},
+      {label:"מתקן חדש או שדרוג שנפתח החודש", weight:`+${SAT_W.freshBuild}`},
+      {label:"מתקני דגל שמושכים קהל", weight:`עד +${SAT_W.appealMax}`},
+      {label:"מגוון קהלים (ילדים ומבוגרים)", weight:`+${SAT_W.variety}`},
+      {label:"מספיק ישיבה וצל", weight:`+${SAT_W.seating}`},
+      {label:"שני דוכני אוכל ומעלה", weight:`+${SAT_W.foodVariety}`},
+      {label:"מציל ייעודי / חבילת אבטחה", weight:`+${SAT_W.lifeguard}`},
+      {label:"מאבטחים בכניסה", weight:`+${SAT_W.guards}`},
+      {label:`מחיר כרטיס מתחת ל-₪${SAT_W.priceLow}`, weight:`+${SAT_W.cheapPerShekel} לכל ₪`},
+      {label:"הדירוג עלה ביחס לחודש הקודם", weight:`+${SAT_W.ratingUp}`},
+    ],
+    down:[
+      {label:"אירוע שלילי (תאונה, ביקורת, ויראלי)", weight:"משתנה"},
+      {label:"צפיפות יתר — ביקוש מעל הקיבולת", weight:`עד -${SAT_W.crowdMax}`},
+      {label:"מתקן מקולקל או סגור", weight:`-${SAT_W.closedRide}`},
+      {label:"אין צל בשיא הקיץ (יוני–אוגוסט)", weight:`-${SAT_W.noShade}`},
+      {label:`תור ארוך (ביקוש מעל ${Math.round(SAT_W.queueAt*100)}% מהקיבולת)`, weight:`-${SAT_W.queue}`},
+      {label:`מחיר כרטיס מעל ₪${SAT_W.priceHigh}`, weight:`-${SAT_W.pricyPerShekel} לכל ₪`},
+    ],
+    note:"בגלל הזיכרון כדאי לתקן מוקדם. גרירה של שלושה חודשים גרועים לוקחת חצי עונה לתקן.",
+  },
+  {
+    key:"money", icon:"💰", title:"כסף",
+    definition:'היתרה בקופה. מתחת לאפס — במצב "שרוד עונה" זה סוף המשחק.',
+    up:[
+      {label:"כרטיסים (מבקרים × מחיר הכרטיס)", weight:"ההכנסה הראשית"},
+      {label:"הסעדה — פלאפל, גלידה, מסעדה", weight:"₪2–5 למבקר"},
+      {label:"VIP — ג'קוזי ופרגולה", weight:"₪45 מ-4% מהמבקרים"},
+      {label:"מענקים ותרומות מאירוע חיובי", weight:"חד-פעמי"},
+    ],
+    down:[
+      {label:`שכר מצילים ועובדים (מציל לכל ${ECON.lifeguardPer} קיבולת)`, weight:"ההוצאה הגדולה"},
+      {label:`ארנונה — ₪${ECON.arnonaPerCapacity} לכל יחידת קיבולת`, weight:"קבוע"},
+      {label:`ביטוח — ${fmtMoney(ECON.insuranceBase)} + ${fmtMoney(ECON.insurancePerRisk)} לכל מתקן מסוכן`, weight:"קבוע"},
+      {label:"מנהלה ורישוי", weight:fmtMoney(ECON.adminBase)},
+      {label:"תחזוקה חודשית של כל מתקן ומזנון", weight:"לפי מתקן"},
+      {label:"אבטחה, קנסות מאירועים, קמפיינים", weight:"משתנה"},
+      {label:"עלויות בנייה, שדרוג והאצת בנייה", weight:"חד-פעמי"},
+    ],
+    note:`השכר, הארנונה, הביטוח והמנהלה רצים גם בינואר כשאין נפש בפארק. תשאיר רזרבה לחורף — ואחרי תאונה הביטוח מוטען ב-${Math.round((ECON.insuranceSpikeMult-1)*100)}% למשך ${ECON.insuranceSpikeMonths} חודשים.`,
+  },
+  {
+    key:"visitors", icon:"👥", title:"מבקרים",
+    definition:`כמה אנשים הגיעו החודש. הביקוש היומי = (${ECON.marketBase} בסיס + ${ECON.marketPerStar} לכל כוכב + מוניטין + מתקנים) × מכפיל עונה × (1 + פרסום) × שביעות רצון/100 × מקדם מחיר — ואז נחתך לפי הקיבולת.`,
+    up:[
+      {label:`עונה חמה (אוגוסט ×${SEASON_MULT[7]}, יולי ×${SEASON_MULT[6]})`, weight:"הגורם החזק"},
+      {label:"כוכב נוסף בדירוג", weight:`+${ECON.marketPerStar} ליום`},
+      {label:"קמפיין פרסומי פעיל", weight:"+5% עד +20%"},
+      {label:"מוניטין מצטבר (מבקרים שכבר היו)", weight:`עד +${ECON.womCap}`},
+      {label:"מתקני דגל חדשים", weight:`×${ECON.appealScale} לכל נקודת משיכה`},
+      {label:`מחיר כרטיס מתחת ל-₪${ECON.ticketRef}`, weight:"מושך קהל"},
+    ],
+    down:[
+      {label:`חורף (ינואר ×${SEASON_MULT[0]}, דצמבר ×${SEASON_MULT[11]})`, weight:"הפארק ריק"},
+      {label:"דירוג נמוך ושביעות רצון נמוכה", weight:"מכפיל את הכול"},
+      {label:`מחיר כרטיס גבוה (אלסטיות ${ECON.elasticity})`, weight:"פחות ראשים"},
+      {label:"קיבולת חסרה — נשלחים הביתה", weight:"תקרה קשיחה"},
+      {label:"מתקנים סגורים וביקורות רעות", weight:"משתנה"},
+    ],
+    note:"שביעות הרצון מכפילה את הכול. פארק מוזנח נפגע הכי חזק דווקא באוגוסט — שם ההפסד האמיתי.",
+  },
+  {
+    key:"rating", icon:"⭐", title:"דירוג כוכבים",
+    definition:"תרגום ישיר של שביעות הרצון לכוכבים. לא משתנה בנפרד — רק דרכה.",
+    tables:[{ title:"טווח שביעות רצון", rows:[
+      {label:"0–20", weight:`${stars(1)} ${ratingDesc(1)}`},
+      {label:"21–40", weight:`${stars(2)} ${ratingDesc(2)}`},
+      {label:"41–60", weight:`${stars(3)} ${ratingDesc(3)}`},
+      {label:"61–80", weight:`${stars(4)} ${ratingDesc(4)}`},
+      {label:"81–100", weight:`${stars(5)} ${ratingDesc(5)}`},
+    ]}],
+    note:`כל כוכב שווה בערך ${ECON.marketPerStar} מבקרים פוטנציאליים ביום. זה מנוע הצמיחה האמיתי של הפארק.`,
+  },
+  {
+    key:"capacity", icon:"🏊", title:"קיבולת",
+    definition:"כמה מבקרים ביום הפארק מסוגל לקלוט. סכום הקיבולת של כל המתקנים הפעילים. הקיבולת לא מייצרת ביקוש — היא רק מגבילה אותו.",
+    up:[
+      {label:"בניית מתקנים חדשים", weight:"לפי מתקן"},
+      {label:"סיום בנייה או תיקון", weight:"מיידי"},
+      {label:"דונם נוסף — עוד 4 יחידות שטח", weight:"מרחיב"},
+    ],
+    down:[
+      {label:"מתקן שנסגר לתיקון", weight:"עד סיום"},
+      {label:"מתקן בבנייה — עדיין לא נספר", weight:"—"},
+      {label:"כל יחידת קיבולת גוררת שכר וארנונה", weight:"עלות חודשית"},
+    ],
+    note:"כשהביקוש עובר את הקיבולת — זו הצפיפות שמורידה שביעות רצון והאנשים נשלחים הביתה. באוגוסט תבדוק את זה לפני שתשקיע בפרסום.",
+  },
+  {
+    key:"price", icon:"🎟️", title:"מחיר כרטיס",
+    definition:`הדיאל הראשי שלך: ₪${ECON.ticketMin}–₪${ECON.ticketMax}. במחיר הייחוס ₪${ECON.ticketRef} הביקוש "נורמלי"; מעליו מאבדים ראשים מהר יותר ממה שמרוויחים על הכרטיס (אלסטיות ${ECON.elasticity}).`,
+    up:[
+      {label:"מחיר גבוה = יותר ₪ לכל מבקר", weight:"רווח לראש"},
+      {label:"עובד טוב כשהדירוג גבוה", weight:"סבלנות הקהל"},
+    ],
+    down:[
+      {label:`מעל ₪${SAT_W.priceHigh} — פוגע גם בשביעות הרצון`, weight:`-${SAT_W.pricyPerShekel} לכל ₪`},
+      {label:"מחיר גבוה מרוקן את הפארק", weight:"פחות מבקרים"},
+      {label:"מחיר נמוך = פחות הכנסה לכרטיס", weight:"אבל יותר קהל"},
+    ],
+    note:`בחורף מחיר נמוך כמעט לא עוזר — אין ביקוש להוזיל. באוגוסט דווקא כדאי לבדוק העלאה, כי המכפיל העונתי (×${SEASON_MULT[7]}) סופג אותה.`,
+  },
+  {
+    key:"maintenance", icon:"🔧", title:"תחזוקה ועלויות קבועות",
+    definition:"עלות חודשית לכל מתקן, בנוסף לשכר, ארנונה, ביטוח ומנהלה. רצה גם כשהפארק ריק.",
+    tables:[{ title:"לפי רמת קושי", rows:[
+      {label:`${DIFFICULTY.easy.emoji} ${DIFFICULTY.easy.label}`, weight:"תחזוקה כבויה לגמרי"},
+      {label:`${DIFFICULTY.normal.emoji} ${DIFFICULTY.normal.label}`, weight:"תחזוקה מלאה"},
+      {label:`${DIFFICULTY.hard.emoji} ${DIFFICULTY.hard.label}`, weight:`מלאה ×${DIFFICULTY.hard.opexMult} + הזנחה מייקרת`},
+    ]}],
+    note:"מתקן שלא טופל יותר מחצי שנה מתייקר ומעלה את סיכון התקלה — בקושי הגבוה בלבד.",
+  },
+  {
+    key:"season", icon:"📅", title:"עונתיות",
+    definition:"מכפיל הביקוש החודשי. הגורם החזק ביותר במשחק.",
+    tables:[{ title:"מכפיל לפי חודש", rows: MONTHS.map((m,i)=>({label:`${MONTH_EMOJI[i]} ${m}`, weight:`×${SEASON_MULT[i]}`})) }],
+    note:"בנייה של 3 חודשים שמתחילה במאי מוכנה לאוגוסט. שמתחילה ביולי — מפספסת את כל העונה.",
+  },
+  {
+    key:"security", icon:"🛡️", title:"אבטחה",
+    definition:"שדרוגים רוחביים שמורידים סיכוני אירועים ומרגיעים הורים.",
+    tables:[{ title:"החבילות", rows: SECURITY.map(s=>({label:`${s.emoji} ${s.name} — ${s.desc}`, weight:`${fmtMoney(s.cost)} + ${fmtMoney(s.monthly)}/חודש`})) }],
+    note:`מציל ייעודי או חבילה מלאה מוסיפים ${SAT_W.lifeguard} לשביעות הרצון בכל חודש, ומאבטחים עוד ${SAT_W.guards}.`,
+  },
+];
+
+/* =========================================================
+   ONBOARDING — the engine.
+   Generic spotlight tour: it highlights one element, dims the
+   rest and points a bubble at it. It knows nothing about the
+   content above — steps are plain data, wired to the DOM only
+   through data-tour attributes.
+   ========================================================= */
+const Tour = (function(){
+  let steps=[], idx=0, mode="tour", tourId=null, session=0;
+  let overlay=null, hole=null, bubble=null, arrowEl=null;
+  let rafId=null, lastKey="", paused=false;
+  let tipQueue=[], flushTimer=null;
+
+  /* ---------- targets ---------- */
+  function isUsable(node){
+    if(!node || !node.isConnected) return false;
+    const r = node.getBoundingClientRect();
+    if(r.width<=0 || r.height<=0) return false;
+    const st = window.getComputedStyle(node);
+    return st.visibility!=="hidden" && st.display!=="none" && st.opacity!=="0";
+  }
+  function findTarget(sel){
+    try{ const n = document.querySelector(sel); return isUsable(n)? n : null; }catch(e){ return null; }
+  }
+  // A step may fire slightly before its element is rendered.
+  function waitForTarget(sel, ms){
+    return new Promise(resolve=>{
+      const now = findTarget(sel);
+      if(now) return resolve(now);
+      let settled = false;
+      const done = (v)=>{ if(settled) return; settled=true; obs.disconnect(); clearTimeout(timer); resolve(v); };
+      const obs = new MutationObserver(()=>{ const n = findTarget(sel); if(n) done(n); });
+      obs.observe(document.body,{childList:true, subtree:true, attributes:true});
+      const timer = setTimeout(()=>done(findTarget(sel)), ms);
+    });
+  }
+  // rAF is throttled to a standstill in a background tab — never hang on it.
+  const nextFrame = ()=> new Promise(r=>{
+    let done = false;
+    const fire = ()=>{ if(done) return; done = true; r(); };
+    requestAnimationFrame(fire);
+    setTimeout(fire, 80);
+  });
+  const wait = (ms)=> new Promise(r=>setTimeout(r, ms));
+
+  /* ---------- text ---------- */
+  function interpolate(text){
+    return String(text==null?"":text).replace(/\{\{(\w+)\}\}/g,(m,key)=>{
+      if(!G) return "";
+      if(key==="money") return fmtMoney(G.money);
+      if(key==="difficulty") return (DIFFICULTY[G.difficulty]||{}).label||"";
+      const v = G[key];
+      return (v==null)? "" : escapeHtml(String(v));
+    });
+  }
+  function bodyFor(step){
+    const byDiff = step.bodyByDifficulty;
+    if(byDiff && G && byDiff[G.difficulty]) return byDiff[G.difficulty];
+    return step.body;
+  }
+  function markSeen(id){
+    if(!id || tourState.seenSteps.includes(id)) return;
+    tourState.seenSteps.push(id); saveTourState();
+  }
+
+  /* ---------- dom ---------- */
+  function ensureDom(){
+    if(overlay) return;
+    overlay = el(`<div class="tour-overlay"></div>`);
+    hole = el(`<div class="tour-hole"></div>`);
+    overlay.appendChild(hole);
+    document.body.appendChild(overlay);
+    bubble = el(`<div class="tour-bubble" role="dialog" aria-modal="true" aria-live="polite"></div>`);
+    document.body.appendChild(bubble);
+    document.addEventListener("keydown", onKey, true);
+  }
+  function teardown(){
+    document.removeEventListener("keydown", onKey, true);
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    if(overlay){ overlay.remove(); }
+    if(bubble){ bubble.remove(); }
+    overlay=null; hole=null; bubble=null; arrowEl=null; lastKey=""; paused=false;
+  }
+
+  function buildBubble(step){
+    bubble.innerHTML = "";
+    arrowEl = el(`<div class="tour-arrow"><i></i></div>`);
+    bubble.appendChild(arrowEl);
+    bubble.appendChild(el(`<div class="tour-head">${step.icon?`<span>${step.icon}</span>`:""}<span>${interpolate(step.title)}</span></div>`));
+    bubble.appendChild(el(`<div class="tour-body">${interpolate(bodyFor(step))}</div>`));
+
+    if(step.effects && (step.effects.up || step.effects.down)){
+      const fx = el(`<div class="tour-fx"></div>`);
+      if(step.effects.up && step.effects.up.length) fx.appendChild(el(`<div class="fx-up">↑ ${step.effects.up.join(" · ")}</div>`));
+      if(step.effects.down && step.effects.down.length) fx.appendChild(el(`<div class="fx-down">↓ ${step.effects.down.join(" · ")}</div>`));
+      bubble.appendChild(fx);
+    }
+    if(step.glossaryKey && GLOSSARY.some(g=>g.key===step.glossaryKey)){
+      const more = el(`<button class="tour-more">הסבר מלא ←</button>`);
+      on(more,"click",()=>openGlossary(step.glossaryKey));
+      bubble.appendChild(more);
+    }
+
+    const foot = el(`<div class="tour-foot"></div>`);
+    const btns = el(`<div class="tour-btns"></div>`);
+    if(mode==="tour" && idx>0){
+      const prev = el(`<button class="btn btn-sm btn-ghost">◀️ הקודם</button>`);
+      on(prev,"click",()=>go(-1));
+      btns.appendChild(prev);
+    }
+    const last = idx >= steps.length-1;
+    const label = mode==="tip" ? "הבנתי 👍" : (last ? "יאללה, בוא נתחיל 🏊" : "הבא ➡️");
+    const next = el(`<button class="btn btn-sm btn-accent" id="tourNext">${label}</button>`);
+    on(next,"click",()=>go(1));
+    btns.appendChild(next);
+    foot.appendChild(btns);
+
+    const meta = el(`<div class="tour-meta"></div>`);
+    if(mode==="tour"){
+      meta.appendChild(el(`<span class="tour-count">${idx+1}/${steps.length}</span>`));
+      const skip = el(`<button class="tour-skip">דלג על ההדרכה</button>`);
+      on(skip,"click",askSkip);
+      meta.appendChild(skip);
+    }
+    foot.appendChild(meta);
+    bubble.appendChild(foot);
+  }
+
+  /* ---------- positioning ---------- */
+  function calcPos(p, r, bw, bh, vw, vh, M, GAP){
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    if(p==="bottom") return {left:clamp(cx-bw/2, M, vw-bw-M), top:r.bottom+GAP};
+    if(p==="top")    return {left:clamp(cx-bw/2, M, vw-bw-M), top:r.top-bh-GAP};
+    if(p==="left")   return {left:r.left-bw-GAP, top:clamp(cy-bh/2, M, vh-bh-M)};
+    if(p==="right")  return {left:r.right+GAP, top:clamp(cy-bh/2, M, vh-bh-M)};
+    return null;
+  }
+  function placeArrow(p, r, bl, bt, bw, bh){
+    if(!arrowEl) return;
+    arrowEl.style.display = "";
+    arrowEl.className = "tour-arrow";
+    arrowEl.style.left = ""; arrowEl.style.top = "";
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    if(p==="bottom" || p==="top"){
+      arrowEl.classList.add(p==="bottom" ? "at-top" : "at-bottom");
+      arrowEl.style.left = clamp(cx-bl-8, 16, Math.max(16, bw-32)) + "px";
+    } else {
+      arrowEl.classList.add(p==="left" ? "at-right" : "at-left");
+      arrowEl.style.top = clamp(cy-bt-8, 16, Math.max(16, bh-32)) + "px";
+    }
+  }
+  function place(){
+    const step = steps[idx];
+    if(!step || !bubble || !hole) return;
+    const t = findTarget(step.target);
+    if(!t) return;
+    const r = t.getBoundingClientRect();
+    const pad = (step.spotlightPadding!=null) ? step.spotlightPadding : 8;
+    hole.style.left = Math.max(0, r.left-pad)+"px";
+    hole.style.top = Math.max(0, r.top-pad)+"px";
+    hole.style.width = (r.width+pad*2)+"px";
+    hole.style.height = (r.height+pad*2)+"px";
+
+    const vw = window.innerWidth, vh = window.innerHeight, M = 12, GAP = 14;
+    bubble.classList.remove("as-sheet");
+    bubble.style.left = ""; bubble.style.top = "";
+    const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+    const hogsScreen = (r.width*r.height) > (vw*vh*0.4);
+
+    let chosen = null;
+    if(vh>=600 && vw>=360 && !hogsScreen){
+      const order = [];
+      [step.placement,"bottom","top","left","right"].forEach(p=>{ if(p && order.indexOf(p)<0) order.push(p); });
+      for(const p of order){
+        const pos = calcPos(p, r, bw, bh, vw, vh, M, GAP);
+        if(pos && pos.left>=M && pos.left+bw<=vw-M && pos.top>=M && pos.top+bh<=vh-M){ chosen = {p, left:pos.left, top:pos.top}; break; }
+      }
+    }
+    if(chosen){
+      bubble.style.left = Math.round(chosen.left)+"px";
+      bubble.style.top = Math.round(chosen.top)+"px";
+      placeArrow(chosen.p, r, chosen.left, chosen.top, bw, bh);
+    } else {
+      // nothing fits, tiny screen, or the target eats the viewport → bottom sheet
+      bubble.classList.add("as-sheet");
+      bubble.style.left = ""; bubble.style.top = "";
+      if(arrowEl) arrowEl.style.display = "none";
+    }
+  }
+  // The target may move (scroll, layout, a re-render). Follow it.
+  function track(){
+    rafId = requestAnimationFrame(track);
+    if(paused || !bubble) return;
+    const step = steps[idx];
+    if(!step) return;
+    const t = findTarget(step.target);
+    if(!t) return;
+    const r = t.getBoundingClientRect();
+    const key = [Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height),window.innerWidth,window.innerHeight].join(",");
+    if(key!==lastKey){ lastKey = key; place(); }
+  }
+
+  /* ---------- flow ---------- */
+  async function enter(){
+    const my = ++session;
+    const step = steps[idx];
+    if(!step){ finish(); return; }
+    if(typeof step.condition === "function"){
+      let ok = false;
+      try{ ok = !!step.condition(G); }catch(e){ ok = false; }
+      if(!ok){ go(1); return; }
+    }
+    let t = findTarget(step.target);
+    if(!t && step.waitForTarget) t = await waitForTarget(step.target, 3000);
+    if(my!==session) return;
+    if(!t){ console.warn("[tour] target missing, skipping step:", step.id, step.target); go(1); return; }
+
+    ensureDom();
+    bubble.style.visibility = "hidden";
+    try{ t.scrollIntoView({block:"center", behavior:"smooth"}); }catch(e){ try{ t.scrollIntoView(); }catch(e2){} }
+    await nextFrame();
+    await wait(350);
+    if(my!==session || !bubble) return;
+    if(!findTarget(step.target)){ go(1); return; }
+
+    buildBubble(step);
+    lastKey = "";
+    place();
+    bubble.style.visibility = "";
+    markSeen(step.id);
+    if(!rafId) track();
+    const nb = bubble.querySelector("#tourNext");
+    if(nb){ try{ nb.focus({preventScroll:true}); }catch(e){ nb.focus(); } }
+  }
+  function go(dir){
+    const next = idx + dir;
+    if(next < 0){ idx = 0; enter(); return; }
+    if(next >= steps.length){ finish(); return; }
+    idx = next;
+    enter();
+  }
+  function finish(){
+    if(mode==="tour" && tourId && !tourState.toursCompleted.includes(tourId)){
+      tourState.toursCompleted.push(tourId);
+      saveTourState();
+    }
+    close();
+  }
+  function close(){
+    session++;
+    steps = []; idx = 0; tourId = null;
+    teardown();
+    scheduleFlush();
+  }
+  function startSteps(list, m, id){
+    if(!list || !list.length) return;
+    session++;
+    teardown();
+    steps = list.slice(); idx = 0; mode = m; tourId = id;
+    enter();
+  }
+  function start(id){
+    const list = TOUR_STEPS[id];
+    if(!list){ console.warn("[tour] unknown tour:", id); return; }
+    startSteps(list, "tour", id);
+  }
+
+  function askSkip(){
+    const ov = el(`<div class="overlay" style="z-index:10001;"><div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="title-xl on-card" style="font-size:18px;">לדלג על ההדרכה?</div>
+      <div class="subtitle on-card" style="margin-top:8px;">תמיד אפשר להחזיר אותה מכפתור ה-❓ שבראש המסך.</div>
+      <label class="row gap8 card" style="margin-top:16px;padding:12px 14px;align-items:center;cursor:pointer;">
+        <input type="checkbox" id="tourNoTips" style="width:18px;height:18px;flex:0 0 auto;">
+        <span style="font-size:13.5px;font-weight:700;">אל תציג לי טיפים בהמשך המשחק</span>
+      </label>
+      <div class="stack gap8" style="margin-top:16px;">
+        <button class="btn btn-primary btn-block" id="tourSkipYes">כן, דלג</button>
+        <button class="btn btn-ghost btn-block" id="tourSkipNo">חזרה להדרכה</button>
+      </div>
+    </div></div>`);
+    document.body.appendChild(ov);
+    on(ov.querySelector("#tourSkipYes"),"click",()=>{
+      if(ov.querySelector("#tourNoTips").checked){
+        tourState.tipsDisabled = true;
+        tipQueue = [];
+      }
+      steps.forEach(s=>markSeen(s.id));
+      saveTourState();
+      ov.remove();
+      finish();
+    });
+    on(ov.querySelector("#tourSkipNo"),"click",()=>ov.remove());
+    on(ov,"click",(e)=>{ if(e.target===ov) ov.remove(); });
+  }
+
+  /* ---------- glossary ---------- */
+  function glTable(title, rows, cls){
+    const box = el(`<div class="gl-table ${cls||""}"></div>`);
+    box.appendChild(el(`<div class="gl-tr gl-th"><span>${title}</span><span></span></div>`));
+    (rows||[]).forEach(r=>{
+      box.appendChild(el(`<div class="gl-tr"><span>${r.label}</span>${r.weight?`<span class="gl-w">${r.weight}</span>`:""}</div>`));
+    });
+    return box;
+  }
+  function glossaryItem(entry, open){
+    const item = el(`<div class="gl-item ${open?"open":""}"></div>`);
+    item.dataset.key = entry.key;
+    const head = el(`<div class="gl-head"><span>${entry.icon}</span><span>${entry.title}</span><span class="gl-chev">${open?"▲":"▼"}</span></div>`);
+    const body = el(`<div class="gl-body"></div>`);
+    body.appendChild(el(`<div class="gl-def">${entry.definition}</div>`));
+    if(entry.up) body.appendChild(glTable("↑ מה מעלה", entry.up, "gl-up"));
+    if(entry.down) body.appendChild(glTable("↓ מה מוריד", entry.down, "gl-down"));
+    (entry.tables||[]).forEach(t=>body.appendChild(glTable(t.title, t.rows, "")));
+    if(entry.note) body.appendChild(el(`<div class="gl-note">🧑‍💼 <b>הערת מנהל:</b> ${entry.note}</div>`));
+    body.style.display = open ? "" : "none";
+    on(head,"click",()=>{
+      const nowOpen = body.style.display === "none";
+      const list = item.parentElement;
+      if(list){
+        list.querySelectorAll(".gl-item").forEach(other=>{
+          if(other===item) return;
+          other.classList.remove("open");
+          const b = other.querySelector(".gl-body"); if(b) b.style.display = "none";
+          const c = other.querySelector(".gl-chev"); if(c) c.textContent = "▼";
+        });
+      }
+      body.style.display = nowOpen ? "" : "none";
+      item.classList.toggle("open", nowOpen);
+      head.querySelector(".gl-chev").textContent = nowOpen ? "▲" : "▼";
+    });
+    item.appendChild(head);
+    item.appendChild(body);
+    return item;
+  }
+  function openGlossary(key){
+    const cameFromTour = !!overlay;
+    if(cameFromTour) pause();
+    const ov = el(`<div class="overlay" style="z-index:10000;"><div class="sheet"></div></div>`);
+    const sheet = ov.querySelector(".sheet");
+    sheet.appendChild(el(`<div class="sheet-handle"></div>`));
+    sheet.appendChild(el(`<div class="row-between"><div style="font-weight:800;font-size:17px;">📖 מילון מונחים</div><button class="icon-btn" id="glClose">✕</button></div>`));
+    const list = el(`<div class="gl-list"></div>`);
+    GLOSSARY.forEach(entry=>list.appendChild(glossaryItem(entry, key===entry.key)));
+    sheet.appendChild(list);
+    sheet.appendChild(el(`<div style="height:10px;"></div>`));
+    document.body.appendChild(ov);
+    const closeGl = ()=>{ ov.remove(); if(cameFromTour) resume(); };
+    on(ov.querySelector("#glClose"),"click",closeGl);
+    on(ov,"click",(e)=>{ if(e.target===ov) closeGl(); });
+    if(key){
+      const opened = list.querySelector(`.gl-item[data-key="${key}"]`);
+      if(opened) requestAnimationFrame(()=>opened.scrollIntoView({block:"start", behavior:"smooth"}));
+    }
+  }
+  function pause(){
+    paused = true;
+    if(overlay) overlay.style.display = "none";
+    if(bubble) bubble.style.display = "none";
+  }
+  function resume(){
+    paused = false;
+    if(overlay) overlay.style.display = "";
+    if(bubble) bubble.style.display = "";
+    lastKey = "";
+    place();
+  }
+
+  /* ---------- help menu (the ❓ button) ---------- */
+  function openHelp(){
+    const ov = el(`<div class="overlay" style="z-index:10000;"><div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="title-xl on-card" style="font-size:18px;">❓ עזרה</div>
+      <div class="stack gap12" style="margin-top:16px;">
+        <button class="btn btn-accent btn-block" id="helpTour">▶️ הפעל את הסיור מחדש</button>
+        <button class="btn btn-ghost btn-block" id="helpGloss">📖 מילון מונחים</button>
+        <button class="btn btn-ghost btn-block" id="helpTips">${tourState.tipsDisabled?"🔔 הפעל טיפים בחזרה":"🔕 כבה טיפים"}</button>
+        <button class="btn btn-ghost btn-block" id="helpClose">סגירה</button>
+      </div>
+    </div></div>`);
+    document.body.appendChild(ov);
+    on(ov.querySelector("#helpTour"),"click",()=>{ ov.remove(); start("opening"); });
+    on(ov.querySelector("#helpGloss"),"click",()=>{ ov.remove(); openGlossary(null); });
+    on(ov.querySelector("#helpTips"),"click",()=>{
+      tourState.tipsDisabled = !tourState.tipsDisabled;
+      if(tourState.tipsDisabled) tipQueue = [];
+      saveTourState();
+      ov.remove();
+      toast(tourState.tipsDisabled? "טיפים כבויים 🔕" : "טיפים פעילים 🔔");
+    });
+    on(ov.querySelector("#helpClose"),"click",()=>ov.remove());
+    on(ov,"click",(e)=>{ if(e.target===ov) ov.remove(); });
+  }
+
+  /* ---------- contextual tips ---------- */
+  function trigger(name){
+    if(tourState.tipsDisabled) return;
+    const tip = TIPS.find(t=>t.trigger===name);
+    if(!tip) return;
+    if(tourState.seenSteps.includes(tip.id) || tipQueue.includes(tip.id)) return;
+    tipQueue.push(tip.id);
+    scheduleFlush();
+  }
+  function scheduleFlush(){
+    if(flushTimer) return;
+    flushTimer = setTimeout(()=>{ flushTimer = null; flushTips(); }, 420);
+  }
+  function flushTips(){
+    if(overlay || !G || G.over || tourState.tipsDisabled) return;
+    if(G._tipTurn === G.turn) return;           // at most one tip per game month
+    tipQueue = tipQueue.filter(id=>{
+      const tip = TIPS.find(t=>t.id===id);
+      return tip && !tourState.seenSteps.includes(id);
+    });
+    // First tip whose element is actually on screen wins. The rest keep their
+    // place in line and get their turn when their screen comes back.
+    const i = tipQueue.findIndex(id=>findTarget(TIPS.find(t=>t.id===id).target));
+    if(i<0) return;
+    const id = tipQueue.splice(i,1)[0];
+    const tip = TIPS.find(t=>t.id===id);
+    G._tipTurn = G.turn;
+    startSteps([tip], "tip", null);
+  }
+  function showTip(id){
+    if(tourState.tipsDisabled) return;
+    const tip = TIPS.find(t=>t.id===id);
+    if(!tip || tourState.seenSteps.includes(tip.id)) return;
+    startSteps([tip], "tip", null);
+  }
+
+  /* ---------- keyboard ---------- */
+  function onKey(e){
+    if(!overlay || paused) return;
+    if(e.key==="Enter" || e.key==="ArrowRight"){
+      e.preventDefault(); e.stopPropagation(); go(1);
+    } else if(e.key==="ArrowLeft"){
+      if(mode==="tour"){ e.preventDefault(); e.stopPropagation(); go(-1); }
+    } else if(e.key==="Escape"){
+      e.preventDefault(); e.stopPropagation();
+      if(mode==="tour") askSkip(); else close();
+    } else if(e.key==="Tab" && bubble){
+      const f = bubble.querySelectorAll("button, [href], input, select, textarea");
+      if(!f.length) return;
+      const first = f[0], last = f[f.length-1];
+      if(!bubble.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+      else if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
+  }
+
+  return {
+    get isActive(){ return !!overlay; },
+    start, showTip, trigger, openGlossary, openHelp,
+    flushTips: scheduleFlush,
+    stop: close,
+    reset(){ tourState.seenSteps=[]; tourState.toursCompleted=[]; saveTourState(); tipQueue=[]; },
+    // A new game gets its tips back; "don't show me tips" stays global.
+    // Call this BEFORE the first render — the render itself queues tips.
+    onNewGame(){
+      tourState.seenSteps = [];
+      tourState.toursCompleted = [];
+      saveTourState();
+      tipQueue = [];
+    },
+    // ...and this after it, once the dashboard is actually on screen.
+    startOpening(){ if(!tourState.tipsDisabled) start("opening"); },
+  };
+})();
 
 /* =========================================================
    BOOTSTRAP
