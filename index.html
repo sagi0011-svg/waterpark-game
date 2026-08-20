@@ -1023,6 +1023,14 @@ function insuranceMonthly(){
 function bumpInsurance(){
   G.insuranceSpikeUntil = Math.max(G.insuranceSpikeUntil||0, G.turn + ECON.insuranceSpikeMonths);
 }
+
+/* Every fine in the game goes through here. On 🟢 קליל the multiplier is 0.5, so
+   an un-rounded randi() leaves half a shekel sitting in G.money for the rest of
+   the season — the balance reads ₪3,486,893.5. Rounding at the source also means
+   the next event that levies a fine can't reintroduce it. */
+function fineOf(min, max){
+  return Math.round(randi(min, max) * (DIFFICULTY[G.difficulty].fineMult || 1));
+}
 function arnonaMonthly(){ return Math.round(capacityTotal()*ECON.arnonaPerCapacity); }
 // Every recurring cost except maintenance and the security packages.
 function overheadBreakdown(monthIdx){
@@ -1045,7 +1053,7 @@ function toast(msg){
    EVENTS DATA
    ========================================================= */
 function buildEventPool(){
-  const diff = DIFFICULTY[G.difficulty];
+  // (difficulty is read inside fineOf(); the pool itself no longer needs it)
   const chairsCount = G.built.filter(b=>b.status==="active" && b.defId==="chairs").length;
   const guardMult = (G.security.guards||G.security.full) ? 0.7 : 1;
   const camMult = (G.security.cameras||G.security.full) ? 0.7 : 1;
@@ -1065,7 +1073,7 @@ function buildEventPool(){
         staff:{who:"דודו · מציל", t:"הפרדתי ביניהם. הכיסא לא שרד. אני מבקש תוספת סיכון."}}, light:true, name:'קטטת כיסאות "כתר"', emoji:"🥊",
       chance:(0.08 + chairsCount*0.01) * guardMult * rowdy,
       headline:'קרב אגרוף על כיסא בצל — "היד שלי הייתה שם קודם!"',
-      apply(){ const fine = randi(33000,110000)*diff.fineMult; G.money -= fine; addSat(-8);
+      apply(){ const fine = fineOf(33000,110000); G.money -= fine; addSat(-8);
         return `קנס ${fmtMoney(fine)} ופוסט זועם בקבוצת הוואטסאפ השכונתית.`; }},
     {id:"slide_malfunction",
       reactions:{
@@ -1102,7 +1110,7 @@ function buildEventPool(){
         if(G.security.full){ G.money += 44000; addSat(4); return '"תעודת הצטיינות"! חבילת האבטחה המלאה עשתה את העבודה.'; }
         const pass = chance(clamp(G.satisfaction/100 - neglectFactor*0.1 + 0.3,0.1,0.9));
         if(pass){ addSat(3); return "עבר בשן ובעין. הצוות נושם לרווחה."; }
-        const fine = randi(55000,165000)*diff.fineMult; G.money -= fine; addSat(-7);
+        const fine = fineOf(55000,165000); G.money -= fine; addSat(-7);
         return `כשל בביקורת. קנס ${fmtMoney(fine)}.`;
       }},
     {id:"lost_child",
@@ -1121,7 +1129,7 @@ function buildEventPool(){
         staff:{who:"אבי · תחזוקה", t:"שאבתי מים שש שעות. שש. אני לא מרגיש את הידיים."}}, light:false, name:"הצפה/נזק ממזג אוויר", emoji:"🌧️",
       chance: 0.03 * autumnWinter,
       headline:"סופה פתאומית משטפת את הפארק",
-      apply(){ const cost = randi(33000,132000)*diff.fineMult; G.money -= cost; addSat(-3); bumpInsurance();
+      apply(){ const cost = fineOf(33000,132000); G.money -= cost; addSat(-3); bumpInsurance();
         return `נזק בעלות ${fmtMoney(cost)} לתיקון.`; }},
     {id:"theft",
       reactions:{
@@ -1148,7 +1156,7 @@ function buildEventPool(){
         staff:{who:"מאיה · ניקיון", t:"אני מבקשת רשמית העלאה. רשמית. בכתב. עכשיו."}}, light:true, name:"אירוע חום בבריכה", emoji:"💩",
       chance: capacityTotal()>0 ? 0.07*rowdy : 0,
       headline:'אזעקת "דגל חום" — כל הבריכה מתפנה בבהלה תוך 40 שנייה',
-      apply(){ const fine = randi(22000,77000)*diff.fineMult; G.money -= fine; addSat(-6);
+      apply(){ const fine = fineOf(22000,77000); G.money -= fine; addSat(-6);
         return `ריקון ומילוי מחדש של כל המים. קנס תברואה ${fmtMoney(fine)}.`; }},
     {id:"nargila_fire",
       feedChips:[["פינת ישיבה אבדה","b"]],
@@ -1160,7 +1168,7 @@ function buildEventPool(){
       chance: allBuilt("seating").some(b=>b.status!=="closed") ? 0.03*rowdy : 0,
       headline:'"מי השאיר את הפחמים ככה?!" — פינת ישיבה עולה באש',
       apply(){
-        const fine = randi(44000,121000)*diff.fineMult; G.money -= fine; addSat(-7); bumpInsurance();
+        const fine = fineOf(44000,121000); G.money -= fine; addSat(-7); bumpInsurance();
         const seats = G.built.filter(b=>defOf(b.defId).cat==="seating" && b.status!=="closed");
         if(seats.length){ const idx = G.built.indexOf(pick(seats)); if(idx>-1) G.built.splice(idx,1); }
         return `קנס כבאות ${fmtMoney(fine)}, ופינת ישיבה שלמה ירדה לטמיון.`;
@@ -1175,7 +1183,7 @@ function buildEventPool(){
       chance: G.built.some(b=>b.defId==="falafel" && b.status==="active") ? 0.05 : 0,
       headline:'"החומוס ההוא לא היה טרי" — משפחה שלמה בחדר מיון',
       apply(){
-        const fine = randi(33000,99000)*diff.fineMult; G.money -= fine; addSat(-7); bumpInsurance();
+        const fine = fineOf(33000,99000); G.money -= fine; addSat(-7); bumpInsurance();
         const stand = G.built.find(b=>b.defId==="falafel" && b.status==="active");
         if(stand){ stand.status="closed"; stand.closedWeeksLeft = randi(2,4); }
         return `דוכן הפלאפל נסגר לבדיקה, וקנס משרד הבריאות: ${fmtMoney(fine)}.`;
@@ -1206,7 +1214,7 @@ function buildEventPool(){
         staff:{who:"יוסי · אבטחה", t:"אני לא מקבל מספיק בשביל זה. אני לא מקבל חצי ממה שצריך בשביל זה."}}, light:false, name:'מהומה המונית על כיסאות "כתר"', emoji:"🥊",
       chance: chairsCount>=2 ? 0.03*rowdy : 0,
       headline:'כיסאות "כתר" עפים באוויר — מהומה כללית ליד הבריכה, אבטחה נכנסה לתמונה',
-      apply(){ const fine = randi(90000,275000)*diff.fineMult; G.money -= fine; addSat(-14); bumpInsurance();
+      apply(){ const fine = fineOf(90000,275000); G.money -= fine; addSat(-14); bumpInsurance();
         return `אנשי האבטחה ספגו כמה מכות, ואתם ספגתם קנס ענק: ${fmtMoney(fine)}.`; }},
   ];
 
@@ -1764,8 +1772,7 @@ function mkRutiItem(res){
     if(res.up || since >= RUTI_ESCALATE_GAP){
       R.lastEscalateTurn = G.turn;
       const e = pick(RUTI.stage4);
-      const diff = DIFFICULTY[G.difficulty];
-      const fine = Math.round(randi(e.fine[0], e.fine[1]) * (diff.fineMult||1));
+      const fine = fineOf(e.fine[0], e.fine[1]);
       G.money -= fine;
       G.satisfaction = clamp(Math.round(G.satisfaction + e.sat), 0, 100);
       G.rating = ratingFromSatisfaction(G.satisfaction);
@@ -2627,6 +2634,12 @@ const OWNER_SASS = [
 ];
 const OWNER_NICE = "תודה על המשוב, לקחנו ללב ואנחנו כבר עובדים על זה. מקווים לראותכם שוב!";
 
+/* Answering a review is a live lever: politely costs nothing and cools רותי by 5.
+   Left open forever, the player can scroll back through every unanswered review
+   in the feed and drain a quarter of her heat meter in one sitting (measured:
+   5 buttons, -25 heat). The conversation has a window, like a real one. */
+const REVIEW_REPLY_MONTHS = 2;
+
 function cReview(it){
   const p = it.payload;
   const c = el(`<div class="c rev">
@@ -2640,6 +2653,10 @@ function cReview(it){
 
   if(p.ownerReply){
     c.appendChild(el(`<div class="owner-reply"><b>תגובת הבעלים · ${escapeHtml(G.parkName)}</b>${p.ownerReply}</div>`));
+    return c;
+  }
+  if((G.turn - it.turn) > REVIEW_REPLY_MONTHS){
+    c.appendChild(el(`<div class="c-foot"><span class="react">⏳ מאוחר מדי להגיב — הביקורת כבר התיישנה</span></div>`));
     return c;
   }
   const foot = el(`<div class="c-foot">
@@ -3291,8 +3308,6 @@ function securityCard(s){
   return card;
 }
 
-/* effect: extra_dunam grants slots when completed -> patch resolveMonth tick */
-const _origResolve = resolveMonth;
 
 /* =========================================================
    HISTORY / REPORT SCREEN
