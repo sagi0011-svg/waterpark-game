@@ -1604,6 +1604,11 @@ function rutiTick(hadBadEvent){
   else if(G.satisfaction < 55) d += 9;
   else if(G.satisfaction > 72) d -= 16;
   else if(G.satisfaction > 62) d -= 8;
+  // 55-62 used to drift by exactly nothing, which froze her at whatever stage she
+  // had reached — a park that stopped doing damage could never make her let go.
+  // Two a month is "time heals, slowly": you still have to clear 62 to really
+  // push her down, but standing still is no longer a life sentence.
+  else                         d -= 2;
   if(hadBadEvent)              d += 10;
   if(priceNow() > 45)          d += 6;
   if(G.rating < 3)             d += 7;
