@@ -857,7 +857,7 @@ function newGame(draft){
     feedFilter: "all",     // all | events | crowd | report
 
     // --- רותי עש, the nemesis with a memory ---
-    ruti: { heat:0, stage:0, members:0, lastTickHeat:null, everPeaked:0 },
+    ruti: { heat:0, stage:0, members:0, lastTickHeat:null, everPeaked:0, lastEscalateTurn:null },
 
     // --- reactions that land a month after their cause ---
     queuedReactions: [],   // [{kind:'staff'|'review', payload}]
@@ -895,13 +895,14 @@ function migrateSave(g){
   if(g.feedSeq==null) g.feedSeq = 0;
   if(g.unseenEvents==null) g.unseenEvents = 0;
   if(g.feedFilter==null) g.feedFilter = "all";
-  if(!g.ruti || typeof g.ruti!=="object") g.ruti = {heat:0,stage:0,members:0,lastTickHeat:null,everPeaked:0};
+  if(!g.ruti || typeof g.ruti!=="object") g.ruti = {heat:0,stage:0,members:0,lastTickHeat:null,everPeaked:0,lastEscalateTurn:null};
   else {
     if(g.ruti.heat==null) g.ruti.heat = 0;
     if(g.ruti.stage==null) g.ruti.stage = 0;
     if(g.ruti.members==null) g.ruti.members = 0;
     if(g.ruti.lastTickHeat===undefined) g.ruti.lastTickHeat = null;
     if(g.ruti.everPeaked==null) g.ruti.everPeaked = 0;
+    if(g.ruti.lastEscalateTurn===undefined) g.ruti.lastEscalateTurn = null;
   }
   if(!Array.isArray(g.queuedReactions)) g.queuedReactions = [];
   if(!g.recentEventIds || typeof g.recentEventIds!=="object") g.recentEventIds = {bad:[],good:[]};
@@ -1567,6 +1568,14 @@ const RUTI = {
      s:"שמונה עמודים, שלושה נספחים ותוכן עניינים. חבר המועצה הבטיח לבדוק לעומק.",
      fine:[25000,70000], sat:-9},
   ],
+  // between escalations she doesn't disappear — she keeps the file open
+  stage4quiet: [
+    "עדכון לחברי הקבוצה: התיק עדיין פתוח. אין מה לדווח החודש. אני מחכה לתשובה בכתב.",
+    "קיבלתי אישור שהתלונה נקלטה. מספר פנייה שמור אצלי. ממשיכים לתעד בינתיים.",
+    "אני לא מוסיפה שורות לטבלה החודש כי לא קרה כלום חדש. זה לא אומר ששכחתי.",
+    "שאלו אותי אם התייאשתי. לא התייאשתי. אני פשוט מסודרת ולוקח זמן.",
+    "הפקח אמר שיחזור אליי. אני רושמת גם את זה, עם התאריך.",
+  ],
   down: [
     "בסדר. אני מודה. תיקנו. אני משאירה את הקבוצה פתוחה ליתר ביטחון, אבל הייתי שם והיה נעים.",
     "עדכון הוגן: עדכנתי את הביקורת שלי מכוכב לשלושה. אני יודעת לתת קרדיט כשמגיע.",
@@ -1574,6 +1583,9 @@ const RUTI = {
     "הייתי שם עם הנכדים. לא היה על מה לכתוב. זה מחמאה, במושגים שלי.",
   ],
 };
+
+const RUTI_MAX_MEMBERS = 9000;    // the ceiling the joke survives
+const RUTI_ESCALATE_GAP = 4;      // months between two stage-4 escalations
 
 /* Heat is compared against the heat at the LAST month close, so mid-month player
    actions (a sassy reply, a price hike) also count as heating her up. */
@@ -1604,6 +1616,9 @@ function rutiTick(hadBadEvent){
     if(!R.members) R.members = randi(24,60);
     else R.members = Math.round(R.members * (rising ? 1.35 : 0.7));
     if(ns === 4 && rising) R.members = Math.max(R.members, randi(180,420));
+    // 1.35× a month compounds to six figures over a long season. A neighbourhood
+    // info group with 170,000 members stops being funny and starts being a bug.
+    R.members = Math.min(R.members, RUTI_MAX_MEMBERS);
   } else if(R.members){
     R.members = Math.round(R.members * 0.55);
     if(R.members < 8) R.members = 0;
@@ -1741,14 +1756,25 @@ function mkRutiItem(res){
     return mkItem("ruti","ruti",2,{mode:"down", stage:res.now, heat:R.heat, text:pick(RUTI.down)});
   }
   if(res.now === 4){
-    const e = pick(RUTI.stage4);
-    const diff = DIFFICULTY[G.difficulty];
-    const fine = Math.round(randi(e.fine[0], e.fine[1]) * (diff.fineMult||1));
-    G.money -= fine;
-    G.satisfaction = clamp(Math.round(G.satisfaction + e.sat), 0, 100);
-    G.rating = ratingFromSatisfaction(G.satisfaction);
-    return mkItem("event","ruti",1,{mode:"escalate", stage:4, heat:R.heat,
-      headline:e.h, sub:e.s, fine, sat:e.sat});
+    // Once heat pins at 100 she sits at stage 4 for the rest of the season. Firing
+    // the fine every month is a death spiral — the satisfaction hit keeps her hot,
+    // which fires the next fine — and it burns the three escalation texts in a
+    // quarter. She escalates on arrival, then roughly once a season.
+    const since = (R.lastEscalateTurn == null) ? 99 : (G.turn - R.lastEscalateTurn);
+    if(res.up || since >= RUTI_ESCALATE_GAP){
+      R.lastEscalateTurn = G.turn;
+      const e = pick(RUTI.stage4);
+      const diff = DIFFICULTY[G.difficulty];
+      const fine = Math.round(randi(e.fine[0], e.fine[1]) * (diff.fineMult||1));
+      G.money -= fine;
+      G.satisfaction = clamp(Math.round(G.satisfaction + e.sat), 0, 100);
+      G.rating = ratingFromSatisfaction(G.satisfaction);
+      return mkItem("event","ruti",1,{mode:"escalate", stage:4, heat:R.heat,
+        headline:e.h, sub:e.s, fine, sat:e.sat});
+    }
+    return mkItem("ruti","ruti",2,{mode:"pressure", stage:4, heat:R.heat, members:R.members,
+      group:`נפגעי ${G.parkName} — קבוצת מידע 🕵️‍♀️`, text:pick(RUTI.stage4quiet),
+      waiting:RUTI_ESCALATE_GAP - since, time:feedTime()});
   }
   if(res.now === 3){
     return mkItem("ruti","ruti",2,{mode:"group", stage:3, heat:R.heat, members:R.members,
@@ -2683,6 +2709,14 @@ function cRuti(it){
         <div class="c-meta">שלב ${p.stage} · חום ${p.heat}</div></div></div>
       <div class="c-body">${p.text}</div>
       ${heatBar(true)}</div>`);
+  }
+  if(p.mode==="pressure"){
+    return el(`<div class="c rutic">
+      <div class="ruti-bar">🕵️‍♀️ ${escapeHtml(p.group)}<small>שלב 4 — התיק פתוח</small></div>
+      <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name} · מנהלת</span>${p.text}
+        <div class="tm">${p.time} ✓✓</div></div>
+      <div class="grp-count">👥 ${(p.members||0).toLocaleString('he-IL')} חברים בקבוצה · הלחץ נמשך</div>
+      ${heatBar(false)}</div>`);
   }
   if(p.mode==="group"){
     return el(`<div class="c rutic">
