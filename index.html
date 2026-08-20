@@ -28,6 +28,8 @@
   --pink:#ec4fa0;
   --leaf:#3fb950;
   --violet:#9b6bff;
+  --ruti:#6d28d9;
+  --ruti2:#4c1d95;
   --slate:#3d5a72;
   --radius:20px;
   --radius-sm:14px;
@@ -346,7 +348,9 @@ input[type=text]:focus,input[type=number]:focus{border-color:var(--accent);}
 .sparkline{width:100%;height:60px;margin-top:6px;}
 
 .toast{
-  position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%);
+  /* clears the dashboard's bottom bar (~69px) instead of sitting on top of it */
+  position:fixed;bottom:calc(84px + var(--safe-bottom));left:50%;transform:translateX(-50%);
+  max-width:min(92vw,470px);text-align:center;
   background:var(--text);color:#fff;
   padding:11px 18px;border-radius:999px;font-size:13px;font-weight:700;z-index:200;
   box-shadow:0 8px 24px rgba(0,0,0,.3);
@@ -428,6 +432,231 @@ input[type=text]:focus,input[type=number]:focus{border-color:var(--accent);}
   padding:10px 12px;font-size:12.5px;line-height:1.55;}
 @media (prefers-reduced-motion:reduce){
   .tour-hole,.tour-hole::after,.tour-arrow{animation:none;transition:none;}
+}
+
+/* =========================================================
+   FEED — the living centre of the dashboard.
+   Ported from feed-demo-v3.html. The feed tabs are namespaced
+   .ftabs/.ftab because .tabs/.tab already belong to the build screen.
+   ========================================================= */
+
+/* The dashboard becomes a fixed-height app shell: only .feed scrolls.
+   min-height:0 on both is what stops a long feed from stretching the shell —
+   a column flex item defaults to min-height:auto and refuses to shrink. */
+.screen.dash{height:100vh;height:100dvh;min-height:0;overflow:hidden;padding-bottom:0;flex:0 0 auto;}
+
+.topstrip{background:linear-gradient(180deg,var(--sky1),var(--sky2));color:#fff;flex:0 0 auto;z-index:9;
+  box-shadow:0 3px 12px rgba(4,52,80,.26);padding-top:var(--safe-top);}
+.ts-top{display:flex;align-items:center;gap:8px;padding:9px 12px 2px;}
+.ts-park{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 1px 2px rgba(0,40,64,.35);display:block;color:#fff;flex:0 1 auto;min-width:0;}
+.ts-month{font-size:11px;font-weight:700;opacity:.9;white-space:nowrap;flex:0 1 auto;
+  overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.ts-acts{margin-inline-start:auto;display:flex;gap:6px;flex:0 0 auto;}
+.ts-acts .icon-btn{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.32);color:#fff;
+  width:32px;height:32px;font-size:15px;}
+.ts-line{display:flex;align-items:center;gap:7px;padding:6px 12px 8px;}
+.ts-stat{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;
+  background:rgba(255,255,255,.17);border-radius:99px;padding:4px 9px;white-space:nowrap;flex:0 0 auto;
+  color:#fff;border:none;}
+.ts-stat.neg{background:rgba(217,54,43,.55);}
+.ts-stat small{font-weight:600;opacity:.85;font-size:10.5px;}
+.ts-stat span,.ts-cell b,.rep-kpi b,.fr span:last-child{unicode-bidi:isolate;direction:ltr;}
+.ts-ruti{display:none;align-items:center;gap:3px;font-size:11.5px;font-weight:800;border-radius:99px;
+  padding:4px 9px;background:rgba(109,40,217,.85);flex:0 0 auto;animation:rutipulse 2.4s infinite;color:#fff;border:none;}
+.ts-ruti.on{display:flex;}
+@keyframes rutipulse{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,.6);}50%{box-shadow:0 0 0 6px rgba(167,139,250,0);}}
+.ts-exp{margin-inline-start:auto;background:rgba(255,255,255,.2);border-radius:99px;width:27px;height:27px;
+  color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:transform .2s;}
+.ts-exp.open{transform:rotate(180deg);}
+.ts-detail{max-height:0;overflow:hidden;transition:max-height .28s ease;}
+.ts-detail.open{max-height:340px;}
+.ts-detail-in{padding:2px 12px 11px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ts-cell{background:rgba(255,255,255,.14);border-radius:12px;padding:7px 10px;}
+.ts-cell b{display:block;font-size:14px;} .ts-cell span{font-size:10.5px;opacity:.85;}
+
+.mood{display:flex;align-items:center;gap:7px;padding:5px 12px 7px;background:rgba(0,0,0,.12);}
+.mood-face{font-size:15px;flex:0 0 auto;}
+.mood-track{flex:1;height:7px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden;position:relative;}
+.mood-fill{height:100%;border-radius:99px;transition:width .5s ease,background .5s ease;}
+.mood-lbl{font-size:10.5px;font-weight:800;flex:0 0 auto;opacity:.95;}
+.ts-warnbar{background:rgba(217,54,43,.85);font-size:11.5px;font-weight:700;padding:5px 12px;text-align:center;color:#fff;}
+
+.dilslot{flex:0 0 auto;background:#fffdf5;border-bottom:2px solid var(--gold);z-index:8;display:none;
+  box-shadow:0 4px 12px rgba(232,169,12,.22);animation:dildrop .3s ease;max-height:52vh;overflow-y:auto;}
+.dilslot.on{display:block;}
+@keyframes dildrop{from{transform:translateY(-100%);opacity:0;}to{transform:none;opacity:1;}}
+.dil-pin{background:var(--gold);color:#fff;font-size:10.5px;font-weight:900;padding:4px 12px;}
+.dil-q{padding:9px 12px 3px;font-size:14px;font-weight:800;line-height:1.35;}
+.dil-ctx{padding:0 12px 9px;font-size:12px;color:var(--dim);line-height:1.5;}
+.dil-btns{display:flex;gap:7px;padding:0 12px 11px;}
+.dil-btns button{flex:1;border-radius:12px;padding:10px 6px;font-size:12.5px;font-weight:800;line-height:1.3;}
+.dil-btns .a{background:linear-gradient(135deg,#4ade80,#22c55e);color:#052e14;}
+.dil-btns .b{background:#eef3f6;color:var(--text);border:1px solid var(--border);}
+
+.ftabs{flex:0 0 auto;display:flex;gap:5px;padding:7px 9px;background:#fff;border-bottom:1px solid var(--border);z-index:7;}
+.ftab{flex:1;font-size:11.5px;font-weight:800;padding:7px 4px;border-radius:99px;background:#f1f6f9;color:var(--dim);
+  transition:.15s;white-space:nowrap;position:relative;border:none;}
+.ftab.on{background:var(--sky2);color:#fff;}
+.ftab .bdg{position:absolute;top:-2px;inset-inline-end:2px;min-width:15px;height:15px;border-radius:99px;
+  background:var(--coral2);color:#fff;font-size:9.5px;line-height:15px;font-weight:900;display:none;padding:0 3px;}
+.ftab .bdg.on{display:block;}
+
+.feed{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 10px 14px;background:#e9f1f6;}
+.feed::-webkit-scrollbar{width:0;}
+.month{margin-bottom:6px;}
+.mhead{position:sticky;top:0;z-index:4;padding:8px 0 7px;
+  background:linear-gradient(180deg,#e9f1f6 72%,rgba(233,241,246,0));}
+.mhead-in{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #c9dbe5;border-radius:99px;
+  padding:5px 12px;box-shadow:0 2px 6px rgba(10,50,76,.08);}
+.mhead-in b{font-size:12.5px;}
+.mhead-in .sum{font-size:11px;color:var(--dim);margin-inline-start:auto;unicode-bidi:isolate;direction:ltr;}
+.mhead-in .sum i{font-style:normal;font-weight:800;}
+
+.c{background:#fff;border-radius:16px;margin-bottom:8px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(10,50,76,.09);animation:cpop .3s cubic-bezier(.2,.9,.3,1.2) both;}
+@keyframes cpop{from{opacity:0;transform:translateY(-6px) scale(.985);}to{opacity:1;transform:none;}}
+.c-head{display:flex;align-items:center;gap:8px;padding:9px 11px 0;}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex:0 0 auto;background:#dbeaf2;}
+.c-who{font-weight:800;font-size:12.5px;line-height:1.25;}
+.c-meta{font-size:10.5px;color:var(--dim2);}
+.c-body{padding:8px 12px 11px;font-size:13.5px;line-height:1.55;}
+.c-foot{display:flex;gap:6px;padding:0 10px 10px;flex-wrap:wrap;align-items:center;}
+.react{background:#f1f6f9;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--dim);}
+.btn-mini{background:var(--card2);border:1px solid var(--border);border-radius:99px;padding:5px 11px;
+  font-size:11.5px;font-weight:700;color:var(--text);}
+.btn-mini:active{transform:scale(.94);}
+.btn-mini.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+
+.c.t1{border-inline-start:5px solid var(--bad);}
+.c.t1.good{border-inline-start-color:var(--good);}
+.kicker{font-size:10px;font-weight:900;letter-spacing:.4px;color:var(--bad);padding:9px 12px 0;}
+.c.t1.good .kicker{color:var(--good);}
+.headline{font-size:15.5px;font-weight:900;line-height:1.35;padding:3px 12px 0;}
+.subline{font-size:12.5px;color:var(--dim);padding:5px 12px 0;line-height:1.5;}
+.impact{display:flex;gap:6px;padding:9px 12px 11px;flex-wrap:wrap;}
+.chip{font-size:11px;font-weight:800;border-radius:99px;padding:3px 9px;unicode-bidi:isolate;direction:ltr;}
+.chip.b{background:rgba(217,54,43,.1);color:var(--bad);}
+.chip.g{background:rgba(22,163,74,.12);color:var(--good);}
+.chip.p{background:rgba(109,40,217,.12);color:var(--ruti);}
+.t3{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#7c94a3;padding:5px 12px;margin-bottom:6px;
+  font-weight:600;animation:cpop .3s both;}
+.t3::before{content:"";height:1px;flex:0 0 14px;background:#c3d4dd;}
+
+.thread{position:relative;padding-inline-start:22px;margin:0 0 10px;}
+.thread::before{content:"";position:absolute;inset-inline-start:8px;top:4px;bottom:16px;width:3px;
+  background:linear-gradient(180deg,#8fb6cc,#c9dde8);border-radius:3px;}
+.thread .c{margin-bottom:6px;transform:scale(.985);transform-origin:100% 50%;}
+.thread-lbl{font-size:10.5px;font-weight:800;color:#6b8697;padding:3px 0 7px;}
+.late{font-size:10px;font-weight:800;color:#a06a00;background:#fff3d6;border-radius:99px;
+  padding:2px 8px;display:inline-block;margin:0 12px 8px;}
+
+.c.wa{background:#ece5dd;}
+.wa-bar{background:#075e54;color:#fff;font-size:11.5px;font-weight:700;padding:6px 11px;
+  display:flex;align-items:center;gap:6px;}
+.wa-bar small{opacity:.7;font-weight:500;margin-inline-start:auto;font-size:10px;}
+.bub{background:#dcf8c6;border-radius:12px;padding:7px 10px;margin:8px 10px;font-size:12.8px;line-height:1.5;
+  box-shadow:0 1px 1px rgba(0,0,0,.08);}
+.bub .nm{font-size:11px;font-weight:800;display:block;margin-bottom:2px;}
+.bub .tm{font-size:9.5px;color:#7d8f86;text-align:end;margin-top:2px;}
+.bub.other{background:#fff;}
+.wa-more{background:rgba(255,255,255,.6);border-top:1px solid rgba(0,0,0,.06);width:100%;
+  padding:7px;font-size:11.5px;font-weight:800;color:#0b6b5e;}
+
+.c.rutic{background:linear-gradient(180deg,#f5f0ff,#ede4ff);border:1.5px solid #c4b5fd;}
+.ruti-bar{background:linear-gradient(135deg,var(--ruti),var(--ruti2));color:#fff;font-size:11px;font-weight:800;
+  padding:6px 11px;display:flex;align-items:center;gap:6px;}
+.ruti-bar small{margin-inline-start:auto;opacity:.8;font-weight:600;font-size:10px;}
+.c.rutic .c-body{color:#2e1065;}
+.c.rutic .av{background:#ddd6fe;}
+.ruti-heat{display:flex;align-items:center;gap:6px;padding:0 12px 10px;}
+.ruti-heat .tr{flex:1;height:6px;background:#ddd6fe;border-radius:99px;overflow:hidden;}
+.ruti-heat .fl{height:100%;background:linear-gradient(90deg,#a78bfa,#6d28d9);border-radius:99px;transition:width .5s;}
+.ruti-heat span{font-size:10px;font-weight:800;color:var(--ruti);}
+.grp-count{font-size:11px;font-weight:800;color:var(--ruti);padding:0 12px 10px;}
+
+.g-bar{display:flex;align-items:center;gap:6px;padding:8px 11px 0;font-size:10.5px;color:var(--dim2);font-weight:700;}
+.g-logo{font-weight:900;font-size:12px;} .g-logo i{font-style:normal;}
+.g-logo i:nth-child(1){color:#4285F4;} .g-logo i:nth-child(2){color:#EA4335;}
+.g-logo i:nth-child(3){color:#FBBC05;} .g-logo i:nth-child(4){color:#4285F4;}
+.g-logo i:nth-child(5){color:#34A853;} .g-logo i:nth-child(6){color:#EA4335;}
+.strs{letter-spacing:1px;font-size:12.5px;unicode-bidi:isolate;direction:ltr;}
+.owner-reply{background:#f5f8fa;border-inline-start:3px solid var(--dim2);margin:0 12px 11px;padding:8px 10px;
+  border-radius:0 10px 10px 0;font-size:12px;line-height:1.5;color:var(--dim);}
+.owner-reply b{color:var(--text);font-size:11.5px;display:block;margin-bottom:2px;}
+
+.c.staff{background:#2b3a44;color:#dce8ef;}
+.c.staff .c-who{color:#fff;} .c.staff .c-meta{color:#7c9aab;}
+.c.staff .av{background:#3d525f;} .c.staff .react{background:rgba(255,255,255,.09);color:#9fbccd;}
+.staff-tag{font-size:10px;font-weight:800;color:#65d1c4;padding:8px 12px 0;letter-spacing:.3px;}
+
+.c.viral{background:#111;color:#fff;}
+.vid{height:118px;background:linear-gradient(140deg,#243b4a,#0d1b24);display:flex;align-items:center;
+  justify-content:center;font-size:34px;position:relative;}
+.vid::after{content:"\25B6";position:absolute;font-size:28px;opacity:.85;}
+.vid-cap{padding:9px 12px 4px;font-size:12.8px;font-weight:700;line-height:1.45;}
+.vid-stats{padding:0 12px 11px;font-size:11px;color:#8ea6b5;unicode-bidi:isolate;direction:ltr;text-align:end;}
+
+.c.report{border:2px solid var(--sky2);}
+.rep-head{background:linear-gradient(135deg,var(--sky1),var(--sky2));color:#fff;padding:9px 12px;
+  display:flex;align-items:center;justify-content:space-between;}
+.rep-head b{font-size:13.5px;}
+.rep-kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);}
+.rep-kpi div{background:#fff;padding:9px 6px;text-align:center;}
+.rep-kpi small{display:block;font-size:10px;color:var(--dim);margin-bottom:2px;}
+.rep-kpi b{font-size:14.5px;}
+.rep-sat{padding:10px 12px 4px;border-top:1px solid var(--border);}
+.rep-sat .rs-head{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;}
+.rep-sat .sat-row{font-size:12px;padding:3px 0;}
+.rep-toggle{width:100%;background:#f4fafd;padding:8px;font-size:12px;font-weight:700;color:var(--sky2);
+  border-top:1px solid var(--border);}
+.rep-lines{display:none;padding:4px 12px 10px;} .rep-lines.open{display:block;}
+.fr{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:4px 0;}
+.fr span:first-child{color:var(--dim);}
+.fr.tot{border-top:1px solid var(--border);margin-top:5px;padding-top:7px;font-weight:800;}
+.fr.tot span:first-child{color:var(--text);}
+
+.quiet{background:#fff;border-radius:16px;padding:16px 14px;text-align:center;margin-bottom:8px;
+  box-shadow:0 1px 3px rgba(10,50,76,.09);}
+.quiet b{display:block;font-size:13.5px;margin-bottom:4px;}
+.quiet span{font-size:12px;color:var(--dim);line-height:1.5;}
+
+.feed-empty{background:#fff;border-radius:16px;padding:22px 16px;text-align:center;margin-top:10px;
+  box-shadow:0 1px 3px rgba(10,50,76,.09);}
+.feed-empty b{display:block;font-size:14px;margin-bottom:6px;}
+.feed-empty span{font-size:12.5px;color:var(--dim);line-height:1.6;}
+
+.bottombar{flex:0 0 auto;background:#fff;border-top:1px solid var(--border);
+  padding:9px 10px calc(12px + var(--safe-bottom));
+  display:flex;gap:7px;align-items:center;box-shadow:0 -4px 16px rgba(10,50,76,.1);z-index:9;}
+.bb-icon{flex:0 0 auto;width:52px;height:48px;border-radius:15px;background:var(--card2);border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:17px;position:relative;
+  color:var(--text);}
+.bb-icon small{font-size:8.5px;font-weight:800;color:var(--dim);}
+.bb-icon .bdg{position:absolute;top:-4px;inset-inline-end:-3px;min-width:16px;height:16px;border-radius:99px;
+  background:var(--coral2);color:#fff;font-size:9.5px;line-height:16px;font-weight:900;padding:0 3px;}
+.bb-next{flex:1;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--coral),var(--coral2));
+  color:#fff;font-size:14.5px;font-weight:800;box-shadow:0 5px 14px rgba(255,82,82,.35);
+  display:flex;align-items:center;justify-content:center;gap:6px;}
+.bb-next:active{transform:scale(.97);}
+.bb-next:disabled{opacity:.4;box-shadow:none;filter:grayscale(.3);cursor:not-allowed;}
+
+/* filters — hide by kind, then hide months left with nothing in them */
+.feed[data-f="events"] [data-kind]:not([data-kind="event"]),
+/* רותי carries her own kind so she can be styled apart, but she is still the crowd */
+.feed[data-f="crowd"]  [data-kind]:not([data-kind="crowd"]):not([data-kind="ruti"]),
+.feed[data-f="report"] [data-kind]:not([data-kind="report"]){display:none;}
+.feed[data-f="events"] .thread-lbl,.feed[data-f="crowd"] .thread-lbl,
+.feed[data-f="report"] .thread-lbl{display:none;}
+/* a thread only ever holds crowd reactions — it has nothing to show in these two */
+.feed[data-f="events"] .thread,.feed[data-f="report"] .thread{display:none;}
+.month.empty{display:none;}
+
+@media(max-width:360px){
+  .ts-stat{font-size:11px;padding:3px 7px;}
+  .bb-icon{width:46px;}
+  .bb-next{font-size:13.5px;}
 }
 </style>
 </head>
@@ -620,12 +849,34 @@ function newGame(draft){
     buildTab: "facility",
     ticketPrice: ECON.ticketDefault,
     insuranceSpikeUntil: 0, // turn number until which the premium is loaded
+
+    // --- feed: the park's running story, newest first ---
+    feed: [],              // see mkItem() for the shape of an item
+    feedSeq: 0,            // running counter for item ids
+    unseenEvents: 0,       // badge on the events tab
+    feedFilter: "all",     // all | events | crowd | report
+
+    // --- רותי עש, the nemesis with a memory ---
+    ruti: { heat:0, stage:0, members:0, lastTickHeat:null, everPeaked:0 },
+
+    // --- reactions that land a month after their cause ---
+    queuedReactions: [],   // [{kind:'staff'|'review', payload}]
+
+    // --- anti-repetition memory, kept in G so a reload can't reset it ---
+    recentEventIds: { bad:[], good:[] },
+
     over: null, // {type:'win'|'lose', reason}
   };
 }
 
 function saveGame(){
-  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(G)); }catch(e){}
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(G)); }
+  catch(e){
+    // The feed is the only thing here that grows without bound. Trim and retry —
+    // otherwise the quota error is swallowed and the game silently stops saving.
+    try{ pruneFeed(true); localStorage.setItem(SAVE_KEY, JSON.stringify(G)); }
+    catch(e2){ toast("⚠️ לא הצלחנו לשמור — הפיד ארוך מדי"); }
+  }
 }
 function loadGame(){
   try{
@@ -639,7 +890,37 @@ function migrateSave(g){
   if(!g || typeof g!=="object") return g;
   if(g.ticketPrice==null) g.ticketPrice = ECON.ticketDefault;
   if(g.insuranceSpikeUntil==null) g.insuranceSpikeUntil = 0;
+  // --- feed (added in the feed redesign; saves from before it have none of this) ---
+  if(!Array.isArray(g.feed)) g.feed = [];
+  if(g.feedSeq==null) g.feedSeq = 0;
+  if(g.unseenEvents==null) g.unseenEvents = 0;
+  if(g.feedFilter==null) g.feedFilter = "all";
+  if(!g.ruti || typeof g.ruti!=="object") g.ruti = {heat:0,stage:0,members:0,lastTickHeat:null,everPeaked:0};
+  else {
+    if(g.ruti.heat==null) g.ruti.heat = 0;
+    if(g.ruti.stage==null) g.ruti.stage = 0;
+    if(g.ruti.members==null) g.ruti.members = 0;
+    if(g.ruti.lastTickHeat===undefined) g.ruti.lastTickHeat = null;
+    if(g.ruti.everPeaked==null) g.ruti.everPeaked = 0;
+  }
+  if(!Array.isArray(g.queuedReactions)) g.queuedReactions = [];
+  if(!g.recentEventIds || typeof g.recentEventIds!=="object") g.recentEventIds = {bad:[],good:[]};
+  if(!Array.isArray(g.recentEventIds.bad)) g.recentEventIds.bad = [];
+  if(!Array.isArray(g.recentEventIds.good)) g.recentEventIds.good = [];
   return g;
+}
+
+/* The save is one JSON.stringify of G, so an unbounded feed eventually throws
+   QuotaExceededError. Events and reports are the story and stay for a long time;
+   ambient noise is trimmed hard. The feed is stored newest→oldest, so the
+   overflow cut is a plain slice. */
+function pruneFeed(aggressive){
+  if(!G || !Array.isArray(G.feed)) return;
+  const KEEP_MONTHS_NOISE = aggressive ? 2 : 6;
+  const KEEP_ITEMS_TOTAL  = aggressive ? 60 : 160;
+  const cutoff = G.turn - KEEP_MONTHS_NOISE;
+  G.feed = G.feed.filter(it => it.kind==="event" || it.kind==="report" || it.turn >= cutoff);
+  if(G.feed.length > KEEP_ITEMS_TOTAL) G.feed = G.feed.slice(0, KEEP_ITEMS_TOTAL);
 }
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
 
@@ -775,12 +1056,21 @@ function buildEventPool(){
   const rowdy = price<25 ? 1+(25-price)*0.045 : (price>45 ? 0.85 : 1);
 
   const RED = [
-    {id:"chair_fight", light:true, name:'קטטת כיסאות "כתר"', emoji:"🥊",
+    {id:"chair_fight",
+      reactions:{
+        wa:["ראיתם מה היה שם אתמול?! שני מבוגרים בני 50 על כיסא פלסטיק 🤦‍♀️",
+            "אני צילמתי הכל. לא מעלה כי הילדים בפריים."],
+        rev:{s:1, t:"אווירה אלימה. הבאתי ילדים, לא לזירה."},
+        staff:{who:"דודו · מציל", t:"הפרדתי ביניהם. הכיסא לא שרד. אני מבקש תוספת סיכון."}}, light:true, name:'קטטת כיסאות "כתר"', emoji:"🥊",
       chance:(0.08 + chairsCount*0.01) * guardMult * rowdy,
       headline:'קרב אגרוף על כיסא בצל — "היד שלי הייתה שם קודם!"',
       apply(){ const fine = randi(33000,110000)*diff.fineMult; G.money -= fine; addSat(-8);
         return `קנס ${fmtMoney(fine)} ופוסט זועם בקבוצת הוואטסאפ השכונתית.`; }},
-    {id:"slide_malfunction", light:false, name:"תקלה במגלשה", emoji:"🔧",
+    {id:"slide_malfunction",
+      reactions:{
+        wa:["הילדים ביקשו את המגלשה הגדולה. אמרתי שנחכה שיתקנו אותה 🙃"],
+        rev:{s:1, t:"הבן שלי נתקע במגלשה. הצוות היה נחמד אבל אני עדיין בלחץ."},
+        staff:{who:"אבי · תחזוקה", t:"אמרתי. אמרתי שהמשאבה עושה רעש. יש לי הודעה קולית מפברואר."}}, light:false, name:"תקלה במגלשה", emoji:"🔧",
       chance: hasSlideActive() ? (0.06 * neglectFactor) : 0,
       headline:"מגלשה נתקעת עם מבקר בפנים — הצוות הכריז חירום",
       apply(){
@@ -792,11 +1082,19 @@ function buildEventPool(){
         addSat(-10); bumpInsurance();
         return `${defOf(s.defId).emoji} ${defOf(s.defId).name} נסגרה ל-${weeks} שבועות לתיקון.`;
       }},
-    {id:"bad_review", light:true, name:"ביקורת הרסנית ברשת", emoji:"📉",
+    {id:"bad_review",
+      reactions:{
+        wa:["ראיתן את הביקורת ההיא? היא כתבה שם דברים שאי אפשר לכתוב פה 😬",
+            "כל אחד והחוויה שלו. אני הייתי שם והיה בסדר גמור."],
+        rev:{s:1, t:"אני מצטרפת לכל מילה בביקורת של מי שכתב לפניי. הכל נכון."},
+        staff:{who:"רונית · קופה", t:"מישהו יכול להסביר לי למה אני קוראת ביקורות בגוגל בשתיים בלילה?"}}, light:true, name:"ביקורת הרסנית ברשת", emoji:"📉",
       chance: 0.10 * (G.satisfaction<50 ? 1.6 : 1),
       headline:'"חוויה שאני לא מאחל לאויב" — ביקורת של כוכב אחד תופסת תאוצה',
       apply(){ addSat(-6); return "הדירוג נפגע זמנית."; }},
-    {id:"health_inspection", light:false, name:"ביקורת פתע ממשרד הבריאות", emoji:"🏥",
+    {id:"health_inspection",
+      reactions:{
+        wa:["ראיתי פקחים בכניסה. מישהו יודע מה קרה?"],
+        staff:{who:"רונית · קופה", t:"חייכתי 40 דקות רצוף. הלסת שלי נעולה."}}, light:false, name:"ביקורת פתע ממשרד הבריאות", emoji:"🏥",
       chance: 0.05 * neglectFactor,
       headline:"פקחי משרד הבריאות בשער — בדיקת פתע!",
       apply(){
@@ -806,29 +1104,58 @@ function buildEventPool(){
         const fine = randi(55000,165000)*diff.fineMult; G.money -= fine; addSat(-7);
         return `כשל בביקורת. קנס ${fmtMoney(fine)}.`;
       }},
-    {id:"lost_child", light:true, name:"ילד נעדר", emoji:"🚨",
+    {id:"lost_child",
+      reactions:{
+        wa:["שמעתי הכרזה ברמקול על ילד. הלב שלי נעצר לרגע 😰",
+            "מצאו אותו תוך חמש דקות. כל הכבוד לצוות שם."],
+        rev:{s:3, t:"הילד שלנו הלך לאיבוד לרבע שעה. מצאו אותו, אבל אין מספיק משגיחים."},
+        staff:{who:"דודו · מציל", t:"מצאנו אותו ליד הגלידה. תמיד ליד הגלידה."}}, light:true, name:"ילד נעדר", emoji:"🚨",
       chance: 0.04 * lifeguardMult,
       headline:'הכרזה ברמקול: "ילד בשם עומרי ממתין בפינת המידע"',
       apply(){ addSat(-4); return "בהלה של חמש דקות שהסתיימה בטוב — ועדיין הורים בלחץ."; }},
-    {id:"weather_damage", light:false, name:"הצפה/נזק ממזג אוויר", emoji:"🌧️",
+    {id:"weather_damage",
+      reactions:{
+        wa:["ראיתם מה הסופה עשתה שם? כל השמשיות עפו לכיוון הכביש 🌪️"],
+        rev:{s:2, t:"באנו יום אחרי הסופה. חצי מהמקום היה עם סרט אזהרה."},
+        staff:{who:"אבי · תחזוקה", t:"שאבתי מים שש שעות. שש. אני לא מרגיש את הידיים."}}, light:false, name:"הצפה/נזק ממזג אוויר", emoji:"🌧️",
       chance: 0.03 * autumnWinter,
       headline:"סופה פתאומית משטפת את הפארק",
       apply(){ const cost = randi(33000,132000)*diff.fineMult; G.money -= cost; addSat(-3); bumpInsurance();
         return `נזק בעלות ${fmtMoney(cost)} לתיקון.`; }},
-    {id:"theft", light:true, name:"גניבת אבזרי בריכה", emoji:"🕵️",
+    {id:"theft",
+      reactions:{
+        wa:["מי גונב גלגלים מתנפחים? מי אתם, אנשים? 😤"],
+        rev:{s:3, t:"היה כיף, אבל שמרו על הציוד שלכם. שמעתי סיפורים."},
+        staff:{who:"יוסי · אבטחה", t:"אני מבקש מצלמה בפינה הצפונית. ביקשתי גם בחודש שעבר."}}, light:true, name:"גניבת אבזרי בריכה", emoji:"🕵️",
       chance: 0.03 * guardMult * camMult * rowdy,
       headline:"מצילה נעלמה בלילה — מי גנב את הגלגלים המתנפחים?",
       apply(){ const cost = randi(9000,33000); G.money -= cost; return `עלות החלפה: ${fmtMoney(cost)}.`; }},
-    {id:"viral_negative", light:true, name:"וידאו ויראלי שלילי", emoji:"📹",
+    {id:"viral_negative",
+      reactions:{
+        wa:["הסרטון של התור שם עשה מיליון צפיות. מיליון! 😱",
+            "עכשיו כולם יידעו ואף אחד לא יבוא. או שכולם יבואו. אי אפשר לדעת."],
+        rev:{s:2, t:"ראיתי את הסרטון, באתי לבדוק, והתור באמת היה כזה."},
+        staff:{who:"רונית · קופה", t:"אמא שלי שלחה לי את הסרטון. אמא שלי."}}, light:true, name:"וידאו ויראלי שלילי", emoji:"📹",
       chance: 0.02,
       headline:'טיקטוק של "התור הכי ארוך בישראל" עושה מיליון צפיות',
       apply(){ addSat(-9); return "הדירוג צונח זמנית עד שהרוחות ירגעו."; }},
-    {id:"pool_poop", light:true, name:"אירוע חום בבריכה", emoji:"💩",
+    {id:"pool_poop",
+      reactions:{
+        wa:["אני לא מפרטת מה קרה בבריכת הגלים היום. תבררו לבד. 🤢",
+            "היינו שם. הילד שלי בהלם. אני בהלם."],
+        rev:{s:1, t:"הגלים היו נחמדים. מה שצף עליהם פחות."},
+        staff:{who:"מאיה · ניקיון", t:"אני מבקשת רשמית העלאה. רשמית. בכתב. עכשיו."}}, light:true, name:"אירוע חום בבריכה", emoji:"💩",
       chance: capacityTotal()>0 ? 0.07*rowdy : 0,
       headline:'אזעקת "דגל חום" — כל הבריכה מתפנה בבהלה תוך 40 שנייה',
       apply(){ const fine = randi(22000,77000)*diff.fineMult; G.money -= fine; addSat(-6);
         return `ריקון ומילוי מחדש של כל המים. קנס תברואה ${fmtMoney(fine)}.`; }},
-    {id:"nargila_fire", light:false, name:"שריפה מנרגילה בפינת ישיבה", emoji:"🔥",
+    {id:"nargila_fire",
+      feedChips:[["פינת ישיבה אבדה","b"]],
+      reactions:{
+        wa:["מישהו יודע מה נשרף שם? ראיתי עשן מהכביש 😳",
+            "בני דודים עם נרגילה. תמיד בני דודים עם נרגילה."],
+        rev:{s:2, t:"יפה, אבל ריח של פחמים שרופים לא ממש תורם לאווירה המשפחתית."},
+        staff:{who:"אבי · תחזוקה", t:"בפעם המאה: אין נרגילות. אין. נר-גי-לות."}}, light:false, name:"שריפה מנרגילה בפינת ישיבה", emoji:"🔥",
       chance: allBuilt("seating").some(b=>b.status!=="closed") ? 0.03*rowdy : 0,
       headline:'"מי השאיר את הפחמים ככה?!" — פינת ישיבה עולה באש',
       apply(){
@@ -837,7 +1164,13 @@ function buildEventPool(){
         if(seats.length){ const idx = G.built.indexOf(pick(seats)); if(idx>-1) G.built.splice(idx,1); }
         return `קנס כבאות ${fmtMoney(fine)}, ופינת ישיבה שלמה ירדה לטמיון.`;
       }},
-    {id:"falafel_poisoning", light:true, name:"הרעלת מזון מהפלאפל", emoji:"🤢",
+    {id:"falafel_poisoning",
+      feedChips:[["דוכן סגור","b"]],
+      reactions:{
+        wa:["מישהו עוד אכל מהפלאפל שם ביום שישי? שואלת לצורך העניין 🤢",
+            "אנחנו אכלנו. אנחנו בסדר. נראה לי."],
+        rev:{s:1, t:"הבן שלי אכל שם צהריים ובילה את הערב בטרם. תבדקו את המקרר שלהם."},
+        staff:{who:"רונית · קופה", t:"אמרתי לו שהחומוס מיום רביעי. הוא אמר 'חומוס לא מתקלקל'. חומוס מתקלקל."}}, light:true, name:"הרעלת מזון מהפלאפל", emoji:"🤢",
       chance: G.built.some(b=>b.defId==="falafel" && b.status==="active") ? 0.05 : 0,
       headline:'"החומוס ההוא לא היה טרי" — משפחה שלמה בחדר מיון',
       apply(){
@@ -846,15 +1179,30 @@ function buildEventPool(){
         if(stand){ stand.status="closed"; stand.closedWeeksLeft = randi(2,4); }
         return `דוכן הפלאפל נסגר לבדיקה, וקנס משרד הבריאות: ${fmtMoney(fine)}.`;
       }},
-    {id:"slide_stuck_kid", light:true, name:"ילד נתקע במגלשה", emoji:"🛝",
+    {id:"slide_stuck_kid",
+      reactions:{
+        wa:["ראיתם את הפוסט של האמא מהמגלשה? היא לא מוותרת 😬",
+            "היא תייגה את משרד הבריאות. בפוסט. בפייסבוק."],
+        rev:{s:1, t:"הבן שלי היה תקוע עשרים דקות באמצע המגלשה. עשרים. דקות. צירפתי תמונות."},
+        staff:{who:"דודו · מציל", t:"טיפסתי לתוך המגלשה. אני. לתוך המגלשה. אני רוצה לדבר על התפקיד שלי."}}, light:true, name:"ילד נתקע במגלשה", emoji:"🛝",
       chance: hasSlideActive() ? 0.05 : 0,
       headline:'"תוציאו אותו משם!" — ילד תקוע באמצע המגלשה 20 דקות',
       apply(){ addSat(-6); bumpInsurance(); return 'האמא כתבה ביקורת זועמת עם שלושה תמונות מטושטשות.'; }},
-    {id:"tube_stuck_kid", light:true, name:"ילד נתקע באבוב", emoji:"🛟",
+    {id:"tube_stuck_kid",
+      reactions:{
+        wa:["הילד באבוב! מישהו צילם את זה? 😂😭"],
+        rev:{s:2, t:"הבת שלי נתקעה באבוב ולא הצליחה לצאת. אף אחד לא שם לב חוץ מבעלי 😢"},
+        staff:{who:"דודו · מציל", t:"האבוב ניצח. שוב. אני שוקל קריירה חדשה."}}, light:true, name:"ילד נתקע באבוב", emoji:"🛟",
       chance: G.built.some(b=>b.status==="active" && (b.defId==="lazy_river"||b.defId==="family_pool")) ? 0.05 : 0,
       headline:'ילד תקוע בתוך האבוב מול הזרם — הצלה דרמטית בנהר העצלן',
       apply(){ addSat(-5); return "עוד ביקורת שלילית ברשת, הפעם עם אימוג'י בוכה."; }},
-    {id:"chair_riot", light:false, name:'מהומה המונית על כיסאות "כתר"', emoji:"🥊",
+    {id:"chair_riot",
+      feedChips:[["מהומה המונית","b"]],
+      reactions:{
+        wa:["מה שהיה שם היום... כיסאות עפו. ממש עפו באוויר 🪑✈️",
+            "יצאתי עם הילדים תוך 30 שניות. לא נשארתי לראות."],
+        rev:{s:1, t:"הגעתי עם משפחה. יצאתי עם חוויה. לא הסוג שרציתי."},
+        staff:{who:"יוסי · אבטחה", t:"אני לא מקבל מספיק בשביל זה. אני לא מקבל חצי ממה שצריך בשביל זה."}}, light:false, name:'מהומה המונית על כיסאות "כתר"', emoji:"🥊",
       chance: chairsCount>=2 ? 0.03*rowdy : 0,
       headline:'כיסאות "כתר" עפים באוויר — מהומה כללית ליד הבריכה, אבטחה נכנסה לתמונה',
       apply(){ const fine = randi(90000,275000)*diff.fineMult; G.money -= fine; addSat(-14); bumpInsurance();
@@ -862,32 +1210,68 @@ function buildEventPool(){
   ];
 
   const GREEN = [
-    {id:"local_news", name:"כתבה חיובית בעיתון מקומי", emoji:"📰", chance:0.06,
+    {id:"local_news",
+      reactions:{
+        wa:["הפארק שלנו בעיתון! 📰 כל הכבוד להם באמת"],
+        rev:{s:5, t:"קראנו את הכתבה ובאנו. לא התאכזבנו."}}, name:"כתבה חיובית בעיתון מקומי", emoji:"📰", chance:0.06,
       headline:'"הפנינה של האזור" — כתבה חמה בעיתון המקומי',
       apply(){ G.campaigns.push({id:"news_boost", weeksLeft:4, boost:0.12}); return "גל מבקרים נוסף בחודש הקרוב."; }},
-    {id:"celebrity", name:"סלב ביקר בפארק", emoji:"🌟", chance:0.03,
+    {id:"celebrity",
+      reactions:{
+        wa:["וואו ראיתם מי היה שם היום?! 😱😱", "הבת שלי לא מפסיקה לצרוח מאז"],
+        rev:{s:5, t:"באנו במקרה באותו יום. חוויה! גם המקום עצמו מעולה."},
+        staff:{who:"דודו · מציל", t:"ביקשתי סלפי. הוא אמר 'אחרי הסיבוב'. הוא לא חזר."}}, name:"סלב ביקר בפארק", emoji:"🌟", chance:0.03,
       headline:"זמר ידוע צולם על נהר העצלן — הרשתות משתגעות",
       apply(){ addSat(10); G.campaigns.push({id:"celeb_boost", weeksLeft:4, boost:0.25}); return "בום של דירוג ומבקרים."; }},
-    {id:"birthday", name:"מסיבת יום הולדת הצליחה", emoji:"🎂", chance:0.04,
+    {id:"birthday",
+      reactions:{
+        wa:["עשינו שם יום הולדת והילדים עוד מדברים על זה שבועיים 🎂",
+            "כמה זה עלה לך? שואלת לצורך תכנון."],
+        rev:{s:5, t:"עשינו יום הולדת לבן. הצוות עזר בהכל. חוזרים שנה הבאה."},
+        staff:{who:"מאיה · ניקיון", t:"שלושים ילדים, עוגה אחת, ורצפה שלא תשכח את זה לעולם."}}, name:"מסיבת יום הולדת הצליחה", emoji:"🎂", chance:0.04,
       headline:'מסיבת יום הולדת "פארק שלם" הפכה לקאמבק שנתי',
       apply(){ addSat(6); return "הורים מרוצים, סטורי בכל מקום."; }},
-    {id:"ad_overperform", name:"מבצע פרסומי הצליח מעל המצופה", emoji:"📈",
+    {id:"ad_overperform",
+      reactions:{
+        wa:["ראיתי את הפרסומת שלהם בערך שמונה פעמים היום 📱"],
+        rev:{s:4, t:"הגעתי בגלל הפרסומת. הפעם זה היה מוצדק."},
+        staff:{who:"רונית · קופה", t:"אני לא יודעת מה עשינו, אבל היום עמדו פה בתור מהבוקר."}}, name:"מבצע פרסומי הצליח מעל המצופה", emoji:"📈",
       chance: G.campaigns.length>0 ? 0.15 : 0,
       headline:"הקמפיין תפס — יותר טוב מהמתוכנן!",
       apply(){ const bonus = randi(44000,132000); G.money += bonus; return `בונוס הכנסה חד-פעמי: ${fmtMoney(bonus)}.`; }},
-    {id:"travel_mag", name:"ביקורת מעולה במגזין טיולים", emoji:"🧳", chance:0.03,
+    {id:"travel_mag",
+      reactions:{
+        wa:["הפארק שלנו במגזין טיולים! מי היה מאמין 🧳"],
+        rev:{s:5, t:"קראתי את הביקורת במגזין ובאתי. מדויק לגמרי."},
+        staff:{who:"דודו · מציל", t:"בא צלם וביקש שאעמוד ליד הבריכה ואחייך. עמדתי. חייכתי. אני מפורסם."}}, name:"ביקורת מעולה במגזין טיולים", emoji:"🧳", chance:0.03,
       headline:'"חובה לבקר" — מגזין טיולים מדרג אתכם גבוה',
       apply(){ addSat(8); G.campaigns.push({id:"mag_boost", weeksLeft:12, boost:0.1}); return "דירוג יציב לכמה חודשים קדימה."; }},
-    {id:"council_grant", name:"תרומה/מענק ממועצה", emoji:"🏛️", chance:0.02,
+    {id:"council_grant",
+      reactions:{
+        wa:["מעניין לאן הולך הכסף הזה בדיוק 🤔"],
+        staff:{who:"רונית · קופה", t:"אז... יש תקציב למזגן בקופה? שואלת לצורך העניין."}}, name:"תרומה/מענק ממועצה", emoji:"🏛️", chance:0.02,
       headline:"המועצה המקומית מעניקה מענק לפארק",
       apply(){ const grant = randi(90000,275000); G.money += grant; return `מענק של ${fmtMoney(grant)} התקבל בחשבון.`; }},
-    {id:"influencer_story", name:"משפיענית פרסמה סטורי מפרגן", emoji:"🤳", chance:0.05,
+    {id:"influencer_story",
+      reactions:{
+        wa:["ראיתן את הסטורי שלה מהפארק?! אני נוסעת מחר 😍",
+            "היא באמת הייתה שם או שזה ממומן?"],
+        rev:{s:5, t:"באתי בגלל הסטורי. נשארתי בגלל המגלשות. ממליצה!"},
+        staff:{who:"רונית · קופה", t:"היא ביקשה קפה. אמרתי שאין. היא צילמה את זה. זה עלה לסטורי."}}, name:"משפיענית פרסמה סטורי מפרגן", emoji:"🤳", chance:0.05,
       headline:'"האמת שזה ממש כיף פה" — משפיענית מוכרת מעלה סטורי לחצי מיליון עוקבים',
       apply(){ addSat(4); G.campaigns.push({id:"influencer_story_boost", weeksLeft:4, boost:0.15}); return "גל כניסות מהעוקבים שלה כל השבוע."; }},
-    {id:"water_billing_glitch", name:"תקלת חיוב מים — חודש חינם", emoji:"💧", chance:0.02,
+    {id:"water_billing_glitch",
+      reactions:{
+        wa:["מישהו יודע למה חשבון המים שלי קפץ החודש? אולי קשור לפארק 🤔"],
+        staff:{who:"אבי · תחזוקה", t:"אמרתי לכם שהמונה משוגע. אף אחד לא הקשיב. עכשיו קיבלנו חודש חינם."}}, name:"תקלת חיוב מים — חודש חינם", emoji:"💧", chance:0.02,
       headline:'תאגיד המים מודה בטעות בחיוב — "החודש על חשבוננו"',
       apply(){ const refund = randi(33000,99000); G.money += refund; return `זיכוי של ${fmtMoney(refund)} התקבל בחשבון בלי לבקש.`; }},
-    {id:"influencer_friend", name:"משפיענית הביאה חברה לפארק", emoji:"👯", chance:0.04,
+    {id:"influencer_friend",
+      reactions:{
+        wa:["עכשיו יש שתיים מהן שם 😅 המקום הזה נהיה אופנתי",
+            "הזמנתי כרטיסים מראש בפעם הראשונה בחיים שלי"],
+        rev:{s:5, t:"המקום נהיה פופולרי מדי אבל עדיין כיף. תזמינו כרטיסים מראש."},
+        staff:{who:"דודו · מציל", t:"יש פה עכשיו אנשים שמצלמים יותר משהם נכנסים למים. אני שומר על טלפונים עכשיו?"}}, name:"משפיענית הביאה חברה לפארק", emoji:"👯", chance:0.04,
       headline:"משפיענית השיקה חברה חדשה בפארק — התיוגים לא נגמרים",
       apply(){ G.campaigns.push({id:"influencer_friend_boost", weeksLeft:4, boost:0.10}); return "עוד גל מבקרים בעקבות התיוג."; }},
   ];
@@ -929,6 +1313,533 @@ const DILEMMAS = [
           return "שודרג ביסודיות ב-₪20,000. המבקרים כבר מרגישים בהבדל."; }},
     ]},
 ];
+
+/* =========================================================
+   FEED — CONTENT POOLS
+   Everything the neighbourhood, the staff and the internet say.
+   Pools are deliberately large: a 24-month season reads the same
+   line twice around month four when a pool holds only a dozen items.
+   ========================================================= */
+
+const NEIGHBORS = [
+  {n:"אורית 🌸", c:"#c2185b"}, {n:"דודו מהצפון", c:"#303f9f"}, {n:"מיכל - ועד הבית", c:"#00796b"},
+  {n:"שמעון (סוכן ביטוח)", c:"#5d4037"}, {n:"אמא של עידו", c:"#e65100"}, {n:"רונן 🎣", c:"#455a64"},
+  {n:"סיגל מהמכולת", c:"#6a1b9a"}, {n:"אבו יוסי", c:"#00695c"}, {n:"הילה ✨", c:"#ad1457"},
+  {n:"קובי - אבא של תאומים", c:"#283593"}, {n:"נאוה מהגן", c:"#bf360c"}, {n:"איציק הרכב", c:"#37474f"},
+  {n:"ליאת (לא נכנסת למים)", c:"#7b1fa2"}, {n:"משה מהמאפייה", c:"#4e342e"},
+];
+const REVIEWERS = [
+  "שרון ל.","Dudu B.","משפחת אזולאי","נטלי כ.","יוסי (Local Guide)","ר. מזרחי","Tal S.",
+  "אורן ב.","משפחת בן חמו","Liat G.","חיים פ.","נועה ש.","Avi K.","ג. פרץ","מיטל ד.",
+  "אלכס (Local Guide)","משפחת שטרית","Roni M.","דנה א.","עומר ט.",
+];
+
+/* --- neighbourhood WhatsApp. cond() lets a post know what you actually built --- */
+const WA_NOISE = [
+  {t:"מישהו יודע אם יש שם צל היום? אני לא נוסעת שוב לשבת על בטון 😤", cond:()=> shadeCapacity() < visitorsPerDay()*0.25},
+  {t:"אין שם טיפת צל. חזרתי בצבע של פלפל אדום 🌶️", cond:()=> shadeCapacity() < visitorsPerDay()*0.25},
+  {t:"תזכורת לכל מי שנוסע: קחו שמשייה מהבית. אני אמרתי.", cond:()=> shadeCapacity() < visitorsPerDay()*0.25},
+  {t:"עדכון לכולן: הוסיפו שמשיות! ישבתי בצל שעתיים ולא נלחמתי על זה 🌴", cond:()=> shadeCapacity() >= visitorsPerDay()*0.25},
+  {t:"הצל שם עכשיו זה סיפור אחר לגמרי. אני מודה שטעיתי.", cond:()=> shadeCapacity() >= visitorsPerDay()*0.25},
+  {t:"התור לאוכל שם זה משהו שלא יאומן. הילד שלי גדל בתור.", cond:()=> activeBuilt("food").length < 2},
+  {t:"אין שם מה לאכול חוץ מדבר אחד. תביאו כריכים.", cond:()=> activeBuilt("food").length < 2},
+  {t:"פתחו עוד דוכן! חיכיתי ארבע דקות. ארבע! 🍔", cond:()=> activeBuilt("food").length >= 2},
+  {t:"יש שם עכשיו כמה דוכנים. הילדים אכלו, אני שתקתי, כולם מרוצים.", cond:()=> activeBuilt("food").length >= 2},
+  {t:"מישהו הצליח לתפוס כיסא אחרי 10:00? שואלת ברצינות.", cond:()=> seatCapacityDaily() < visitorsPerDay()*0.4},
+  {t:"הבאתי שולחן מתקפל מהבית. כן. שולחן מתקפל. לפארק מים.", cond:()=> seatCapacityDaily() < visitorsPerDay()*0.4},
+  {t:"יש מספיק כיסאות עכשיו. אני לא מאמינה שאני כותבת את זה 🪑", cond:()=> seatCapacityDaily() >= visitorsPerDay()*0.4},
+  {t:"₪{price} לכרטיס?! על מה בדיוק? על הזכות לחפש כיסא? 😤", cond:()=> priceNow() > 45},
+  {t:"במחיר הזה אני לוקח את המשפחה לים ועוד נשאר לי לפלאפל.", cond:()=> priceNow() > 45},
+  {t:"₪{price} לכרטיס — יאללה כולם מחר, אני מזמינה מונית גדולה 🎉", cond:()=> priceNow() < 25},
+  {t:"הורידו מחיר! מי שלא הולך עכשיו זה על אחריותו.", cond:()=> priceNow() < 25},
+  {t:"המחיר שם סביר בעיניי. אני אומרת את זה בשקט כדי שלא יעלו.", cond:()=> priceNow() >= 25 && priceNow() <= 45},
+  {t:"אחד המתקנים שם סגור עם סרט צהוב. מישהו יודע מה קרה?", cond:()=> anyClosedRide()},
+  {t:"שאלה: כמה זמן מתקן אמור להיות סגור לפני שזה נהיה קבוע? 🤔", cond:()=> anyClosedRide()},
+  {t:"המגלשה הגדולה שם — הילד שלי ירד עשר פעמים ברצף. עשר.", cond:()=> hasSlideActive()},
+  {t:"מי שמפחד ממגלשות שידלג. אני ירדתי וצרחתי כמו ילדה בת 6 💀", cond:()=> hasSlideActive()},
+  {t:"אין שם מגלשה בכלל? באתי בשביל מגלשה.", cond:()=> !hasSlideActive()},
+  {t:"ראיתי מאבטח בכניסה. סוף סוף מישהו עושה סדר 👮", cond:()=> !!(G.security.guards || G.security.full)},
+  {t:"אין שם אף אחד שעושה סדר. פרוע לגמרי בשעות הצהריים.", cond:()=> !(G.security.guards || G.security.full)},
+  {t:"המציל שם ער ומסתכל. זה לא מובן מאליו, תרשמו לפניכם.", cond:()=> !!(G.security.lifeguard || G.security.full)},
+  {t:"היה כזה עומס שם היום שחשבתי שאני בתחנה המרכזית 😵", cond:()=> crowdingNow() > 1.15},
+  {t:"אמרו לנו בכניסה שאין מקום. נסענו סתם 40 דקות.", cond:()=> crowdingNow() > 1.15},
+  {t:"היה שם ריק לגמרי היום. נעים, אבל קצת מוזר?", cond:()=> crowdingNow() < 0.6},
+  {t:"מוכרים כסאות כתר בסביבה? הפארק כאילו קנה את כל המלאי בארץ 😂"},
+  {t:"מישהי ראתה משקפי שחייה ורודים? של עידו. הוא בוכה מאתמול."},
+  {t:"אחלה מקום אבל תביאו מגבות משלכם, ההשכרה שם זה שוד לאור יום"},
+  {t:"כל הקבוצה נוסעת מחר. תגידו שיש מקום 🙏"},
+  {t:"היה שם מישהו שהתחיל לצעוק על המציל בגלל אבוב. תיאטרון שלם 🍿"},
+  {t:"שאלה תמימה: למה אין שם מקום לשים תיק? למה?"},
+  {t:"מי שנוסע מחר — צאו ב-8:00. אני אומר לכם כידיד."},
+  {t:"עשיתי שם יום הולדת לילד. שרד. אני פחות."},
+  {t:"החניה שם זה סיפור בפני עצמו. באתי ב-9:15, חניתי בשכונה הבאה."},
+  {t:"למה כולם צריכים לשים מגבת על כיסא בשבע בבוקר ואז ללכת? זו שאלה חברתית."},
+  {t:"היה שם ילד עם רמקול בלוטות'. בקול רם. כל היום. רק אומרת."},
+  {t:"אני מעדכנת: המים היו נקיים. באמת. הופתעתי."},
+  {t:"ראיתי שם את השכן מהבניין ליד. הוא העמיד פנים שלא ראה אותי 😅"},
+  {t:"מישהו יודע אם מותר להכניס אבטיח? שואל לצורך תכנון."},
+  {t:"הבן שלי אמר שזה 'הפארק הכי טוב בעולם'. הוא בן 4, אבל בכל זאת."},
+  {t:"תזכורת: קרם הגנה. אני מדברת מניסיון של אתמול 🦞"},
+];
+const WA_REPLY = [
+  "אותו דבר אמרתי 🙄","+1","הייתי שם שבוע שעבר, היה בסדר גמור","יאללה מגזימים כרגיל",
+  "מסכימה לגמרי","😂😂😂","תעלי תמונה","בסוף כולם נוסעים לשם ומתלוננים",
+  "אני דווקא נהניתי","מי שלא אוהב שלא ייסע","נו באמת","זה מה שיש, זה מה שנשאר",
+  "אשתי אומרת בדיוק אותו דבר","אני שותק ולוקח את הילדים לים","מסכים חלקית","אוקיי אבל בשקל?",
+  "היה שם גם אתמול, אותו סיפור","תודה על העדכון 🙏","אני נוסעת מחר, אעדכן","למה כולם כל כך שליליים 😩",
+];
+const REVIEWS = [
+  {s:5, t:"הילדים לא רצו לצאת. אפילו קיבלנו כיסא בלי לריב. ממליץ בחום!"},
+  {s:2, t:"יפה, אבל יקר. שילמתי כדי לשבת על הרצפה ליד גדר."},
+  {s:4, t:"מקום נחמד למשפחות. תוסיפו צל ואני נותן חמישה."},
+  {s:3, t:"היה בסדר. המים היו רטובים, כמו שהובטח."},
+  {s:5, t:"באנו ל-3 שעות, נשארנו עד הסגירה. תודה לצוות!"},
+  {s:2, t:"למה אין מקום לשים תיק? למה?"},
+  {s:1, t:"חיכינו 40 דקות למגלשה אחת. ארבעים. בשמש."},
+  {s:4, t:"הצוות מקסים, המקום נקי, המחיר קצת גבוה. עדיין שווה."},
+  {s:3, t:"בסדר גמור אם באים מוקדם. אחרי 11:00 זה כבר משהו אחר."},
+  {s:5, t:"הגלידרייה שם הצילה לי את היום ואת הנישואים."},
+  {s:1, t:"שילמתי מלא ומחצית מהמתקנים היו סגורים. תבדקו לפני שאתם באים."},
+  {s:4, t:"הילדים היו מאושרים, אני הייתי בצל. עסקה טובה."},
+  {s:2, t:"הצפיפות הרסה את החוויה. ממש כמו קניון בערב חג."},
+  {s:5, t:"הבן שלי בן 6 אמר שזה היה היום הכי טוב בחיים שלו. אז 5 כוכבים."},
+  {s:3, t:"אין על מה להתלונן ואין על מה להתלהב. ממוצע ישראלי מכובד."},
+  {s:4, t:"נקי, מסודר, ואף אחד לא רב על כיסאות. הופתעתי לטובה."},
+  {s:1, t:"המציל היה בטלפון. צילמתי. יש לי סרטון."},
+  {s:5, t:"סוף סוף מקום שמתאים גם לסבתא. תודה על הפרגולות."},
+  {s:2, t:"האוכל שם יקר וקר. תביאו סנדוויצ'ים."},
+  {s:3, t:"בסדר. באנו, נרטבנו, חזרנו. לא סיפור גדול לכאן או לכאן."},
+  {s:4, t:"הרבה שיפור מאשתקד. עוד קצת ואתם שם."},
+  {s:5, t:"הכי כיף שיש. חבל שאין מנוי שנתי."},
+  {s:1, t:"חנייה — סיוט. תור — סיוט. אחרי זה היה כיף. שני כוכבים? לא, אחד."},
+  {s:2, t:"הבטיחו לנו מגלשה גדולה. המגלשה הגדולה הייתה סגורה. זהו הסיפור."},
+  {s:4, t:"התור לגלידה ארוך אבל הגלידה שווה את זה. אני אישית שקלתי."},
+  {s:3, t:"מקום סביר. הבעיה היחידה זה האנשים. וזו לא אשמתכם."},
+  {s:5, t:"נשארנו עד שכיבו את המים. חוויה מושלמת למשפחה."},
+  {s:1, t:"ילד זר קפץ עליי מהמגלשה. איפה המשגיחים?"},
+  {s:4, t:"מומלץ בהחלט לגילאי 4-10. למבוגרים קצת פחות."},
+  {s:2, t:"בואו נגיד ככה: הילדים נהנו. אני עמדתי בשמש ארבע שעות."},
+  {s:5, t:"הצוות עזר לנו למצוא את הילד תוך שתי דקות. מקצוענים אמיתיים."},
+  {s:3, t:"היה נחמד. פשוט נחמד. לא יותר, לא פחות."},
+  {s:4, t:"המים נקיים והכיסאות שלמים. במדינה הזאת זה הישג."},
+  {s:1, t:"התלוננתי בקופה וקיבלתי מבט. רק מבט. תודה רבה."},
+  {s:5, t:"אנחנו באים כל שנה וכל שנה זה יותר טוב. תמשיכו ככה 🙌"},
+  {s:2, t:"מחיר של פארק גדול, גודל של בריכה שכונתית."},
+  {s:4, t:"הפרגולות שינו את המשחק. עכשיו רק תוסיפו עוד מקומות ישיבה."},
+  {s:3, t:"סבבה ליום חופש. לא הייתי נוסע שעה בשביל זה."},
+  {s:5, t:"יום כיף מושלם. אפילו מצאנו חניה. אולי היה לנו מזל."},
+  {s:1, t:"הרעש. אלוהים. הרעש."},
+  {s:4, t:"קניתי כרטיסים מראש וזה חסך המון זמן. ממליץ לכולם."},
+  {s:2, t:"אין מספיק שירותים ליום עמוס כזה. תחשבו על זה."},
+];
+const STAFF = [
+  {who:"דודו · מציל", t:"היום הצלתי אבוב. לא ילד. אבוב. הוא ברח לי."},
+  {who:"רונית · קופה", t:"בן אדם ניסה לשלם בשלושה שטרות של 20 ולהתווכח על העודף. ניצחתי."},
+  {who:"אבי · תחזוקה", t:"מי הזיז את כל כיסאות הכתר לפינה אחת? זה נראה כמו מחנה פליטים של פלסטיק."},
+  {who:"מאיה · ניקיון", t:"אני מבקשת רשמית שלא יביאו יותר אבטיח שלם לפארק. רשמית."},
+  {who:"דודו · מציל", t:"היום שרקתי 41 פעם. ספרתי. אני עייף."},
+  {who:"יוסי · אבטחה", t:"עצרתי ריב על מגבת. מגבת. לא כיסא. התקדמנו."},
+  {who:"רונית · קופה", t:"מישהו שאל אם יש הנחת סטודנט. הוא בן 61."},
+  {who:"אבי · תחזוקה", t:"המשאבה עושה רעש. אני רושם את זה פה כדי שיהיה תיעוד."},
+  {who:"מאיה · ניקיון", t:"מצאתי שלוש כפכפים בודדות. שלוש. איפה השאר?"},
+  {who:"דודו · מציל", t:"ילד אמר לי 'אתה לא באמת מציל, אתה סתם יושב'. הוא בן 7. הוא צודק חלקית."},
+  {who:"רונית · קופה", t:"היום נגמר לי הרול של הקבלות בשיא העומס. תזמינו עוד."},
+  {who:"יוסי · אבטחה", t:"מישהו ניסה להיכנס עם מקרר. מקרר שלם. עם גלגלים."},
+  {who:"אבי · תחזוקה", t:"תיקנתי את הברז ליד השירותים. אף אחד לא ישים לב, אז אני מספר פה."},
+  {who:"מאיה · ניקיון", t:"שאלה: למה אנשים משאירים גרעיני חמניות ליד הבריכה? זו שאלה פילוסופית."},
+  {who:"דודו · מציל", t:"היום מישהו קפץ בום. אמרתי לו לא. הוא עשה שוב. אמרתי שוב. זה הג'וב."},
+  {who:"רונית · קופה", t:"אישה ביקשה חשבונית על שם החברה עבור יום כיף משפחתי. מותר?"},
+  {who:"יוסי · אבטחה", t:"האיש עם הרמקול חזר. הוא יודע שאני יודע."},
+  {who:"אבי · תחזוקה", t:"מזגן בקופה. זה כל מה שאני אומר. מזגן. בקופה."},
+  {who:"מאיה · ניקיון", t:"הפח ליד המגלשה קטן מדי. אני מרוקנת אותו שש פעמים ביום."},
+  {who:"דודו · מציל", t:"סבתא ביקשה שאלמד אותה לשחות. עשינו 20 דקות. היא צפה. יום טוב."},
+  {who:"רונית · קופה", t:"היום חייכתי 40 דקות רצוף בגלל ביקורת. הלסת שלי נעולה."},
+  {who:"יוסי · אבטחה", t:"מצאתי ילד שהתחבא בתוך גלגל מתנפח כדי לא לצאת. הבנתי אותו."},
+  {who:"אבי · תחזוקה", t:"אם מישהו שואל למה יש שלולית ליד המזנון — זה לא ממני."},
+  {who:"מאיה · ניקיון", t:"מישהו שפך שוקו על מזרן. מזרן. איך?"},
+  {who:"דודו · מציל", t:"קיץ שלם ואף אחד לא טבע. אני קורא לזה הצלחה."},
+  {who:"רונית · קופה", t:"היום מכרנו 12 כובעים. יש לנו מלאי של 3."},
+  {who:"יוסי · אבטחה", t:"עוד יום, עוד ויכוח על מי היה ראשון בתור. אני לא שופט. אני מפריד."},
+  {who:"אבי · תחזוקה", t:"החלפתי נורה. עכשיו רואים את הכניסה. בבקשה."},
+  {who:"מאיה · ניקיון", t:"אני לא מתלוננת. אני מתעדת. יש הבדל."},
+  {who:"דודו · מציל", t:"היום קיבלתי גלידה מילד בלי סיבה. יום מצוין."},
+  {who:"רונית · קופה", t:"מישהו שילם לי במטבעות של עשר אגורות. הכל. בכל הסכום."},
+  {who:"יוסי · אבטחה", t:"היום העברתי שעתיים בלהסביר שאסור נרגילה. שעתיים."},
+  {who:"אבי · תחזוקה", t:"אם המגלשה עושה 'קליק' זה בסדר. אם היא עושה 'קלאנק' תקראו לי."},
+  {who:"מאיה · ניקיון", t:"מישהו השאיר ספר. ספר אמיתי, מנייר. בפארק מים."},
+  {who:"דודו · מציל", t:"אמרתי לילד לא לרוץ. הוא הלך מהר מאוד. מכבד את זה."},
+  {who:"רונית · קופה", t:"היום הסברתי חמש פעמים למה כרטיס ילד זה גם בן 12. אני צריכה שלט."},
+  {who:"יוסי · אבטחה", t:"תפסתי מישהו מנסה לקפוץ מעל הגדר. עם צידנית. הכבוד."},
+  {who:"אבי · תחזוקה", t:"סתם עדכון: הכל עובד. אני עצמי בהלם."},
+  {who:"מאיה · ניקיון", t:"נגמר הנייר בשירותים בשעה 11. ב-11. תזמינו יותר."},
+  {who:"דודו · מציל", t:"היום היה שקט. אני לא סומך על זה."},
+];
+const TICKER = [
+  ()=>`מזג אוויר: ${pick(["גל חום","שרב כבד","יום מעונן","חמסין","לחות של 90%","רוח מערבית נעימה"])} — הביקוש ${pick(["קפץ","ירד"])} ב-${randi(6,22)}%`,
+  ()=>`${randi(2,9)} ביקורות חדשות בגוגל · ממוצע ${(3+Math.random()*2).toFixed(1)}`,
+  ()=>`${randi(3,28)} אנשים שאלו בוואטסאפ אם יש חניה`,
+  ()=>`דוכן ההסעדה נגמר ב-${feedTime()}. שוב.`,
+  ()=>`${randi(1,6)} כיסאות כתר נעלמו החודש. אף אחד לא ראה כלום.`,
+  ()=>`${randi(11,64)} מגבות נשכחו בפארק. ${randi(0,3)} נאספו.`,
+  ()=>`הקבוצה השכונתית עברה את ${randi(310,480)} המשתתפים`,
+  ()=>`${randi(2,14)} אנשים ניסו להיכנס עם צידנית גדולה מהמותר`,
+  ()=>`שיא היום: ${randi(4,19)} ילדים בו-זמנית על המגלשה. זה יותר מדי.`,
+  ()=>`${randi(1,5)} משקפי שחייה נמצאו. ${randi(6,20)} אבדו.`,
+  ()=>`תור הכניסה בשיאו: ${randi(8,42)} דקות`,
+  ()=>`${randi(20,90)}% מהמבקרים הגיעו לפני 10:00`,
+  ()=>`מישהו חיפש בגוגל "${G.parkName} שעות פתיחה" ${randi(40,900)} פעמים החודש`,
+  ()=>`${randi(1,4)} אנשים ביקשו החזר כספי. ${randi(0,2)} קיבלו.`,
+  ()=>`טמפרטורת המים: ${randi(24,31)} מעלות. מישהו עדיין התלונן.`,
+  ()=>`${randi(2,11)} מסיבות יום הולדת התקיימו בפארק החודש`,
+  ()=>`${randi(1,7)} אנשים שאלו אם יש WiFi. בפארק מים.`,
+  ()=>`הוזמנו ${randi(60,400)} כרטיסים מראש דרך הטלפון`,
+  ()=>`${randi(3,17)} כפכפים בודדות ממתינות באבידות ומציאות`,
+  ()=>`${randi(1,3)} אנשים ניסו לשלם בביטקוין. שוב.`,
+  ()=>`מכירות הגלידה: ${randi(80,600)} יחידות החודש`,
+  ()=>`${randi(1,9)} תלונות על עוצמת המוזיקה. ${randi(1,9)} תלונות שאין מוזיקה.`,
+  ()=>`${randi(12,70)} תמונות עם התיוג של הפארק עלו לרשת`,
+  ()=>`${randi(1,6)} אנשים נכנסו עם כלב. ${randi(0,2)} יצאו איתו.`,
+  ()=>`הקופה סגרה את היום ב-${feedTime()} עם ${randi(2,40)} אנשים עוד בתור`,
+  ()=>`${randi(1,5)} מבקרים ביקשו לדבר עם המנהל. זה אתה.`,
+  ()=>`${randi(30,180)} ליטר קרם הגנה נמכרו. בערך.`,
+  ()=>`${randi(1,4)} טענות על "היה יותר זול בשנה שעברה"`,
+  ()=>`${randi(5,30)} אנשים ישבו על המדרגות כי לא מצאו כיסא`,
+  ()=>`ניקוי הבריכה ארך ${randi(40,180)} דקות אחרי הסגירה`,
+  ()=>`${randi(2,12)} סטוריז חדשים מהפארק ברשתות`,
+  ()=>`המזנון נגמר ממלאי ${pick(["הבורקס","הפלאפל","הגלידה","הקולה","הצ'יפס"])} שוב`,
+  ()=>`${randi(1,8)} אנשים שאלו אם מותר להיכנס עם אוכל מבחוץ. התשובה לא השתנתה.`,
+  ()=>`${randi(40,300)} מגבות הושכרו החודש`,
+  ()=>`${randi(1,4)} מקרי "שכחתי איפה חניתי" הסתיימו בהצלחה`,
+  ()=>`תלונה חדשה בעירייה על רעש. מספר ${randi(2,18)} העונה.`,
+  ()=>`${randi(1,6)} מבקרים הגיעו בטעות במקום לפארק אחר. ${randi(0,4)} נשארו.`,
+  ()=>`${randi(2,15)} ילדים הוכרזו ברמקול. כולם נמצאו.`,
+  ()=>`הצוות שתה ${randi(20,120)} כוסות קפה החודש`,
+  ()=>`${randi(1,5)} אנשים ניסו להזמין את הפארק כולו לאירוע פרטי`,
+];
+const VIRAL = [
+  {cap:'"התור הכי ארוך בישראל" 😭 #פארקמים', v:"1.2M"},
+  {cap:'כשאתה מגיע ב-10:00 וכל הכיסאות תפוסים מ-06:30 🪑💀', v:"840K"},
+  {cap:'הבחור הזה החליק על המגלשה עם כפכפים. כפכפים! 🩴', v:"2.1M"},
+  {cap:'תיעוד: מלחמת עולם על כיסא פלסטיק 🪑⚔️', v:"1.7M"},
+  {cap:'POV: אמא שלך אמרה "רק שעה" לפני ארבע שעות 😵‍💫', v:"620K"},
+  {cap:'האיש שהביא מקרר שלם לפארק מים. אגדה. 🧊', v:"3.4M"},
+  {cap:'הריאקציה של הילד הזה למגלשה הגדולה 😂😂', v:"980K"},
+  {cap:'למה כולם שמים מגבת ואז הולכים? מחקר שטח 🕵️', v:"1.1M"},
+];
+
+/* =========================================================
+   רותי עש — the nemesis engine
+   Not a random event: an opponent with a memory. Her heat rises
+   from low satisfaction, bad months, a steep ticket and sassy
+   replies — and falls when you actually fix things.
+   ========================================================= */
+const RUTI = {
+  name: "רותי עש",
+  stageNames: ["רגועה", "👀 מציצה", "⭐ ביקורת", "📢 קבוצה", "🔥 הסלמה"],
+  stage1: [
+    {t:"אני לא רוצה להגיד כלום. אבל אני אגיד. 🙂", r:"על מה את מדברת רותי"},
+    {t:"מעניין. שמרתי צילום מסך מהפוסט של החודש שעבר. ליתר ביטחון.", r:"רותי את מפחידה אותי"},
+    {t:"אני רק שואלת שאלה תמימה: מישהו פה קרא את רישיון העסק שלהם? אני קראתי.", r:"😳"},
+    {t:"בלי לקטר, רק לפרוטוקול: הייתי שם היום. יש לי הערות. אני שומרת אותן.", r:"תשמרי תשמרי"},
+    {t:"אני אישה סבלנית. אני מדגישה את המילה 'סבלנית'. בינתיים.", r:"רותי נשמה תנשמי"},
+  ],
+  stage2: [
+    "אני כותבת את זה בשקט ובאחריות מלאה. הייתי שם ארבע פעמים העונה. בכל פעם משהו אחר. תיעדתי הכל — יש לי תיקייה בטלפון עם 61 תמונות ותאריכים. אני לא אישה כועסת. אני אישה מסודרת.",
+    "עדכון: פניתי אליהם. קיבלתי תשובה מנומסת ולא עניינית. שמרתי גם אותה. הביקורת נשארת על כוכב אחד עד להודעה חדשה.",
+    "ביקרתי שוב היום כדי לתת הזדמנות הוגנת. נתתי. לא ניצלו. הביקורת מתעדכנת בהתאם, עם תאריכים.",
+  ],
+  stage3: {
+    posts: [
+      "פתחתי את הקבוצה כדי שיהיה מקום מסודר. בלי קללות, בלי לכלוך. רק עובדות ותאריכים.",
+      "מצורף קובץ אקסל עם כל האירועים מהשנה. עמודה D זה הקנסות. עמודה E זה מה שהם אמרו לתקשורת.",
+      "לכל מי שנכנס עכשיו — יש קובץ מוצמד למעלה. תקראו לפני ששואלים.",
+      "עדכנתי את הטבלה. שורה 34 חדשה. מי שיש לו תיעוד שישלח לי בפרטי, אני מסדרת לפי תאריך.",
+    ],
+  },
+  stage4: [
+    {h:"תלונה מסודרת הוגשה למחלקת רישוי עסקים",
+     s:'המתלוננת צירפה 61 תמונות, טבלת אקסל ותצהיר. הפקח אמר "זו התלונה הכי מסודרת שראיתי".',
+     fine:[60000,140000], sat:-9},
+    {h:'"מה קורה בפארק המים שלנו?" — כתבה חוקרת בעיתון המקומי',
+     s:"מקור אחד סיפק לכתב את כל החומר מסודר לפי תאריכים. הכתבה עלתה גם לפייסבוק.",
+     fine:[20000,50000], sat:-11},
+    {h:"פנייה לוועדת הפניות של המועצה — עם נספחים",
+     s:"שמונה עמודים, שלושה נספחים ותוכן עניינים. חבר המועצה הבטיח לבדוק לעומק.",
+     fine:[25000,70000], sat:-9},
+  ],
+  down: [
+    "בסדר. אני מודה. תיקנו. אני משאירה את הקבוצה פתוחה ליתר ביטחון, אבל הייתי שם והיה נעים.",
+    "עדכון הוגן: עדכנתי את הביקורת שלי מכוכב לשלושה. אני יודעת לתת קרדיט כשמגיע.",
+    "אני מארכבת את הקובץ. לא מוחקת. מארכבת.",
+    "הייתי שם עם הנכדים. לא היה על מה לכתוב. זה מחמאה, במושגים שלי.",
+  ],
+};
+
+/* Heat is compared against the heat at the LAST month close, so mid-month player
+   actions (a sassy reply, a price hike) also count as heating her up. */
+function rutiTick(hadBadEvent){
+  const R = G.ruti;
+  let d = 0;
+  if(G.satisfaction < 45)      d += 18;
+  else if(G.satisfaction < 55) d += 9;
+  else if(G.satisfaction > 72) d -= 16;
+  else if(G.satisfaction > 62) d -= 8;
+  if(hadBadEvent)              d += 10;
+  if(priceNow() > 45)          d += 6;
+  if(G.rating < 3)             d += 7;
+
+  const prev = (R.lastTickHeat == null) ? R.heat : R.lastTickHeat;
+  R.heat = clamp(Math.round(R.heat + d), 0, 100);
+  // pinned at the top still counts as rising — the group must not bleed at peak rage
+  const rising = R.heat > prev || R.heat >= 95;
+  R.lastTickHeat = R.heat;
+
+  const ns = R.heat>=88 ? 4 : R.heat>=62 ? 3 : R.heat>=36 ? 2 : R.heat>=16 ? 1 : 0;
+  const old = R.stage;
+  R.stage = ns;
+  if(ns > R.everPeaked) R.everPeaked = ns;
+
+  // the group only recruits while she heats up, and bleeds members while she cools
+  if(ns >= 3){
+    if(!R.members) R.members = randi(24,60);
+    else R.members = Math.round(R.members * (rising ? 1.35 : 0.7));
+    if(ns === 4 && rising) R.members = Math.max(R.members, randi(180,420));
+  } else if(R.members){
+    R.members = Math.round(R.members * 0.55);
+    if(R.members < 8) R.members = 0;
+  }
+  return {old, now:ns, up:ns>old, down:ns<old, rising};
+}
+
+/* Player actions feed the same meter, outside the monthly tick. */
+function rutiHeat(delta){
+  if(!G || !G.ruti) return;
+  G.ruti.heat = clamp(Math.round(G.ruti.heat + delta), 0, 100);
+}
+
+/* =========================================================
+   FEED — small helpers the content pools lean on
+   ========================================================= */
+function shadeCapacity(){
+  return allBuilt("seating").filter(b=>b.status!=="closed" && defOf(b.defId).shade)
+    .reduce((s,b)=>s+(defOf(b.defId).seatCap||0),0) * 10;
+}
+function seatCapacityDaily(){
+  return allBuilt("seating").filter(b=>b.status!=="closed")
+    .reduce((s,b)=>s+(defOf(b.defId).seatCap||0),0) * 10;
+}
+function visitorsPerDay(){ return Math.round((G.lastVisitors||0)/30); }
+function crowdingNow(){ const cap = capacityTotal(); return cap>0 ? marketPerDay(G.monthIdx)/cap : 0; }
+function anyClosedRide(){ return G.built.some(b=>b.status==="closed"); }
+function priceNow(){ return G.ticketPrice||ECON.ticketDefault; }
+function feedTime(){ return randi(8,22)+":"+String(randi(0,59)).padStart(2,"0"); }
+function daysAgoTxt(){ const d = randi(1,9); return d===1?"אתמול":(d===2?"לפני יומיים":`לפני ${d} ימים`); }
+function starStr(n){ n = clamp(Math.round(n),1,5); return "★".repeat(n)+"☆".repeat(5-n); }
+function moodScore(){
+  return clamp(Math.round(G.satisfaction*0.65 + (G.rating/5*100)*0.35 - (G.ruti?G.ruti.heat:0)*0.18), 0, 100);
+}
+function pickNoise(){
+  const pool = WA_NOISE.filter(n=>{
+    if(!n.cond) return true;
+    try{ return !!n.cond(); }catch(e){ return false; }
+  });
+  const chosen = pick(pool.length ? pool : WA_NOISE);
+  return String(chosen.t).replace("{price}", String(priceNow()));
+}
+
+/* =========================================================
+   FEED — items are DATA, never HTML. The renderer builds the DOM.
+   ========================================================= */
+function mkItem(kind, type, tier, payload, extra){
+  const it = {
+    id: "f" + (G.feedSeq++),
+    turn: G.turn, monthIdx: G.monthIdx, year: G.year,
+    kind, type, tier, parentId: null, late: false,
+    payload: payload || {},
+  };
+  if(extra) Object.assign(it, extra);
+  return it;
+}
+/* Player actions during the month land at the top of the current month. */
+function pushFeed(item){
+  if(!G.feed) G.feed = [];
+  G.feed.unshift(item);
+  return item;
+}
+
+function mkTicker(){ return mkItem("noise","ticker",3,{text: pick(TICKER)()}); }
+function mkQuiet(){ return mkItem("event","quiet",2,{}); }
+function mkWA(lines, opts){
+  opts = opts || {};
+  const a = pick(NEIGHBORS);
+  const others = NEIGHBORS.filter(x=>x.n!==a.n);
+  const b = pick(others.length?others:NEIGHBORS);
+  const msgs = lines.map((text,i)=>({
+    who: i===0 ? a.n : b.n, color: i===0 ? a.c : b.c,
+    text, time: feedTime(), mine: i===0,
+  }));
+  return mkItem("crowd","wa",2,{
+    group:"🏘️ שכונת רמת אגוז — קבוצה", members: randi(240,410), msgs,
+    comments: randi(4,28), likes: randi(2,31), collapse: !!opts.collapse,
+  });
+}
+function mkReview(r){
+  r = r || pick(REVIEWS);
+  return mkItem("crowd","review",2,{
+    who: pick(REVIEWERS), avatar: pick(["👤","🧔","👩","🧑","👨‍🦱","👵","🧑‍🦰"]),
+    stars: r.s, text: r.t, days: daysAgoTxt(), ownerReply: null,
+  });
+}
+function mkStaff(s){
+  s = s || pick(STAFF);
+  return mkItem("crowd","staff",2,{
+    who: s.who, avatar: pick(["🧑‍✈️","👷","🧹","💁"]), text: s.t, time: feedTime(),
+    r1: randi(1,9), r2: randi(1,6),
+  });
+}
+function mkViral(){
+  const v = pick(VIRAL);
+  return mkItem("crowd","viral",2,{caption:v.cap, views:v.v, likes:randi(12,88)+"K"});
+}
+/* Chips are read off what apply() actually did this month, so the numbers on the
+   card are the real ones — never a second, drifting copy of the balance. */
+function mkEventItem(e, good, newsRow, fx){
+  const chips = [];
+  if(fx && fx.money) chips.push([(fx.money>0?"+":"") + fmtMoney(fx.money), fx.money>0?"g":"b"]);
+  if(fx && fx.sat)   chips.push([`${fx.sat>0?"+":""}${Math.round(fx.sat)} שביעות רצון`, fx.sat>0?"g":"b"]);
+  if(fx && fx.insurance) chips.push([`ביטוח ×${ECON.insuranceSpikeMult}`, "b"]);
+  (e.feedChips||[]).forEach(c=>chips.push(c));
+  return mkItem("event", good?"news_good":"news_bad", 1, {
+    emoji: e.emoji, name: e.name,
+    headline: e.headline || newsRow.title,
+    sub: newsRow.sub || "", chips,
+  });
+}
+function mkFromQueue(q){
+  const it = q.kind==="staff" ? mkStaff(q.payload) : mkReview(q.payload);
+  it.late = true;
+  return it;
+}
+/* The report card holds a flat COPY of the numbers — G.history is pruned to 36
+   and must stay that way, so the card can never hold a reference into it. */
+function mkReportItem(h){
+  const sc = staffCounts();
+  return mkItem("report","report",1, Object.assign({}, h, {
+    parkName: G.parkName,
+    staffLifeguards: sc.lifeguards, staffOther: sc.staff,
+    insuranceLoaded: G.turn < (G.insuranceSpikeUntil||0),
+  }));
+}
+function mkDecision(dil, outcome){
+  return mkItem("event","decision",2,{emoji:dil.emoji, question:dil.name, headline:dil.headline, outcome});
+}
+
+/* --- רותי's monthly card --- */
+function mkRutiItem(res){
+  const R = G.ruti;
+  if(res.down && res.now >= 0 && R.everPeaked > 0){
+    return mkItem("ruti","ruti",2,{mode:"down", stage:res.now, heat:R.heat, text:pick(RUTI.down)});
+  }
+  if(res.now === 4){
+    const e = pick(RUTI.stage4);
+    const diff = DIFFICULTY[G.difficulty];
+    const fine = Math.round(randi(e.fine[0], e.fine[1]) * (diff.fineMult||1));
+    G.money -= fine;
+    G.satisfaction = clamp(Math.round(G.satisfaction + e.sat), 0, 100);
+    G.rating = ratingFromSatisfaction(G.satisfaction);
+    return mkItem("event","ruti",1,{mode:"escalate", stage:4, heat:R.heat,
+      headline:e.h, sub:e.s, fine, sat:e.sat});
+  }
+  if(res.now === 3){
+    return mkItem("ruti","ruti",2,{mode:"group", stage:3, heat:R.heat, members:R.members,
+      group:`נפגעי ${G.parkName} — קבוצת מידע 🕵️‍♀️`, text:pick(RUTI.stage3.posts),
+      joined:randi(4,19), time:feedTime()});
+  }
+  if(res.now === 2){
+    return mkItem("ruti","ruti",2,{mode:"review", stage:2, heat:R.heat,
+      text:pick(RUTI.stage2), reviews:randi(40,120)});
+  }
+  if(res.now === 1){
+    const s = pick(RUTI.stage1);
+    const nb = pick(NEIGHBORS);
+    return mkItem("ruti","ruti",2,{mode:"wa", stage:1, heat:R.heat,
+      text:s.t, reply:s.r, replyWho:nb.n, replyColor:nb.c, t1:feedTime(), t2:feedTime()});
+  }
+  return null;
+}
+
+/* --- event reactions: the thread that hangs off a headline --- */
+function mkReactions(e, parentId){
+  const out = [];
+  const rx = e.reactions;
+  if(!rx) return out;
+  if(rx.rev && chance(0.75)){
+    // half the reviews land a month late — that is how it works in real life
+    if(chance(0.5)) G.queuedReactions.push({kind:"review", payload:rx.rev});
+    else { const it = mkReview(rx.rev); it.parentId = parentId; out.push(it); }
+  }
+  if(rx.wa && rx.wa.length){
+    const lines = rx.wa.slice(0,2);
+    const it = mkWA(lines, {collapse:false});
+    it.parentId = parentId; out.push(it);
+  }
+  if(rx.staff){
+    if(chance(0.5)) G.queuedReactions.push({kind:"staff", payload:rx.staff});
+    else { const it = mkStaff(rx.staff); it.parentId = parentId; out.push(it); }
+  }
+  return out;
+}
+
+/* =========================================================
+   FEED — assembling one month
+   ========================================================= */
+function buildMonthFeed(opts){
+  const triggeredInfo = opts.triggeredInfo || [];
+  const items = [];   // chronological; reversed on the way into G.feed
+
+  // 1. opening ticker
+  items.push(mkTicker());
+
+  // 2. last month's delayed reactions arrive first
+  G.queuedReactions.splice(0).forEach(q => items.push(mkFromQueue(q)));
+
+  // 3. the headlines, each with its own thread of consequences
+  let hadBad = false;
+  triggeredInfo.forEach(ti => {
+    const parent = mkEventItem(ti.e, ti.good, ti.newsRow, ti.fx);
+    items.push(parent);
+    mkReactions(ti.e, parent.id).forEach(r => items.push(r));
+    if(!ti.good){
+      hadBad = true;
+      G.unseenEvents++;
+      if(chance(0.3)) items.push(mkViral());
+    }
+  });
+
+  // 4. רותי עש
+  const res = rutiTick(hadBad);
+  const rc = mkRutiItem(res);
+  if(rc && (res.up || res.down || G.ruti.stage>=2 || chance(0.6))){
+    items.push(rc);
+    if(res.now === 4) G.unseenEvents++;
+    if(res.up && res.now>0) setTimeout(()=>toast(`🕵️‍♀️ ${RUTI.name} עלתה לשלב ${res.now}`), 500);
+    else if(res.down)       setTimeout(()=>toast(`🕵️‍♀️ ${RUTI.name} נסוגה לשלב ${res.now}`), 500);
+  }
+
+  // 5. neighbourhood noise — aware of what is actually built
+  if(chance(0.85)) items.push(mkWA([pickNoise(), pick(WA_REPLY), pick(WA_REPLY)], {collapse:true}));
+  if(chance(0.55)) items.push(mkReview());
+  if(chance(0.50)) items.push(mkStaff());
+  if(chance(0.45)) items.push(mkTicker());
+
+  // 6. a genuinely quiet month deserves to be named
+  if(!triggeredInfo.length && items.length <= 2) items.push(mkQuiet());
+
+  // 7. the report closes the month
+  items.push(mkReportItem(opts.historyRow));
+
+  G.feed.unshift.apply(G.feed, items.reverse());
+}
 
 /* =========================================================
    MONTH RESOLUTION
@@ -1022,18 +1933,44 @@ function resolveMonth(){
     for(const e of list){ if(chance(e.chance)) return e; }
     return null;
   }
-  const r1 = rollFrom(shuffled(redCandidates));
-  const g1 = rollFrom(shuffled(greenCandidates));
-  if(r1) triggered.push(r1);
-  if(g1) triggered.push(g1);
+  // Recency memory lives in G (not a module variable) so a reload can't hand the
+  // player the same headline twice in a row. RED and GREEN remember separately —
+  // a shared window would starve the shorter list.
+  function withoutRecent(list, key){
+    const mem = G.recentEventIds[key] || [];
+    const fresh = list.filter(e=>!mem.includes(e.id));
+    return fresh.length ? fresh : list;
+  }
+  function rememberEvent(id, key, poolSize){
+    const mem = G.recentEventIds[key];
+    if(!mem) return;
+    mem.push(id);
+    const win = Math.max(2, Math.floor(poolSize/2));
+    while(mem.length > win) mem.shift();
+  }
+  const r1 = rollFrom(withoutRecent(shuffled(redCandidates), "bad"));
+  const g1 = rollFrom(withoutRecent(shuffled(greenCandidates), "good"));
+  if(r1){ triggered.push(r1); rememberEvent(r1.id, "bad", redCandidates.length); }
+  if(g1){ triggered.push(g1); rememberEvent(g1.id, "good", greenCandidates.length); }
   if(diff.doubleChance && chance(diff.doubleChance)){
-    const extra = rollFrom(shuffled(redCandidates.filter(e=>!triggered.includes(e))));
-    if(extra) triggered.push(extra);
+    const extra = rollFrom(withoutRecent(shuffled(redCandidates.filter(e=>!triggered.includes(e))), "bad"));
+    if(extra){ triggered.push(extra); rememberEvent(extra.id, "bad", redCandidates.length); }
   }
 
+  // What each event actually did to the balance — the feed card reads its chips
+  // from here instead of keeping a second, drifting copy of the numbers.
+  const triggeredInfo = [];
   triggered.forEach(e=>{
+    const good = pool.GREEN.includes(e);
+    const moneyBefore = G.money, satBefore = G._satDelta||0, insBefore = G.insuranceSpikeUntil||0;
     const result = e.apply();
-    news.push({type:e.name && pool.GREEN.includes(e)?"good":"bad", title:`${e.emoji} ${e.name}`, sub: result, headline:e.headline});
+    const newsRow = {type: good?"good":"bad", title:`${e.emoji} ${e.name}`, sub: result, headline:e.headline};
+    news.push(newsRow);
+    triggeredInfo.push({e, good, newsRow, fx:{
+      money: G.money - moneyBefore,
+      sat: (G._satDelta||0) - satBefore,
+      insurance: (G.insuranceSpikeUntil||0) > insBefore,
+    }});
   });
 
   // dilemma roll (only if none pending already, small chance independent of red/green)
@@ -1120,9 +2057,13 @@ function resolveMonth(){
   });
   if(G.history.length>36) G.history.shift();
 
+  // pendingEvents stays for backwards compatibility, but the feed is the source of truth
   G.pendingEvents = news;
   G.pendingDilemma = dilemma;
   G.justUpgradedThisTurn = false;
+
+  buildMonthFeed({ triggeredInfo, historyRow: G.history[G.history.length-1] });
+  pruneFeed();
 
   // advance calendar
   G.monthIdx += 1;
@@ -1159,6 +2100,9 @@ function checkEndConditions(){
    ========================================================= */
 function render(){
   const app = document.getElementById("app");
+  // a re-render must not throw the player back to the top of the feed
+  const prevFeed = document.querySelector(".feed");
+  if(prevFeed) _feedScroll = prevFeed.scrollTop;
   app.innerHTML = "";
   if(!G){ app.appendChild(renderWelcome()); return; }
   if(G.over){ app.appendChild(renderGameOver()); return; }
@@ -1169,12 +2113,10 @@ function render(){
     case "history": app.appendChild(renderHistory()); break;
     default: app.appendChild(renderDashboard());
   }
-  // overlays
-  if(G.screen==="dashboard" || G.screen==="build" || G.screen==="history"){
-    if(G._showReport){ app.appendChild(renderReportOverlay()); }
-    else if(G._showDilemma){ app.appendChild(renderDilemmaOverlay()); }
-  }
   saveGame();
+  const feed = document.querySelector(".feed");
+  if(feed && _feedScroll) feed.scrollTop = _feedScroll;
+  applyFeedFilter();
   Tour.flushTips();
 }
 
@@ -1354,83 +2296,568 @@ function renderWizard(){
 /* =========================================================
    DASHBOARD
    ========================================================= */
+/* =========================================================
+   DASHBOARD — the feed is the screen now.
+
+   [topstrip]   park · money · rating · רותי · collapsible KPI panel
+   [mood]       net sentiment meter
+   [warnbar]    only when something is actually wrong
+   [dilslot]    sticky dilemma, outside the scroll, blocks "close month"
+   [ftabs]      all · events · crowd · reports
+   [feed]       the scrolling majority of the screen
+   [bottombar]  build · price · close month
+   ========================================================= */
+
+let _feedScroll = 0;
+
 function renderDashboard(){
-  const wrap = el(`<div class="screen"></div>`);
-  wrap.appendChild(renderTopbar());
-
-  if(G.money<0){
-    wrap.appendChild(el(`<div class="banner ${G.winCondition==='sandbox'?'banner-warn':'banner-bad'}">⚠️ ${G.winCondition==='sandbox'?'הפארק בגירעון — כדאי לטפל בזה.':'הפארק בגירעון! עוד קצת ותפשטו רגל.'}</div>`));
-  }
-
-  const sClass = seasonClass(G.monthIdx);
-  const hero = el(`<div class="hero">
-    <div class="hero-scene ${sClass}">${SCENE_SVG}</div>
-    <div class="hero-emoji">${MONTH_EMOJI[G.monthIdx]}</div>
-    <div class="hero-content">
-      <div class="hero-month">${MONTHS[G.monthIdx]} · שנה ${G.year}</div>
-      <div class="hero-sub">${G.parkName} · תור ${G.turn}${G.winCondition==='season'?`/${G.seasonLen}`:''}</div>
-    </div>
-  </div>`);
-  wrap.appendChild(hero);
-
-  const deltaBadge = (()=>{
-    const last = G.history[G.history.length-1];
-    if(!last || last.visitorsDeltaPct==null) return "";
-    const up = last.visitorsDeltaPct>=0;
-    return `<div class="kpi-delta" style="color:${up?'var(--good)':'var(--bad)'}">${up?'▲':'▼'} ${Math.abs(last.visitorsDeltaPct)}%</div>`;
-  })();
-
-  const kpis = el(`<div class="kpi-row">
-    <div class="kpi" data-tour="kpi-visitors"><div class="kpi-label">👥 מבקרים</div><div class="kpi-value">${G.lastVisitors.toLocaleString('he-IL')}</div>${deltaBadge}</div>
-    <div class="kpi" data-tour="kpi-rating"><div class="kpi-label">⭐ דירוג</div><div class="kpi-value">${stars(G.rating)}</div><div class="kpi-delta muted">שביעות רצון ${G.satisfaction}</div></div>
-    <div class="kpi" data-tour="kpi-money"><div class="kpi-label">💰 כסף</div><div class="kpi-value" style="color:${G.money<0?'var(--bad)':'inherit'}">${fmtMoney(G.money)}</div></div>
-  </div>`);
-  wrap.appendChild(kpis);
-  wrap.appendChild(capacityCard());
-
-  wrap.appendChild(priceCard());
-
-  const grid = el(`<div class="action-grid">
-    <div class="action-card" id="goBuild" data-tour="nav-build"><span class="ac-emoji">🏗️</span><span class="ac-label">בנייה ושדרוגים</span></div>
-    <div class="action-card" id="goHistory"><span class="ac-emoji">📊</span><span class="ac-label">היסטוריה ודוחות</span></div>
-  </div>`);
-  wrap.appendChild(grid);
-  on(grid.querySelector("#goBuild"),"click",()=>{ G.screen="build"; render(); });
-  on(grid.querySelector("#goHistory"),"click",()=>{ G.screen="history"; render(); });
-
-  if(!G.quickUI){
-    wrap.appendChild(el(`<div class="section-title">מגמת מבקרים — 6 חודשים אחרונים</div>`));
-    const sparkWrap = el(`<div class="px"></div>`);
-    sparkWrap.appendChild(sparkline(G.history.slice(-6).map(h=>h.visitors), true));
-    wrap.appendChild(sparkWrap);
-  }
-
-  const constructing = G.built.filter(b=>b.status==="building").length;
-  if(constructing>0){
-    wrap.appendChild(el(`<div class="section-title">בבנייה כרגע</div>`));
-    const list = el(`<div class="item-list"></div>`);
-    G.built.filter(b=>b.status==="building").forEach(b=>list.appendChild(buildingCard(b)));
-    wrap.appendChild(list);
-  }
-
-  wrap.appendChild(el(`<div class="spacer"></div>`));
-  const cta = el(`<div class="sticky-cta">
-    <button class="btn btn-primary btn-lg btn-block" id="nextMonthBtn" data-tour="next-month-btn">➡️ המשך לחודש הבא</button>
-  </div>`);
-  on(cta.querySelector("#nextMonthBtn"),"click",()=>{
-    if(Tour.isActive) return; // the game is frozen while the tutorial is up
-    resolveMonth();
-    if(G.pendingDilemma){ G._showDilemma = true; }
-    else { G._showReport = true; }
-    render();
-  });
-  wrap.appendChild(cta);
+  const wrap = el(`<div class="screen dash"></div>`);
+  wrap.appendChild(renderTopstrip());
+  wrap.appendChild(renderDilemmaSlot());
+  wrap.appendChild(renderFeedTabs());
+  wrap.appendChild(renderFeed());
+  wrap.appendChild(renderBottomBar());
 
   Tour.trigger("FIRST_NEXT_MONTH");
+  if(G.ruti && G.ruti.stage>=2) Tour.trigger("RUTI_ON_YOUR_CASE");
   if(G.satisfaction<40) Tour.trigger("SATISFACTION_BELOW_40");
   if(G.money<0) Tour.trigger("NEGATIVE_BALANCE");
 
   return wrap;
+}
+
+/* ---------- top strip ---------- */
+function renderTopstrip(){
+  const cap = capacityTotal();
+  const demand = Math.round(marketPerDay(G.monthIdx));
+  const open = !!G._kpiOpen;
+  const ts = el(`<div class="topstrip"></div>`);
+
+  ts.appendChild(el(`<div class="ts-top">
+    <div class="ts-park" data-tour="park-header">🏊 ${escapeHtml(G.parkName)}</div>
+    <div class="ts-month">${MONTH_EMOJI[G.monthIdx]} ${MONTHS[G.monthIdx]} · שנה ${G.year}${G.winCondition==='season'?` · ${G.turn}/${G.seasonLen}`:''}</div>
+    <div class="ts-acts">
+      <button class="icon-btn" id="helpBtn" data-tour="help-btn" aria-label="עזרה והדרכה">❓</button>
+      <button class="icon-btn" id="menuBtn" aria-label="תפריט">☰</button>
+    </div>
+  </div>`));
+  on(ts.querySelector("#helpBtn"),"click",()=>Tour.openHelp());
+  on(ts.querySelector("#menuBtn"),"click",()=>openMenu());
+
+  const line = el(`<div class="ts-line">
+    <button class="ts-stat ${G.money<0?'neg':''}" data-tour="kpi-money" aria-label="כסף">💰 <span>${fmtMoney(G.money)}</span></button>
+    <button class="ts-stat" data-tour="kpi-rating" aria-label="דירוג ושביעות רצון">⭐ <span>${G.rating}</span><small>· ${G.satisfaction}</small></button>
+    <button class="ts-ruti ${G.ruti.stage>0?'on':''}" data-tour="ruti-chip" aria-label="רותי עש">🕵️‍♀️ <span>${G.ruti.stage}</span></button>
+    <button class="ts-exp ${open?'open':''}" id="kpiExp" aria-label="פרטים נוספים">▼</button>
+  </div>`);
+  on(line.querySelector('[data-tour="kpi-money"]'),"click",()=>Tour.openGlossary("money"));
+  on(line.querySelector('[data-tour="kpi-rating"]'),"click",()=>Tour.openGlossary("satisfaction"));
+  on(line.querySelector('[data-tour="ruti-chip"]'),"click",()=>{
+    if(G.ruti.stage===0) toast("🕵️‍♀️ רותי עש רגועה. בינתיים.");
+    else toast(`🕵️‍♀️ ${RUTI.name} · ${RUTI.stageNames[G.ruti.stage]} · חום ${G.ruti.heat}`);
+  });
+  on(line.querySelector("#kpiExp"),"click",()=>{ G._kpiOpen = !G._kpiOpen; toggleKpiPanel(); });
+  ts.appendChild(line);
+
+  ts.appendChild(el(`<div class="ts-detail ${open?'open':''}"><div class="ts-detail-in">
+    <div class="ts-cell" data-tour="kpi-visitors"><b>${G.lastVisitors.toLocaleString('he-IL')}</b><span>👥 מבקרים בחודש שעבר</span></div>
+    <div class="ts-cell"><b>${G.satisfaction}</b><span>😊 שביעות רצון</span></div>
+    <div class="ts-cell"><b>${cap.toLocaleString('he-IL')}</b><span>🏊 קיבולת ליום</span></div>
+    <div class="ts-cell"><b>${demand.toLocaleString('he-IL')}</b><span>📈 ביקוש ליום</span></div>
+    <div class="ts-cell"><b>₪${priceNow()}</b><span>🎟️ מחיר כרטיס</span></div>
+    <div class="ts-cell"><b>${RUTI.stageNames[G.ruti.stage]}</b><span>🕵️‍♀️ רותי עש</span></div>
+  </div></div>`));
+
+  // net sentiment — one number for "how the internet feels about you"
+  const mo = moodScore();
+  const fill = mo>70 ? "linear-gradient(90deg,#6ee7b7,#10b981)"
+             : mo>45 ? "linear-gradient(90deg,#fcd34d,#f59e0b)"
+             : "linear-gradient(90deg,#fca5a5,#dc2626)";
+  const face = mo>78?"😍":mo>60?"🙂":mo>42?"😐":mo>25?"😠":"🤬";
+  const lbl  = mo>60?"אוהבים אתכם":mo>42?"סבבה":"מתחיל להסריח";
+  ts.appendChild(el(`<div class="mood">
+    <span class="mood-face">${face}</span>
+    <div class="mood-track"><div class="mood-fill" style="width:${mo}%;background:${fill}"></div></div>
+    <span class="mood-lbl">${lbl}</span>
+  </div>`));
+
+  if(cap>0 && demand > cap*1.15){
+    ts.appendChild(el(`<div class="ts-warnbar">🚧 ~${Math.round((demand-cap)*30).toLocaleString('he-IL')} אנשים יחזרו הביתה החודש</div>`));
+  } else if(G.money<0){
+    ts.appendChild(el(`<div class="ts-warnbar">⚠️ הפארק בגירעון${G.winCondition==='sandbox'?'' : ' — עוד קצת ותפשטו רגל'}</div>`));
+  }
+  return ts;
+}
+function toggleKpiPanel(){
+  const d = document.querySelector(".ts-detail"), b = document.querySelector("#kpiExp");
+  if(d) d.classList.toggle("open", !!G._kpiOpen);
+  if(b) b.classList.toggle("open", !!G._kpiOpen);
+}
+/* The tutorial points at 👥 מבקרים, which lives inside the collapsed panel —
+   so the step opens the panel first. Documented in onboarding-tutorial-spec.md. */
+function openKpiPanel(){ if(!G) return; G._kpiOpen = true; toggleKpiPanel(); }
+
+/* ---------- the sticky dilemma slot ---------- */
+function renderDilemmaSlot(){
+  const slot = el(`<div class="dilslot"></div>`);
+  const dil = G.pendingDilemma;
+  if(!dil) return slot;
+  slot.classList.add("on");
+  slot.appendChild(el(`<div class="dil-pin">📌 מחכה להחלטה שלך — אי אפשר לסגור חודש</div>`));
+  slot.appendChild(el(`<div class="dil-q" data-tour="event-sheet">${dil.emoji} ${dil.headline}</div>`));
+  if(!G.quickUI) slot.appendChild(el(`<div class="dil-ctx">${dil.desc}</div>`));
+  const btns = el(`<div class="dil-btns"></div>`);
+  dil.choices.forEach((c,i)=>{
+    const b = el(`<button class="${i===0?'a':'b'}">${c.label}</button>`);
+    on(b,"click",()=>{
+      if(Tour.isActive) return;
+      G._satDelta = 0;
+      const result = c.apply();
+      if(G._satDelta){
+        G.satisfaction = clamp(Math.round(G.satisfaction + G._satDelta*0.3), 0, 100);
+        G.rating = ratingFromSatisfaction(G.satisfaction);
+      }
+      pushFeed(mkDecision(dil, result));
+      G.pendingDilemma = null;
+      render();
+      const f = document.querySelector(".feed");
+      if(f){ f.scrollTop = 0; _feedScroll = 0; }
+    });
+    btns.appendChild(b);
+  });
+  slot.appendChild(btns);
+  Tour.trigger("FIRST_RANDOM_EVENT");
+  return slot;
+}
+
+/* ---------- tabs + badge ---------- */
+function renderFeedTabs(){
+  const wrap = el(`<div class="ftabs"></div>`);
+  [["all","הכל"],["events","🚨 אירועים"],["crowd","💬 קהל"],["report","📊 דוחות"]].forEach(pair=>{
+    const k = pair[0];
+    const badge = k==="events" ? `<span class="bdg ${G.unseenEvents>0?'on':''}">${G.unseenEvents}</span>` : "";
+    const b = el(`<button class="ftab ${G.feedFilter===k?'on':''}" data-f="${k}">${pair[1]}${badge}</button>`);
+    on(b,"click",()=>{
+      G.feedFilter = k;
+      if(k==="events" || k==="all") G.unseenEvents = 0;
+      render();
+    });
+    wrap.appendChild(b);
+  });
+  return wrap;
+}
+
+/* ---------- the feed ---------- */
+function renderFeed(){
+  const feed = el(`<div class="feed" data-tour="feed" data-f="${G.feedFilter||'all'}"></div>`);
+  const list = Array.isArray(G.feed) ? G.feed : [];
+
+  if(!list.length){
+    feed.appendChild(el(`<div class="feed-empty"><b>🏊 עוד לא קרה פה כלום</b>
+      <span>זה הפיד של הפארק. כל מה שקורה — מבזקים, קבוצת הוואטסאפ של השכונה,
+      ביקורות גוגל, לחישות של הצוות והדוח החודשי — ינחת פה.<br>
+      לחצו על <b>סגור חודש</b> למטה כדי להתחיל.</span></div>`));
+    return feed;
+  }
+
+  // group by turn. G.feed is newest→oldest, so months come out newest first.
+  const order = [], byTurn = {};
+  list.forEach(it=>{
+    if(!byTurn[it.turn]){ byTurn[it.turn] = []; order.push(it.turn); }
+    byTurn[it.turn].push(it);
+  });
+
+  order.forEach(turn=>{
+    const items = byTurn[turn].slice().reverse();   // back to chronological
+    const first = items[0];
+    const sec = el(`<div class="month"></div>`);
+    const rep = items.filter(i=>i.type==="report")[0];
+    const sum = rep ? `<i>${(rep.payload.visitors/1000).toFixed(1)}K</i> 👥 · <i style="color:${rep.payload.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(rep.payload.profit)}</i>` : "";
+    sec.appendChild(el(`<div class="mhead"><div class="mhead-in">
+      <b>📅 ${MONTHS[first.monthIdx]} · שנה ${first.year}</b><span class="sum">${sum}</span>
+    </div></div>`));
+
+    const childrenOf = {};
+    items.forEach(it=>{ if(it.parentId){ (childrenOf[it.parentId] = childrenOf[it.parentId]||[]).push(it); } });
+
+    items.forEach(it=>{
+      if(it.parentId) return;                        // rendered inside its parent's thread
+      const node = feedCard(it);
+      if(!node) return;
+      node.setAttribute("data-kind", it.kind);
+      sec.appendChild(node);
+      const kids = childrenOf[it.id];
+      if(kids && kids.length){
+        const th = el(`<div class="thread"><div class="thread-lbl">↳ מה קרה בעקבות זה</div></div>`);
+        kids.forEach(k=>{
+          const kn = feedCard(k);
+          if(!kn) return;
+          kn.setAttribute("data-kind", k.kind);
+          th.appendChild(kn);
+        });
+        sec.appendChild(th);
+      }
+    });
+    feed.appendChild(sec);
+  });
+  return feed;
+}
+
+/* Hide month headers whose entire content was filtered away. */
+function applyFeedFilter(){
+  const feed = document.querySelector(".feed");
+  if(!feed) return;
+  feed.querySelectorAll(".month").forEach(sec=>{
+    const any = Array.prototype.some.call(sec.querySelectorAll("[data-kind]"),
+      n => window.getComputedStyle(n).display !== "none");
+    sec.classList.toggle("empty", !any);
+  });
+}
+
+/* ---------- one card per feed item ---------- */
+function feedCard(it){
+  let node = null;
+  switch(it.type){
+    case "ticker":    node = cTicker(it); break;
+    case "wa":        node = cWA(it); break;
+    case "review":    node = cReview(it); break;
+    case "staff":     node = cStaff(it); break;
+    case "viral":     node = cViral(it); break;
+    case "quiet":     node = cQuiet(it); break;
+    case "news_bad":
+    case "news_good": node = cEvent(it); break;
+    case "ruti":      node = cRuti(it); break;
+    case "decision":  node = cDecision(it); break;
+    case "report":    node = renderReportCard(it); break;
+    default:          node = null;
+  }
+  if(node && it.late && node.classList.contains("c")){
+    node.insertBefore(el(`<div class="late">⏳ מגיב על החודש שעבר</div>`), node.firstChild);
+  }
+  return node;
+}
+
+function cTicker(it){ return el(`<div class="t3">${escapeHtml(it.payload.text)}</div>`); }
+
+function cQuiet(){
+  return el(`<div class="quiet"><b>🙏 חודש שקט</b>
+    <span>אף אחד לא רב על כיסא, אף אחד לא נתקע במגלשה, ואף אחד לא כתב עליכם כלום.<br>
+    תיהנו מזה. זה לא יימשך.</span></div>`);
+}
+
+function cEvent(it){
+  const p = it.payload, good = it.type==="news_good";
+  const c = el(`<div class="c t1 ${good?'good':''}">
+    <div class="kicker">${good?"📰 חדשות טובות":"🚨 מבזק — קרה החודש"}</div>
+    <div class="headline">${p.emoji||""} ${p.headline}</div>
+    <div class="subline">${p.sub||""}</div>
+  </div>`);
+  if(p.chips && p.chips.length){
+    c.appendChild(el(`<div class="impact">${p.chips.map(ch=>`<span class="chip ${ch[1]}">${ch[0]}</span>`).join("")}</div>`));
+  }
+  return c;
+}
+
+function cDecision(it){
+  const p = it.payload;
+  return el(`<div class="c">
+    <div class="c-head"><div class="av">🗳️</div><div>
+      <div class="c-who">החלטה: ${p.question}</div>
+      <div class="c-meta">${MONTHS[it.monthIdx]} · שנה ${it.year}</div></div></div>
+    <div class="c-body">${p.outcome}</div>
+  </div>`);
+}
+
+function cWA(it){
+  const p = it.payload;
+  const c = el(`<div class="c wa">
+    <div class="wa-bar">${p.group}<small>${p.members} משתתפים</small></div>
+  </div>`);
+  const bubble = (m,i)=>el(`<div class="bub ${i===0?'':'other'}">
+    <span class="nm" style="color:${m.color}">${escapeHtml(m.who)}</span>${m.text}
+    <div class="tm">${m.time}${i===0?" ✓✓":""}</div></div>`);
+  const msgs = p.msgs||[];
+  c.appendChild(bubble(msgs[0],0));
+  const rest = msgs.slice(1);
+  if(rest.length && !p.collapse){
+    rest.forEach((m,i)=>c.appendChild(bubble(m,i+1)));
+  } else if(rest.length){
+    const more = el(`<button class="wa-more">💬 עוד ${rest.length} ${rest.length===1?'הודעה':'הודעות'} ↓</button>`);
+    on(more,"click",()=>{
+      rest.forEach((m,i)=>c.insertBefore(bubble(m,i+1), more));
+      more.remove();
+    });
+    c.appendChild(more);
+  }
+  c.appendChild(el(`<div class="c-foot"><span class="react">💬 ${p.comments} תגובות</span><span class="react">👍 ${p.likes}</span></div>`));
+  return c;
+}
+
+const OWNER_SASS = [
+  "אולי כדאי לבדוק מה עשיתם אתם באותו יום 🙂 בהצלחה.",
+  "מעניין שכל מי שמתלונן על התור מגיע ב-11:00 באוגוסט.",
+  "נשמח לראותכם שוב, הפעם בלי השולחן המתקפל.",
+  "תודה על הביקורת. שמרנו אותה. גם אנחנו יודעים לשמור צילומי מסך.",
+];
+const OWNER_NICE = "תודה על המשוב, לקחנו ללב ואנחנו כבר עובדים על זה. מקווים לראותכם שוב!";
+
+function cReview(it){
+  const p = it.payload;
+  const c = el(`<div class="c rev">
+    <div class="g-bar"><span class="g-logo"><i>G</i><i>o</i><i>o</i><i>g</i><i>l</i><i>e</i></span> ביקורת חדשה על ${escapeHtml(G.parkName)}</div>
+    <div class="c-head"><div class="av">${p.avatar}</div><div>
+      <div class="c-who">${escapeHtml(p.who)}</div>
+      <div class="c-meta"><span class="strs" style="color:${p.stars>=4?'#f0a500':'#d9362b'}">${starStr(p.stars)}</span> · ${p.days}</div>
+    </div></div>
+    <div class="c-body">${p.text}</div>
+  </div>`);
+
+  if(p.ownerReply){
+    c.appendChild(el(`<div class="owner-reply"><b>תגובת הבעלים · ${escapeHtml(G.parkName)}</b>${p.ownerReply}</div>`));
+    return c;
+  }
+  const foot = el(`<div class="c-foot">
+    <button class="btn-mini primary" data-a="nice">🙏 להגיב יפה</button>
+    <button class="btn-mini" data-a="sass">🔥 לענות בסטייל</button></div>`);
+  foot.querySelectorAll("[data-a]").forEach(b=>on(b,"click",()=>{
+    if(Tour.isActive) return;
+    const nice = b.dataset.a==="nice";
+    p.ownerReply = nice ? OWNER_NICE : pick(OWNER_SASS);
+    if(nice){
+      G.satisfaction = clamp(G.satisfaction+1, 0, 100);
+      rutiHeat(-5);
+      toast("+1 שביעות רצון · רותי מתקררת קצת");
+    } else {
+      G.satisfaction = clamp(G.satisfaction-2, 0, 100);
+      rutiHeat(12);
+      toast("🕵️‍♀️ רותי עש שמרה צילום מסך. חום +12");
+    }
+    G.rating = ratingFromSatisfaction(G.satisfaction);
+    render();
+  }));
+  c.appendChild(foot);
+  return c;
+}
+
+function cStaff(it){
+  const p = it.payload;
+  return el(`<div class="c staff">
+    <div class="staff-tag">👷 צוות הפארק — קבוצה פנימית</div>
+    <div class="c-head"><div class="av">${p.avatar}</div><div>
+      <div class="c-who">${p.who}</div><div class="c-meta">היום · ${p.time}</div></div></div>
+    <div class="c-body">${p.text}</div>
+    <div class="c-foot"><span class="react">😅 ${p.r1}</span><span class="react">👀 ${p.r2}</span></div>
+  </div>`);
+}
+
+function cViral(it){
+  const p = it.payload;
+  return el(`<div class="c viral"><div class="vid">🎬</div>
+    <div class="vid-cap">${p.caption}</div>
+    <div class="vid-stats">▶ ${p.views} · ${p.likes} ❤️</div></div>`);
+}
+
+function cRuti(it){
+  const p = it.payload;
+  const heatBar = (green)=>`<div class="ruti-heat"><span>חום</span>
+    <div class="tr"><div class="fl" style="width:${p.heat}%${green?';background:linear-gradient(90deg,#6ee7b7,#059669)':''}"></div></div>
+    <span>${p.heat}</span></div>`;
+
+  if(p.mode==="escalate"){
+    const c = el(`<div class="c t1" style="border-inline-start-color:var(--ruti)">
+      <div class="kicker" style="color:var(--ruti)">🕵️‍♀️ ${RUTI.name} · שלב 4 — הסלמה</div>
+      <div class="headline">${p.headline}</div>
+      <div class="subline">${p.sub}</div>
+      <div class="impact">
+        <span class="chip b">${fmtMoney(-p.fine)}</span>
+        <span class="chip b">${p.sat} שביעות רצון</span>
+        <span class="chip p">חום ${p.heat}</span></div>
+    </div>`);
+    return c;
+  }
+  if(p.mode==="down"){
+    return el(`<div class="c rutic">
+      <div class="ruti-bar" style="background:linear-gradient(135deg,#059669,#047857)">🕵️‍♀️ ${RUTI.name} · נסוגה שלב</div>
+      <div class="c-head"><div class="av">🕵️‍♀️</div><div>
+        <div class="c-who">${RUTI.name}</div>
+        <div class="c-meta">שלב ${p.stage} · חום ${p.heat}</div></div></div>
+      <div class="c-body">${p.text}</div>
+      ${heatBar(true)}</div>`);
+  }
+  if(p.mode==="group"){
+    return el(`<div class="c rutic">
+      <div class="ruti-bar">🕵️‍♀️ ${escapeHtml(p.group)}<small>שלב 3</small></div>
+      <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name} · מנהלת</span>${p.text}
+        <div class="tm">${p.time} ✓✓</div></div>
+      <div class="grp-count">👥 ${(p.members||0).toLocaleString('he-IL')} חברים בקבוצה · ${p.joined} הצטרפו השבוע</div>
+      ${heatBar(false)}</div>`);
+  }
+  if(p.mode==="review"){
+    return el(`<div class="c rutic">
+      <div class="ruti-bar">🕵️‍♀️ ${RUTI.name} · שלב 2 — ביקורת<small>Google</small></div>
+      <div class="c-head"><div class="av">🕵️‍♀️</div><div>
+        <div class="c-who">${RUTI.name}</div>
+        <div class="c-meta"><span class="strs" style="color:#d9362b">${starStr(1)}</span> · Local Guide · ${p.reviews} ביקורות</div></div></div>
+      <div class="c-body">${p.text}</div>
+      ${heatBar(false)}</div>`);
+  }
+  // stage 1 — a pointed remark in the neighbourhood group
+  return el(`<div class="c rutic">
+    <div class="ruti-bar">🕵️‍♀️ ${RUTI.name} · שלב 1<small>שכונת רמת אגוז</small></div>
+    <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name}</span>${p.text}
+      <div class="tm">${p.t1} ✓✓</div></div>
+    <div class="bub other"><span class="nm" style="color:${p.replyColor}">${escapeHtml(p.replyWho)}</span>${p.reply}
+      <div class="tm">${p.t2}</div></div>
+    ${heatBar(false)}</div>`);
+}
+
+/* ---------- the monthly report, as a card inside the feed ----------
+   Same numbers, same collapsible breakdown and same satisfaction
+   explanation the overlay used to show — it just lives in the feed now,
+   and it is never wiped. */
+function renderReportCard(it){
+  const h = it.payload;
+  const card = el(`<div class="c report"></div>`);
+  card.appendChild(el(`<div class="rep-head">
+    <b>📅 סגירת ${MONTHS[h.monthIdx]} · שנה ${h.year}</b>
+    <span style="font-size:11px;opacity:.92">${escapeHtml(h.parkName||G.parkName)}</span></div>`));
+
+  const deltaTxt = (h.visitorsDeltaPct==null) ? "" :
+    `<div style="font-size:10px;font-weight:800;color:${h.visitorsDeltaPct>=0?'var(--good)':'var(--bad)'}">${h.visitorsDeltaPct>=0?'▲':'▼'} ${Math.abs(h.visitorsDeltaPct)}%</div>`;
+  card.appendChild(el(`<div class="rep-kpi">
+    <div><small>👥 מבקרים</small><b>${(h.visitors/1000).toFixed(1)}K</b>${deltaTxt}</div>
+    <div><small>⭐ דירוג</small><b>${stars(h.rating)}</b></div>
+    <div><small>💰 רווח</small><b style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</b></div>
+  </div>`));
+
+  // why the satisfaction score moved — the factors resolveMonth weighed
+  if(h.satUp || h.satDown){
+    const satDelta = (h.satBefore!=null) ? h.satisfaction-h.satBefore : null;
+    const dColor = satDelta==null ? 'var(--dim)' : (satDelta>=0 ? 'var(--good)':'var(--bad)');
+    const box = el(`<div class="rep-sat">
+      <div class="rs-head"><span>😊 שביעות רצון</span>
+        <span>${h.satBefore!=null?`${h.satBefore} → `:''}${h.satisfaction}
+        ${satDelta!=null?`<span style="color:${dColor};">(${satDelta>=0?'+':''}${satDelta})</span>`:''}</span></div>
+      <div class="stack gap4" style="margin-top:7px;"></div>
+    </div>`);
+    const rows = box.querySelector(".stack");
+    (h.satUp||[]).forEach(f=>rows.appendChild(el(`<div class="sat-row"><span class="up">↑ ${f.label}</span><span class="up">+${f.v}</span></div>`)));
+    (h.satDown||[]).forEach(f=>rows.appendChild(el(`<div class="sat-row"><span class="down">↓ ${f.label}</span><span class="down">${f.v}</span></div>`)));
+    if(!(h.satUp||[]).length && !(h.satDown||[]).length){
+      rows.appendChild(el(`<div class="muted small">חודש בלי אירועים מיוחדים.</div>`));
+    }
+    const more = el(`<button class="tour-more" style="margin-top:6px;">הסבר מלא ←</button>`);
+    on(more,"click",()=>Tour.openGlossary("satisfaction"));
+    box.appendChild(more);
+    card.appendChild(box);
+  }
+
+  const toggle = el(`<button class="rep-toggle" data-tour="report-financials">💵 פירוט כספי ▼</button>`);
+  const lines = el(`<div class="rep-lines"></div>`);
+  const row = (label,val,color)=>el(`<div class="fr"><span>${label}</span><span${color?` style="color:${color}"`:''}>${val}</span></div>`);
+  lines.appendChild(row(`🎟️ כרטיסים <span style="opacity:.7">(₪${h.ticketPrice==null?ECON.ticketDefault:h.ticketPrice})</span>`, fmtMoney(h.ticketIncome)));
+  if(h.priceFactorVal!=null && h.priceFactorVal!==1){
+    let label = `↳ מקדם מחיר ×${h.priceFactorVal}`, value, color;
+    if(h.priceVisitorDelta){
+      const up = h.priceVisitorDelta>0;
+      value = `${up?'+':''}${h.priceVisitorDelta.toLocaleString('he-IL')} מבקרים`;
+      color = up ? 'var(--good)' : 'var(--bad)';
+    } else {
+      label += ` <span style="opacity:.7">(הקיבולת חסמה ממילא)</span>`;
+      value = "0 מבקרים"; color = 'var(--dim)';
+    }
+    lines.appendChild(row(`<span style="padding-inline-start:10px;">${label}</span>`, value, color));
+  }
+  lines.appendChild(row("🍔 הסעדה", fmtMoney(h.foodIncome)));
+  lines.appendChild(row("💎 VIP", fmtMoney(h.vipIncome)));
+  lines.appendChild(row(`🧑‍✈️ שכר עובדים <span style="opacity:.7">(${h.staffLifeguards} מצילים · ${h.staffOther} עובדים)</span>`, "-"+fmtMoney(h.payroll||0), "var(--bad)"));
+  lines.appendChild(row("🔧 תחזוקה", "-"+fmtMoney(h.maintenance), "var(--bad)"));
+  lines.appendChild(row("🏛️ ארנונה", "-"+fmtMoney(h.arnona||0), "var(--bad)"));
+  lines.appendChild(row(`📋 ביטוח${h.insuranceLoaded?' <span style="opacity:.7">(מוטען אחרי תאונה)</span>':''}`, "-"+fmtMoney(h.insurance||0), "var(--bad)"));
+  lines.appendChild(row("🗄️ מנהלה ורישוי", "-"+fmtMoney(h.admin||0), "var(--bad)"));
+  lines.appendChild(row("🛡️ אבטחה", "-"+fmtMoney(h.securityMonthly), "var(--bad)"));
+  const tot = row("רווח נקי", fmtMoney(h.profit), h.profit>=0?'var(--good)':'var(--bad)');
+  tot.classList.add("tot");
+  lines.appendChild(tot);
+  if(h.turnedAway>0){
+    const away = row("🚧 נשלחו הביתה (אין מקום)", h.turnedAway.toLocaleString('he-IL'), "var(--warn)");
+    away.style.borderTop = "1px dashed var(--border)";
+    away.style.marginTop = "5px"; away.style.paddingTop = "6px";
+    lines.appendChild(away);
+  }
+  if(!G.quickUI) lines.classList.add("open");
+  toggle.textContent = lines.classList.contains("open") ? "💵 פירוט כספי ▲" : "💵 פירוט כספי ▼";
+  on(toggle,"click",()=>{
+    lines.classList.toggle("open");
+    toggle.textContent = lines.classList.contains("open") ? "💵 פירוט כספי ▲" : "💵 פירוט כספי ▼";
+  });
+  card.appendChild(toggle);
+  card.appendChild(lines);
+
+  Tour.trigger("FIRST_MONTHLY_REPORT");
+  return card;
+}
+
+/* ---------- bottom bar ---------- */
+function renderBottomBar(){
+  const bar = el(`<div class="bottombar">
+    <button class="bb-icon" id="goBuild" data-tour="nav-build">🏗️<small>בנייה</small></button>
+    <button class="bb-icon" id="goPrice">🎟️<small>₪${priceNow()}</small></button>
+    <button class="bb-next" id="nextMonthBtn" data-tour="next-month-btn">➡️ סגור חודש</button>
+  </div>`);
+  const buildBtn = bar.querySelector("#goBuild");
+  const building = G.built.filter(b=>b.status==="building").length;
+  if(building>0) buildBtn.appendChild(el(`<span class="bdg">${building}</span>`));
+  on(buildBtn,"click",()=>{ if(Tour.isActive) return; G.screen="build"; render(); });
+  on(bar.querySelector("#goPrice"),"click",()=>{ if(Tour.isActive) return; openPriceSheet(); });
+
+  const next = bar.querySelector("#nextMonthBtn");
+  if(G.pendingDilemma) next.disabled = true;
+  on(next,"click",()=>{
+    if(Tour.isActive) return;                 // the game is frozen while the tutorial is up
+    if(G.pendingDilemma){ toast("קודם תחליט על הדילמה למעלה 👆"); return; }
+    resolveMonth();
+    const ended = checkEndConditions();
+    render();
+    if(!ended){
+      const f = document.querySelector(".feed");
+      if(f){ f.scrollTop = 0; _feedScroll = 0; }
+    }
+  });
+  return bar;
+}
+
+/* Capacity and price didn't disappear — they moved into a bottom sheet
+   behind the 🎟️ button, so the feed can own the screen. */
+function openPriceSheet(){
+  const before = priceNow();
+  const overlay = el(`<div class="overlay"><div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="title-xl" style="font-size:18px;">🎟️ קיבולת ומחיר</div>
+  </div></div>`);
+  const sheet = overlay.querySelector(".sheet");
+  sheet.appendChild(capacityCard());
+  sheet.appendChild(priceCard());
+  const closeBtn = el(`<button class="btn btn-primary btn-block" style="margin-top:14px;">סגירה</button>`);
+  const finish = ()=>{
+    overlay.remove();
+    const now = priceNow();
+    if(now !== before){
+      // a steep ticket is exactly the sort of thing רותי writes down
+      if(now > 45 && before <= 45) rutiHeat(8);
+      pushFeed(mkItem("noise","ticker",3,{text:`עדכנת מחיר כרטיס ל-₪${now}`}));
+      const line = now>=45 ? `₪${now}?! על מה בדיוק? על הזכות לחפש כיסא? 😤`
+        : now<=26 ? `שמעתי שהורידו ל-₪${now}. יאללה כולם מחר, אני מזמינה מונית גדולה 🎉`
+        : `עדכנו מחיר ל-₪${now}. סביר בעיניי, אבל אני אומרת את זה בשקט.`;
+      pushFeed(mkWA([line], {collapse:false}));
+      toast(now>45 ? `₪${now} — 🕵️‍♀️ רותי עש שמה לב. חום +8` : `מחיר: ₪${now}`);
+    }
+    render();
+  };
+  on(closeBtn,"click",finish);
+  sheet.appendChild(closeBtn);
+  on(overlay,"click",(e)=>{ if(e.target===overlay) finish(); });
+  document.body.appendChild(overlay);
 }
 
 /* Capacity is the real bottleneck of the park, and until now it only showed up
@@ -1537,20 +2964,6 @@ function priceCard(){
   return card;
 }
 
-function renderTopbar(){
-  const bar = el(`<div class="topbar">
-    <div class="park-id" data-tour="park-header">🏊 ${escapeHtml(G.parkName)}</div>
-    <div class="row gap8">
-      <span class="badge badge-gold">💰 ${fmtMoney(G.money)}</span>
-      <button class="icon-btn" id="helpBtn" data-tour="help-btn" aria-label="עזרה והדרכה">❓</button>
-      <button class="icon-btn" id="menuBtn">☰</button>
-    </div>
-  </div>`);
-  on(bar.querySelector("#helpBtn"),"click",()=>Tour.openHelp());
-  on(bar.querySelector("#menuBtn"),"click",()=>openMenu());
-  return bar;
-}
-
 function openMenu(){
   const overlay = el(`<div class="overlay"><div class="sheet">
     <div class="sheet-handle"></div>
@@ -1560,12 +2973,14 @@ function openMenu(){
         <span>מצב תצוגה</span>
         <button class="btn btn-sm ${G.quickUI?'btn-accent':'btn-ghost'}" id="toggleUI">${G.quickUI?'🐇 מהיר':'🐢 מורחב'}</button>
       </div>
+      <button class="btn btn-ghost btn-block" id="menuHistory">📊 היסטוריה ודוחות</button>
       <button class="btn btn-ghost btn-block" id="menuNewGame">🆕 משחק חדש</button>
       <button class="btn btn-ghost btn-block" id="menuClose">סגירה</button>
     </div>
   </div></div>`);
   document.body.appendChild(overlay);
   on(overlay.querySelector("#toggleUI"),"click",()=>{ G.quickUI=!G.quickUI; overlay.remove(); render(); });
+  on(overlay.querySelector("#menuHistory"),"click",()=>{ overlay.remove(); G.screen="history"; render(); });
   on(overlay.querySelector("#menuNewGame"),"click",()=>{
     if(confirm("להתחיל משחק חדש? ההתקדמות הנוכחית תימחק.")){
       clearSave();
@@ -1780,6 +3195,8 @@ function availableCard(d){
     if(d.weeks<=0) G.justUpgradedThisTurn = true;
     if(d.id==="extra_dunam"){ /* built triggers capacity via effect below on completion */ }
     G.built.push(b);
+    // fixing a complaint the neighbourhood keeps posting about takes the heat down
+    if(d.shade || d.cat==="food") rutiHeat(-8);
     toast(`🔨 בונים ${d.name}...`);
     render();
     if(d.weeks>0) Tour.trigger("FIRST_CONSTRUCTION_START");
@@ -1881,159 +3298,6 @@ function renderHistory(){
   wrap.appendChild(card);
   wrap.appendChild(el(`<div style="height:20px;"></div>`));
   return wrap;
-}
-
-/* =========================================================
-   DILEMMA OVERLAY
-   ========================================================= */
-function renderDilemmaOverlay(){
-  const dil = G.pendingDilemma;
-  const overlay = el(`<div class="overlay"><div class="sheet"></div></div>`);
-  const sheet = overlay.querySelector(".sheet");
-  sheet.appendChild(el(`<div class="sheet-handle"></div>`));
-  sheet.appendChild(el(`<span class="event-emoji">${dil.emoji}</span>`));
-  sheet.appendChild(el(`<div class="event-headline" data-tour="event-sheet">${dil.headline}</div>`));
-  if(!G.quickUI){
-    sheet.appendChild(el(`<div class="event-desc">${dil.desc}</div>`));
-  }
-  const choicesWrap = el(`<div class="event-choices"></div>`);
-  dil.choices.forEach((c,i)=>{
-    const btn = el(`<button class="btn ${i===0?'btn-good':'btn-ghost'} btn-lg btn-block">${c.label}</button>`);
-    on(btn,"click",()=>{
-      G._satDelta = 0;
-      const result = c.apply();
-      G.pendingEvents.unshift({type:"neutral", title:`${dil.emoji} ${dil.name}`, sub:result});
-      if(G._satDelta){ G.satisfaction = clamp(G.satisfaction + G._satDelta*0.3, 0, 100); G.satisfaction = Math.round(G.satisfaction); G.rating = ratingFromSatisfaction(G.satisfaction); }
-      G.pendingDilemma = null;
-      G._showDilemma = false;
-      G._showReport = true;
-      render();
-    });
-    choicesWrap.appendChild(btn);
-  });
-  sheet.appendChild(choicesWrap);
-
-  Tour.trigger("FIRST_RANDOM_EVENT");
-
-  return overlay;
-}
-
-/* =========================================================
-   MONTHLY REPORT OVERLAY
-   ========================================================= */
-function renderReportOverlay(){
-  const h = G.history[G.history.length-1];
-  const overlay = el(`<div class="overlay"><div class="sheet"></div></div>`);
-  const sheet = overlay.querySelector(".sheet");
-  sheet.appendChild(el(`<div class="sheet-handle"></div>`));
-  sheet.appendChild(el(`<div class="row-between"><div style="font-weight:800;">📅 ${MONTHS[h.monthIdx]} ${h.year}</div><div class="muted small">${G.parkName}</div></div>`));
-
-  const deltaColor = (h.visitorsDeltaPct==null)?'var(--dim)':(h.visitorsDeltaPct>=0?'var(--good)':'var(--bad)');
-  const deltaTxt = (h.visitorsDeltaPct==null)?'':` (${h.visitorsDeltaPct>=0?'+':''}${h.visitorsDeltaPct}%)`;
-  sheet.appendChild(el(`<div class="kpi-row" style="margin:14px 0 0;">
-    <div class="kpi"><div class="kpi-label">👥 מבקרים</div><div class="kpi-value">${h.visitors.toLocaleString('he-IL')}</div><div class="kpi-delta" style="color:${deltaColor}">${deltaTxt}</div></div>
-    <div class="kpi"><div class="kpi-label">⭐ דירוג</div><div class="kpi-value">${stars(h.rating)}</div></div>
-    <div class="kpi"><div class="kpi-label">💰 רווח נקי</div><div class="kpi-value" style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</div></div>
-  </div>`));
-
-  // why the satisfaction score moved — the factors resolveMonth just weighed
-  if(h.satUp || h.satDown){
-    const satDelta = (h.satBefore!=null) ? h.satisfaction-h.satBefore : null;
-    const dColor = satDelta==null? 'var(--dim)' : (satDelta>=0? 'var(--good)':'var(--bad)');
-    const satBox = el(`<div class="card" style="margin-top:14px;">
-      <div class="row-between">
-        <span style="font-weight:700;font-size:13.5px;">😊 שביעות רצון</span>
-        <span style="font-weight:800;font-size:13.5px;">${h.satBefore!=null?`${h.satBefore} → `:''}${h.satisfaction}
-          ${satDelta!=null?`<span style="color:${dColor};">(${satDelta>=0?'+':''}${satDelta})</span>`:''}</span>
-      </div>
-      <div class="stack gap4" style="margin-top:9px;"></div>
-    </div>`);
-    const rows = satBox.querySelector(".stack");
-    (h.satUp||[]).forEach(f=>rows.appendChild(el(`<div class="sat-row"><span class="up">↑ ${f.label}</span><span class="up">+${f.v}</span></div>`)));
-    (h.satDown||[]).forEach(f=>rows.appendChild(el(`<div class="sat-row"><span class="down">↓ ${f.label}</span><span class="down">${f.v}</span></div>`)));
-    if(!(h.satUp||[]).length && !(h.satDown||[]).length){
-      rows.appendChild(el(`<div class="muted small">חודש בלי אירועים מיוחדים.</div>`));
-    }
-    const more = el(`<button class="tour-more" style="margin-top:6px;">הסבר מלא ←</button>`);
-    on(more,"click",()=>Tour.openGlossary("satisfaction"));
-    satBox.appendChild(more);
-    sheet.appendChild(satBox);
-  }
-
-  // financial breakdown (collapsible)
-  const finBox = el(`<div class="card" data-tour="report-financials" style="margin-top:14px;"></div>`);
-  const finHeader = el(`<div class="row-between" style="cursor:pointer;"><span style="font-weight:700;font-size:13.5px;">💵 פירוט כספי</span><span id="finArrow">${G.quickUI?'▼':'▲'}</span></div>`);
-  const finBody = el(`<div class="stack" style="margin-top:10px;"></div>`);
-  finBody.appendChild(el(`<div class="finance-row"><span class="muted">🎟️ כרטיסים <span style="opacity:.7">(₪${h.ticketPrice??ECON.ticketDefault})</span></span><span>${fmtMoney(h.ticketIncome)}</span></div>`));
-  if(h.priceFactorVal!=null && h.priceFactorVal!==1){
-    let label = `↳ מקדם מחיר ×${h.priceFactorVal}`, value, color;
-    if(h.priceVisitorDelta){
-      const up = h.priceVisitorDelta>0;
-      value = `${up?'+':''}${h.priceVisitorDelta.toLocaleString('he-IL')} מבקרים`;
-      color = up? 'var(--good)' : 'var(--bad)';
-    } else {
-      // demand was above capacity either way — the price cost nothing at the gate
-      label += ` <span style="opacity:.7">(הקיבולת חסמה ממילא)</span>`;
-      value = "0 מבקרים";
-      color = 'var(--dim)';
-    }
-    finBody.appendChild(el(`<div class="finance-row"><span class="muted" style="padding-inline-start:14px;">${label}</span><span style="color:${color}">${value}</span></div>`));
-  }
-  finBody.appendChild(el(`<div class="finance-row"><span class="muted">🍔 הסעדה</span><span>${fmtMoney(h.foodIncome)}</span></div>`));
-  finBody.appendChild(el(`<div class="finance-row"><span class="muted">💎 VIP</span><span>${fmtMoney(h.vipIncome)}</span></div>`));
-  const outRow = (label,val)=>`<div class="finance-row"><span class="muted">${label}</span><span style="color:var(--bad)">-${fmtMoney(val)}</span></div>`;
-  finBody.appendChild(el(outRow(`🧑‍✈️ שכר עובדים <span style="opacity:.7">(${staffCounts().lifeguards} מצילים · ${staffCounts().staff} עובדים)</span>`, h.payroll||0)));
-  finBody.appendChild(el(outRow("🔧 תחזוקה", h.maintenance)));
-  finBody.appendChild(el(outRow("🏛️ ארנונה", h.arnona||0)));
-  finBody.appendChild(el(outRow(`📋 ביטוח${G.turn < (G.insuranceSpikeUntil||0) ? ' <span style="opacity:.7">(מוטען אחרי תאונה)</span>' : ''}`, h.insurance||0)));
-  finBody.appendChild(el(outRow("🗄️ מנהלה ורישוי", h.admin||0)));
-  finBody.appendChild(el(outRow("🛡️ אבטחה", h.securityMonthly)));
-  finBody.appendChild(el(`<div class="finance-row total"><span>רווח נקי</span><span style="color:${h.profit>=0?'var(--good)':'var(--bad)'}">${fmtMoney(h.profit)}</span></div>`));
-  if(h.turnedAway>0){
-    finBody.appendChild(el(`<div class="finance-row" style="border-top:1px dashed var(--border);margin-top:6px;padding-top:8px;"><span class="muted">🚧 נשלחו הביתה (אין מקום)</span><span style="color:var(--warn)">${h.turnedAway.toLocaleString('he-IL')}</span></div>`));
-  }
-  finBody.style.display = G.quickUI ? "none" : "flex";
-  finBox.appendChild(finHeader); finBox.appendChild(finBody);
-  on(finHeader,"click",()=>{
-    const showing = finBody.style.display!=="none";
-    finBody.style.display = showing?"none":"flex";
-    finHeader.querySelector("#finArrow").textContent = showing?"▼":"▲";
-  });
-  sheet.appendChild(finBox);
-
-  // hot news
-  if(G.pendingEvents.length){
-    sheet.appendChild(el(`<div class="section-title" style="margin:16px 0 8px;padding:0;">🗞️ הידיעות החמות</div>`));
-    const newsStack = el(`<div class="stack gap8"></div>`);
-    G.pendingEvents.forEach(n=>{
-      const card = el(`<div class="news-card ${n.type==='bad'?'bad':(n.type==='good'?'good':'')}">
-        <div class="news-title">${n.headline?n.headline:n.title}</div>
-        <div class="news-sub">${n.headline?n.title+' — ':''}${n.sub}</div>
-      </div>`);
-      newsStack.appendChild(card);
-    });
-    sheet.appendChild(newsStack);
-  } else {
-    sheet.appendChild(el(`<div class="muted small center" style="margin-top:16px;">חודש שקט. אף אחד לא רב על כיסא הפעם. 🙏</div>`));
-  }
-
-  if(!G.quickUI){
-    sheet.appendChild(el(`<div class="section-title" style="padding:0;margin:18px 0 6px;">📈 מגמה — 6 חודשים אחרונים</div>`));
-    sheet.appendChild(sparkline(G.history.slice(-6).map(x=>x.visitors)));
-  }
-
-  const cont = el(`<button class="btn btn-primary btn-lg btn-block" style="margin-top:20px;">המשך ➡️</button>`);
-  on(cont,"click",()=>{
-    G._showReport = false;
-    G.pendingEvents = [];
-    if(checkEndConditions()){ render(); return; }
-    render();
-  });
-  sheet.appendChild(cont);
-
-  Tour.trigger("FIRST_MONTHLY_REPORT");
-
-  return overlay;
 }
 
 /* =========================================================
@@ -2143,6 +3407,13 @@ const TOUR_STEPS = {
       effects:null, glossaryKey:null,
     },
     {
+      id:"feed", target:'[data-tour="feed"]', icon:"📰",
+      title:"הפיד — פה קורים החיים",
+      body:"כל חודש נופלים לפה מבזקים, קבוצת הוואטסאפ של השכונה, ביקורות גוגל, לחישות של הצוות והדוח החודשי. שום דבר לא נמחק — אפשר לגלול אחורה ולראות איך הגעת לכאן.",
+      placement:"top", advanceOn:"next", spotlightPadding:6,
+      effects:null, glossaryKey:null,
+    },
+    {
       id:"money", target:'[data-tour="kpi-money"]', icon:"💰",
       title:"הכסף",
       body:"כל שקל נחשב. אם תרד למינוס — הפארק נסגר ואתה חוזר לעבוד אצל אבא.",
@@ -2162,7 +3433,9 @@ const TOUR_STEPS = {
     {
       id:"visitors", target:'[data-tour="kpi-visitors"]', icon:"👥",
       title:"מבקרים",
-      body:"באוגוסט הם באים בהמונים. בינואר תשמע צרצרים. תתכנן בהתאם.",
+      body:"באוגוסט הם באים בהמונים. בינואר תשמע צרצרים. תתכנן בהתאם.<br>המספר הזה יושב בפאנל שנפתח מהחץ ▼ שבשורה העליונה.",
+      // 👥 lives inside the collapsible KPI panel — open it before pointing at it
+      prepare:()=>openKpiPanel(), waitForTarget:true,
       placement:"bottom", advanceOn:"next", spotlightPadding:4,
       effects:{ up:["עונה חמה","פרסום","דירוג גבוה"], down:["חורף","דירוג נמוך","מחיר גבוה"] },
       glossaryKey:"visitors",
@@ -2196,6 +3469,10 @@ const TIPS = [
     icon:"🔴", title:"אתה במינוס",
     body:"עוד חודש כזה ונגמר הסיפור.",
     placement:"bottom", glossaryKey:"money" },
+  { id:"tip-ruti", trigger:"RUTI_ON_YOUR_CASE", target:'[data-tour="ruti-chip"]',
+    icon:"🕵️‍♀️", title:"רותי עש שמה עלייך עין",
+    body:"היא לא אירוע אקראי — יש לה זיכרון, ויש לה מד חום. שביעות רצון נמוכה, מחיר גבוה ותשובות מתחכמות מחממות אותה. תיקונים מקררים. בשלב 4 היא כבר עולה כסף.",
+    placement:"bottom", glossaryKey:null },
   { id:"tip-next-month", trigger:"FIRST_NEXT_MONTH", target:'[data-tour="next-month-btn"]',
     icon:"➡️", title:"סיימת לחודש?",
     body:"כשסיימת — לוחץ פה והחודש מתקדם. אין חזרה אחורה.",
@@ -2546,6 +3823,8 @@ const Tour = (function(){
       try{ ok = !!step.condition(G); }catch(e){ ok = false; }
       if(!ok){ go(1); return; }
     }
+    // Some targets live inside a collapsed panel — let the step open it first.
+    if(typeof step.prepare === "function"){ try{ step.prepare(); }catch(e){} }
     let t = findTarget(step.target);
     if(!t && step.waitForTarget) t = await waitForTarget(step.target, 3000);
     if(my!==session) return;

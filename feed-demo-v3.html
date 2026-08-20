@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הדגמה v3 — רותי עש</title>
+<style>
+:root{
+  --sky1:#7bdcff; --sky2:#0b84d6;
+  --card:#fff; --card2:#eaf6fb; --border:#d3ecf5;
+  --text:#0a324c; --dim:#5c7a8c; --dim2:#93aebc;
+  --accent:#00bfb3; --accent2:#00969c;
+  --good:#16a34a; --bad:#d9362b; --warn:#c9790a; --gold:#e8a90c;
+  --coral:#ff6b4a; --coral2:#ff5252;
+  --wa:#dcf8c6; --wa-head:#075e54; --staff:#2b3a44;
+  --ruti:#6d28d9; --ruti2:#4c1d95;
+  --feedbg:#e9f1f6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:#06405f;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Assistant,Arial,sans-serif;}
+button{font-family:inherit;cursor:pointer;border:none;}
+
+.demo-wrap{max-width:1240px;margin:0 auto;padding:18px 14px 60px;display:flex;gap:22px;
+  align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+.notes{flex:1 1 340px;min-width:300px;max-width:450px;color:#dceefa;position:sticky;top:18px;}
+.notes h2{font-size:19px;margin:0 0 4px;color:#fff;}
+.notes p.lead{font-size:13.5px;line-height:1.6;color:#a9cfe6;margin:0 0 14px;}
+.note{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:14px;
+  padding:11px 13px;margin-bottom:9px;}
+.note b{display:block;font-size:13.5px;color:#fff;margin-bottom:3px;}
+.note span{font-size:12.5px;line-height:1.55;color:#a9cfe6;display:block;}
+.note em{color:var(--gold);font-style:normal;font-weight:700;}
+.note.ruti{background:rgba(109,40,217,.22);border-color:rgba(167,139,250,.4);}
+.stg{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+.stg i{font-style:normal;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;
+  background:rgba(255,255,255,.1);color:#c4b5fd;}
+
+.phone{flex:0 0 auto;width:392px;max-width:100%;height:830px;max-height:88vh;background:var(--feedbg);
+  border-radius:34px;overflow:hidden;box-shadow:0 26px 70px rgba(0,0,0,.5);display:flex;flex-direction:column;
+  border:7px solid #10222e;position:relative;}
+
+/* KPI */
+.topstrip{background:linear-gradient(180deg,var(--sky1),var(--sky2));color:#fff;flex:0 0 auto;z-index:9;
+  box-shadow:0 3px 12px rgba(4,52,80,.26);}
+.ts-line{display:flex;align-items:center;gap:7px;padding:9px 11px 8px;}
+.ts-park{font-weight:800;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:96px;text-shadow:0 1px 2px rgba(0,40,64,.35);}
+.ts-stat{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;
+  background:rgba(255,255,255,.17);border-radius:99px;padding:4px 8px;white-space:nowrap;flex:0 0 auto;}
+.ts-stat.neg{background:rgba(217,54,43,.55);}
+.ts-stat small{font-weight:600;opacity:.85;font-size:10.5px;}
+.ts-stat span,.ts-cell b,.rep-kpi b,.fr span:last-child{unicode-bidi:isolate;direction:ltr;}
+/* nemesis indicator */
+.ts-ruti{display:none;align-items:center;gap:3px;font-size:11.5px;font-weight:800;border-radius:99px;
+  padding:4px 8px;background:rgba(109,40,217,.85);flex:0 0 auto;animation:pulse 2.4s infinite;}
+.ts-ruti.on{display:flex;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,.6);}50%{box-shadow:0 0 0 6px rgba(167,139,250,0);}}
+.ts-exp{margin-inline-start:auto;background:rgba(255,255,255,.2);border-radius:99px;width:26px;height:26px;
+  color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:transform .2s;}
+.ts-exp.open{transform:rotate(180deg);}
+.ts-detail{max-height:0;overflow:hidden;transition:max-height .28s ease;}
+.ts-detail.open{max-height:320px;}
+.ts-detail-in{padding:2px 11px 11px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ts-cell{background:rgba(255,255,255,.14);border-radius:12px;padding:7px 10px;}
+.ts-cell b{display:block;font-size:14px;} .ts-cell span{font-size:10.5px;opacity:.85;}
+
+/* CHIDUD 9: net sentiment meter */
+.mood{display:flex;align-items:center;gap:7px;padding:5px 11px 7px;background:rgba(0,0,0,.12);}
+.mood-face{font-size:15px;flex:0 0 auto;}
+.mood-track{flex:1;height:7px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden;position:relative;}
+.mood-fill{height:100%;border-radius:99px;transition:width .5s ease,background .5s ease;}
+.mood-lbl{font-size:10.5px;font-weight:800;flex:0 0 auto;opacity:.95;}
+.ts-warnbar{background:rgba(217,54,43,.85);font-size:11.5px;font-weight:700;padding:5px 12px;text-align:center;}
+
+/* dilemma slot */
+.dilslot{flex:0 0 auto;background:#fffdf5;border-bottom:2px solid var(--gold);z-index:8;display:none;
+  box-shadow:0 4px 12px rgba(232,169,12,.22);animation:drop .3s ease;}
+.dilslot.on{display:block;}
+@keyframes drop{from{transform:translateY(-100%);opacity:0;}to{transform:none;opacity:1;}}
+.dil-pin{background:var(--gold);color:#3b2a00;font-size:10.5px;font-weight:900;padding:4px 12px;}
+.dil-q{padding:9px 12px 3px;font-size:14px;font-weight:800;line-height:1.35;}
+.dil-ctx{padding:0 12px 9px;font-size:12px;color:var(--dim);line-height:1.5;}
+.dil-btns{display:flex;gap:7px;padding:0 12px 11px;}
+.dil-btns button{flex:1;border-radius:12px;padding:10px 6px;font-size:12.5px;font-weight:800;line-height:1.3;}
+.dil-btns .a{background:linear-gradient(135deg,#4ade80,#22c55e);color:#052e14;}
+.dil-btns .b{background:#eef3f6;color:var(--text);border:1px solid var(--border);}
+
+/* tabs */
+.tabs{flex:0 0 auto;display:flex;gap:5px;padding:7px 9px;background:#fff;border-bottom:1px solid var(--border);z-index:7;}
+.tab{flex:1;font-size:11.5px;font-weight:800;padding:6px 4px;border-radius:99px;background:#f1f6f9;color:var(--dim);
+  transition:.15s;white-space:nowrap;position:relative;}
+.tab.on{background:var(--sky2);color:#fff;}
+/* CHIDUD 12: unread badge */
+.tab .bdg{position:absolute;top:-2px;inset-inline-end:2px;min-width:15px;height:15px;border-radius:99px;
+  background:var(--coral2);color:#fff;font-size:9.5px;line-height:15px;font-weight:900;display:none;padding:0 3px;}
+.tab .bdg.on{display:block;}
+
+.feed{flex:1;overflow-y:auto;padding:0 10px 14px;scroll-behavior:smooth;}
+.feed::-webkit-scrollbar{width:0;}
+.month{margin-bottom:6px;}
+.mhead{position:sticky;top:0;z-index:4;padding:8px 0 7px;
+  background:linear-gradient(180deg,var(--feedbg) 72%,rgba(233,241,246,0));}
+.mhead-in{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #c9dbe5;border-radius:99px;
+  padding:5px 12px;box-shadow:0 2px 6px rgba(10,50,76,.08);}
+.mhead-in b{font-size:12.5px;}
+.mhead-in .sum{font-size:11px;color:var(--dim);margin-inline-start:auto;unicode-bidi:isolate;direction:ltr;}
+.mhead-in .sum i{font-style:normal;font-weight:800;}
+
+.c{background:#fff;border-radius:16px;margin-bottom:8px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(10,50,76,.09);animation:pop .3s cubic-bezier(.2,.9,.3,1.2) both;}
+@keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.985);}to{opacity:1;transform:none;}}
+.c-head{display:flex;align-items:center;gap:8px;padding:9px 11px 0;}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex:0 0 auto;background:#dbeaf2;}
+.c-who{font-weight:800;font-size:12.5px;line-height:1.25;}
+.c-meta{font-size:10.5px;color:var(--dim2);}
+.c-body{padding:8px 12px 11px;font-size:13.5px;line-height:1.55;}
+.c-foot{display:flex;gap:6px;padding:0 10px 10px;flex-wrap:wrap;align-items:center;}
+.react{background:#f1f6f9;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--dim);}
+.btn-mini{background:var(--card2);border:1px solid var(--border);border-radius:99px;padding:5px 11px;
+  font-size:11.5px;font-weight:700;color:var(--text);}
+.btn-mini:active{transform:scale(.94);}
+.btn-mini.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+
+.c.t1{border-inline-start:5px solid var(--bad);}
+.c.t1.good{border-inline-start-color:var(--good);}
+.kicker{font-size:10px;font-weight:900;letter-spacing:.4px;color:var(--bad);padding:9px 12px 0;}
+.c.t1.good .kicker{color:var(--good);}
+.headline{font-size:15.5px;font-weight:900;line-height:1.35;padding:3px 12px 0;}
+.subline{font-size:12.5px;color:var(--dim);padding:5px 12px 0;line-height:1.5;}
+.impact{display:flex;gap:6px;padding:9px 12px 11px;flex-wrap:wrap;}
+.chip{font-size:11px;font-weight:800;border-radius:99px;padding:3px 9px;unicode-bidi:isolate;direction:ltr;}
+.chip.b{background:rgba(217,54,43,.1);color:var(--bad);}
+.chip.g{background:rgba(22,163,74,.12);color:var(--good);}
+.chip.p{background:rgba(109,40,217,.12);color:var(--ruti);}
+.t3{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#7c94a3;padding:5px 12px;margin-bottom:6px;
+  font-weight:600;animation:pop .3s both;}
+.t3::before{content:"";height:1px;flex:0 0 14px;background:#c3d4dd;}
+
+.thread{position:relative;padding-inline-start:22px;margin:0 0 10px;}
+.thread::before{content:"";position:absolute;inset-inline-start:8px;top:4px;bottom:16px;width:3px;
+  background:linear-gradient(180deg,#8fb6cc,#c9dde8);border-radius:3px;}
+.thread .c{margin-bottom:6px;transform:scale(.985);transform-origin:100% 50%;}
+.thread-lbl{font-size:10.5px;font-weight:800;color:#6b8697;padding:3px 0 7px;}
+/* CHIDUD 11: a reaction that arrived a month late */
+.late{font-size:10px;font-weight:800;color:#a06a00;background:#fff3d6;border-radius:99px;
+  padding:2px 8px;display:inline-block;margin:0 12px 8px;}
+
+/* whatsapp */
+.c.wa{background:#ece5dd;}
+.wa-bar{background:var(--wa-head);color:#fff;font-size:11.5px;font-weight:700;padding:6px 11px;
+  display:flex;align-items:center;gap:6px;}
+.wa-bar small{opacity:.7;font-weight:500;margin-inline-start:auto;font-size:10px;}
+.bub{background:var(--wa);border-radius:12px;padding:7px 10px;margin:8px 10px;font-size:12.8px;line-height:1.5;
+  box-shadow:0 1px 1px rgba(0,0,0,.08);}
+.bub .nm{font-size:11px;font-weight:800;display:block;margin-bottom:2px;}
+.bub .tm{font-size:9.5px;color:#7d8f86;text-align:end;margin-top:2px;}
+.bub.other{background:#fff;}
+.wa-more{background:rgba(255,255,255,.6);border-top:1px solid rgba(0,0,0,.06);width:100%;
+  padding:7px;font-size:11.5px;font-weight:800;color:#0b6b5e;}
+
+/* ---------- CHIDUD 10: רותי עש ---------- */
+.c.rutic{background:linear-gradient(180deg,#f5f0ff,#ede4ff);border:1.5px solid #c4b5fd;}
+.ruti-bar{background:linear-gradient(135deg,var(--ruti),var(--ruti2));color:#fff;font-size:11px;font-weight:800;
+  padding:6px 11px;display:flex;align-items:center;gap:6px;}
+.ruti-bar small{margin-inline-start:auto;opacity:.8;font-weight:600;font-size:10px;}
+.c.rutic .c-body{color:#2e1065;}
+.c.rutic .av{background:#ddd6fe;}
+.ruti-heat{display:flex;align-items:center;gap:6px;padding:0 12px 10px;}
+.ruti-heat .tr{flex:1;height:6px;background:#ddd6fe;border-radius:99px;overflow:hidden;}
+.ruti-heat .fl{height:100%;background:linear-gradient(90deg,#a78bfa,#6d28d9);border-radius:99px;transition:width .5s;}
+.ruti-heat span{font-size:10px;font-weight:800;color:var(--ruti);}
+.grp-count{font-size:11px;font-weight:800;color:var(--ruti);padding:0 12px 10px;}
+
+/* google */
+.g-bar{display:flex;align-items:center;gap:6px;padding:8px 11px 0;font-size:10.5px;color:var(--dim2);font-weight:700;}
+.g-logo{font-weight:900;font-size:12px;} .g-logo i{font-style:normal;}
+.g-logo i:nth-child(1){color:#4285F4;} .g-logo i:nth-child(2){color:#EA4335;}
+.g-logo i:nth-child(3){color:#FBBC05;} .g-logo i:nth-child(4){color:#4285F4;}
+.g-logo i:nth-child(5){color:#34A853;} .g-logo i:nth-child(6){color:#EA4335;}
+.strs{letter-spacing:1px;font-size:12.5px;unicode-bidi:isolate;direction:ltr;}
+.owner-reply{background:#f5f8fa;border-inline-start:3px solid var(--dim2);margin:0 12px 11px;padding:8px 10px;
+  border-radius:0 10px 10px 0;font-size:12px;line-height:1.5;color:var(--dim);}
+.owner-reply b{color:var(--text);font-size:11.5px;display:block;margin-bottom:2px;}
+
+.c.staff{background:var(--staff);color:#dce8ef;}
+.c.staff .c-who{color:#fff;} .c.staff .c-meta{color:#7c9aab;}
+.c.staff .av{background:#3d525f;} .c.staff .react{background:rgba(255,255,255,.09);color:#9fbccd;}
+.staff-tag{font-size:10px;font-weight:800;color:#65d1c4;padding:8px 12px 0;letter-spacing:.3px;}
+
+.c.viral{background:#111;color:#fff;}
+.vid{height:118px;background:linear-gradient(140deg,#243b4a,#0d1b24);display:flex;align-items:center;
+  justify-content:center;font-size:34px;position:relative;}
+.vid::after{content:"▶";position:absolute;font-size:28px;opacity:.85;}
+.vid-cap{padding:9px 12px 4px;font-size:12.8px;font-weight:700;line-height:1.45;}
+.vid-stats{padding:0 12px 11px;font-size:11px;color:#8ea6b5;unicode-bidi:isolate;direction:ltr;text-align:end;}
+
+.c.report{border:2px solid var(--sky2);}
+.rep-head{background:linear-gradient(135deg,var(--sky1),var(--sky2));color:#fff;padding:9px 12px;
+  display:flex;align-items:center;justify-content:space-between;}
+.rep-head b{font-size:13.5px;}
+.rep-kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);}
+.rep-kpi div{background:#fff;padding:9px 6px;text-align:center;}
+.rep-kpi small{display:block;font-size:10px;color:var(--dim);margin-bottom:2px;}
+.rep-kpi b{font-size:14.5px;}
+.rep-toggle{width:100%;background:#f4fafd;padding:8px;font-size:12px;font-weight:700;color:var(--sky2);
+  border-top:1px solid var(--border);}
+.rep-lines{display:none;padding:4px 12px 10px;} .rep-lines.open{display:block;}
+.fr{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;}
+.fr span:first-child{color:var(--dim);}
+.fr.tot{border-top:1px solid var(--border);margin-top:5px;padding-top:7px;font-weight:800;}
+
+.quiet{background:#fff;border-radius:16px;padding:16px 14px;text-align:center;margin-bottom:8px;
+  box-shadow:0 1px 3px rgba(10,50,76,.09);}
+.quiet b{display:block;font-size:13.5px;margin-bottom:4px;}
+.quiet span{font-size:12px;color:var(--dim);line-height:1.5;}
+
+/* build sheet */
+.sheet{position:absolute;inset:0;background:rgba(6,40,62,.5);z-index:30;display:none;align-items:flex-end;}
+.sheet.on{display:flex;}
+.sheet-in{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:14px 14px calc(14px + 6px);
+  animation:up .26s ease;}
+@keyframes up{from{transform:translateY(100%);}to{transform:none;}}
+.sheet-in h3{margin:0 0 3px;font-size:15px;}
+.sheet-in p{margin:0 0 12px;font-size:11.5px;color:var(--dim);line-height:1.5;}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1.5px solid var(--border);
+  border-radius:14px;margin-bottom:8px;font-size:13px;font-weight:700;}
+.opt.on{border-color:var(--accent);background:#e6faf8;}
+.opt .bx{width:20px;height:20px;border-radius:6px;border:2px solid var(--dim2);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
+.opt.on .bx{background:var(--accent);border-color:var(--accent);}
+.opt small{margin-inline-start:auto;font-size:10.5px;color:var(--dim);font-weight:600;}
+
+.bottombar{flex:0 0 auto;background:#fff;border-top:1px solid var(--border);padding:9px 10px 12px;
+  display:flex;gap:7px;align-items:center;box-shadow:0 -4px 16px rgba(10,50,76,.1);z-index:9;}
+.bb-icon{flex:0 0 auto;width:46px;height:46px;border-radius:15px;background:var(--card2);border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:16px;position:relative;}
+.bb-icon small{font-size:8.5px;font-weight:800;color:var(--dim);}
+.bb-next{flex:1;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--coral),var(--coral2));
+  color:#fff;font-size:14.5px;font-weight:800;box-shadow:0 5px 14px rgba(255,82,82,.35);
+  display:flex;align-items:center;justify-content:center;gap:6px;}
+.bb-next:active{transform:scale(.97);}
+.bb-next:disabled{opacity:.4;box-shadow:none;}
+
+.toast{position:absolute;bottom:78px;inset-inline:14px;background:rgba(10,50,76,.94);color:#fff;
+  padding:10px 14px;border-radius:13px;font-size:12.5px;font-weight:700;text-align:center;z-index:25;
+  opacity:0;transform:translateY(8px);transition:.22s;pointer-events:none;}
+.toast.show{opacity:1;transform:none;}
+
+.feed[data-f="events"] [data-kind]:not([data-kind="event"]),
+.feed[data-f="crowd"]  [data-kind]:not([data-kind="crowd"]),
+.feed[data-f="report"] [data-kind]:not([data-kind="report"]){display:none;}
+.feed[data-f="events"] .thread-lbl,.feed[data-f="crowd"] .thread-lbl,
+.feed[data-f="report"] .thread-lbl{display:none;}
+.month.empty{display:none;}
+
+@media(max-width:960px){.notes{position:static;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="demo-wrap">
+
+  <div class="notes">
+    <h2>🕵️‍♀️ v3 — רותי עש נכנסת</h2>
+    <p class="lead">כדי לראות את רותי מתפתחת: העלה מחיר ל-₪52, ענה "🔥 בסטייל" לביקורות, וסגור 4-5 חודשים. אחר כך תוריד מחיר ותענה יפה — ותראה אותה נסוגה.</p>
+
+    <div class="note ruti"><b>10. רותי עש — נמסיס מתמשך</b><span>לא אירוע אקראי אלא <em>יריבה עם זיכרון</em>. יש לה מד "חום" שעולה משביעות רצון נמוכה, אירועים רעים, מחיר גבוה ותשובות מתחכמות שלך — ויורד כשמתקנים.
+      <div class="stg"><i>1 · הצצה</i><i>2 · ביקורת</i><i>3 · קבוצה</i><i>4 · רישוי עסקים</i></div>
+      בשלב 4 היא כבר עולה לך <em>בכסף אמיתי</em>. אפשר לרדת חזרה במדרגות.</span></div>
+
+    <div class="note"><b>11. תגובות מתעכבות</b><span>חלק מהתגובות לאירוע מגיעות <em>חודש אחרי</em>, עם תגית "מגיב על החודש שעבר". ככה זה עובד באמת — הביקורת נכתבת כשמישהו נזכר.</span></div>
+
+    <div class="note"><b>12. פוסטים שמגיבים למה שבנית</b><span>לחץ 🏗️ למטה וסמן "שמשיות". התלונות על צל <em>נעלמות מהפול</em> ובמקומן מגיע פוסט מפרגן. הקהל זוכר שתיקנת.</span></div>
+
+    <div class="note"><b>13. מד "טמפרטורת רשת"</b><span>הפס מתחת ל-KPI — מ-🤬 ל-😍. משוב רציף על הסנטימנט, לא רק כוכבים בדידים.</span></div>
+
+    <div class="note"><b>14. באדג' על טאב האירועים</b><span>נקודה אדומה עם מספר כשיש אירועים שלא נצפו. נעלם ברגע שנכנסים לטאב.</span></div>
+
+    <div class="note"><b>נשאר מ-v2</b><span>חודש=פרק עם כותרת דביקה · 3 דרגות ויזואליות · שרשורי סיבה-ותוצאה · סדר כרונולוגי · דילמה דביקה · פילטרים · קיבוץ הודעות · חודש שקט.</span></div>
+  </div>
+
+  <div class="phone">
+    <div class="topstrip">
+      <div class="ts-line">
+        <div class="ts-park" id="parkName">ספלאש בלאגן</div>
+        <div class="ts-stat" id="sMoney">💰 <span>₪1.24M</span></div>
+        <div class="ts-stat" id="sRate">⭐ <span>4.2</span><small id="revCount">(38)</small></div>
+        <div class="ts-ruti" id="tsRuti">🕵️‍♀️ <span id="rutiStage">1</span></div>
+        <button class="ts-exp" id="expBtn">▼</button>
+      </div>
+      <div class="ts-detail" id="tsDetail"><div class="ts-detail-in">
+        <div class="ts-cell"><b id="dVis">18.4K</b><span>👥 מבקרים החודש</span></div>
+        <div class="ts-cell"><b id="dSat">62</b><span>😊 שביעות רצון</span></div>
+        <div class="ts-cell"><b id="dCap">430</b><span>קיבולת ליום</span></div>
+        <div class="ts-cell"><b id="dDem">612</b><span>ביקוש ליום</span></div>
+        <div class="ts-cell"><b id="dPrice">₪32</b><span>🎟️ מחיר כרטיס</span></div>
+        <div class="ts-cell"><b id="dRuti">רגועה</b><span>🕵️‍♀️ רותי עש</span></div>
+      </div></div>
+      <div class="mood">
+        <span class="mood-face" id="moodFace">🙂</span>
+        <div class="mood-track"><div class="mood-fill" id="moodFill" style="width:62%"></div></div>
+        <span class="mood-lbl" id="moodLbl">טמפרטורת רשת</span>
+      </div>
+      <div class="ts-warnbar" id="warnBar" style="display:none"></div>
+    </div>
+
+    <div class="dilslot" id="dilSlot"></div>
+
+    <div class="tabs">
+      <button class="tab on" data-f="all">הכל</button>
+      <button class="tab" data-f="events">🚨 אירועים<span class="bdg" id="bdgEv">0</span></button>
+      <button class="tab" data-f="crowd">💬 קהל</button>
+      <button class="tab" data-f="report">📊 דוחות</button>
+    </div>
+
+    <div class="feed" id="feed" data-f="all"></div>
+    <div class="toast" id="toast"></div>
+
+    <div class="sheet" id="sheet"><div class="sheet-in">
+      <h3>🏗️ מה בניתם בפארק?</h3>
+      <p>בהדגמה זה רק כדי להראות איך הפיד מגיב. סמן משהו, סגור חודש, ותראה שהתלונות משתנות.</p>
+      <div class="opt" data-k="shade"><span class="bx">✓</span>🌴 שמשיות וצל<small>-תלונות צל</small></div>
+      <div class="opt" data-k="parking"><span class="bx">✓</span>🅿️ הרחבת חניה<small>-תלונות חניה</small></div>
+      <div class="opt" data-k="food"><span class="bx">✓</span>🍔 דוכן הסעדה שני<small>-תלונות תורים</small></div>
+      <button class="bb-next" style="width:100%;margin-top:6px" id="sheetClose">סגור</button>
+    </div></div>
+
+    <div class="bottombar">
+      <button class="bb-icon" id="btnBuild">🏗️<small>בנייה</small></button>
+      <button class="bb-icon" id="btnPrice">🎟️<small id="priceLbl">₪32</small></button>
+      <button class="bb-next" id="btnNext">➡️ סגור חודש</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   הדגמה בלבד — הכלכלה מפושטת. המטרה: מבנה ותחושה.
+   ================================================================== */
+const MONTHS=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+const SEASON=[0.1,0.1,0.3,1.2,0.8,1.5,3.0,3.2,1.3,1.4,0.2,0.1];
+
+const S={park:"ספלאש בלאגן",monthIdx:6,year:1,money:1240000,visitors:18400,
+  googleRating:4.2,reviews:38,sat:62,capacity:430,demand:612,price:32,dilemmaOpen:false,
+  park_has:{shade:false,parking:false,food:false},
+  ruti:{heat:0,stage:0,members:0,everPeaked:0},
+  queued:[],            // CHIDUD 11 — reactions that arrive next month
+  unseenEvents:0};
+
+const feed=document.getElementById("feed"), toastEl=document.getElementById("toast");
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const ri=(a,b)=>Math.round(a+Math.random()*(b-a));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function money(n){const s=n<0?"-":"";n=Math.abs(n);
+  if(n>=1e6)return s+"₪"+(n/1e6).toFixed(2)+"M";
+  if(n>=1e3)return s+"₪"+Math.round(n/1000)+"K";return s+"₪"+n;}
+function el(h){const d=document.createElement("div");d.innerHTML=h.trim();return d.firstElementChild;}
+function toast(t){toastEl.textContent=t;toastEl.classList.add("show");
+  clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>toastEl.classList.remove("show"),2100);}
+const starStr=n=>"★".repeat(n)+"☆".repeat(5-n);
+const tm=()=>ri(8,22)+":"+String(ri(0,59)).padStart(2,"0");
+function daysAgo(){const d=ri(1,9);return d===1?"אתמול":(d===2?"לפני יומיים":`לפני ${d} ימים`);}
+
+/* separate recency memory per pool, sized to the pool — with 9 bad events and only
+   6 good ones a shared window would starve the good list */
+const _recent=new Map();
+function pickEvent(list,key){
+  if(!_recent.has(key))_recent.set(key,[]);
+  const mem=_recent.get(key), win=Math.max(2,Math.floor(list.length/2));
+  let pool=list.filter(e=>!mem.includes(e.id));
+  if(!pool.length){mem.length=0;pool=list;}
+  const e=rnd(pool);mem.push(e.id);
+  while(mem.length>win)mem.shift();
+  return e;
+}
+
+const NEIGHBORS=[
+  {n:"אורית 🌸",c:"#c2185b"},{n:"דודו מהצפון",c:"#303f9f"},{n:"מיכל - ועד הבית",c:"#00796b"},
+  {n:"שמעון (סוכן ביטוח)",c:"#5d4037"},{n:"אמא של עידו",c:"#e65100"},{n:"רונן 🎣",c:"#455a64"}];
+const REVIEWERS=["שרון ל.","Dudu B.","משפחת אזולאי","נטלי כ.","יוסי (Local Guide)","ר. מזרחי","Tal S."];
+
+/* =============== רותי עש =============== */
+const RUTI={
+  name:"רותי עש",
+  stage1:[
+   {t:"אני לא רוצה להגיד כלום. אבל אני אגיד. 🙂",r:"על מה את מדברת רותי"},
+   {t:"מעניין. שמרתי צילום מסך מהפוסט של החודש שעבר. ליתר ביטחון.",r:"רותי את מפחידה אותי"},
+   {t:"אני רק שואלת שאלה תמימה: מישהו פה קרא את רישיון העסק שלהם? אני קראתי.",r:"😳"}],
+  stage2:[
+   "אני כותבת את זה בשקט ובאחריות מלאה. הייתי שם ארבע פעמים העונה. בכל פעם משהו אחר. תיעדתי הכל — יש לי תיקייה בטלפון עם 61 תמונות ותאריכים. אני לא אישה כועסת. אני אישה מסודרת.",
+   "עדכון: פניתי אליהם. קיבלתי תשובה מנומסת ולא ענייניות. שמרתי גם אותה. הביקורת נשארת על כוכב אחד עד להודעה חדשה."],
+  stage3:{group:"נפגעי ספלאש בלאגן — קבוצת מידע 🕵️‍♀️",
+   posts:[
+    "פתחתי את הקבוצה כדי שיהיה מקום מסודר. בלי קללות, בלי לכלוך. רק עובדות ותאריכים.",
+    "מצורף קובץ אקסל עם כל האירועים מהשנה. עמודה D זה הקנסות. עמודה E זה מה שהם אמרו לתקשורת.",
+    "לכל מי שנכנס עכשיו — יש קובץ מוצמד למעלה. תקראו לפני ששואלים."]},
+  stage4:[
+   {h:"תלונה מסודרת הוגשה למחלקת רישוי עסקים",
+    s:'המתלוננת צירפה 61 תמונות, טבלת אקסל ותצהיר. הפקח אמר "זו התלונה הכי מסודרת שראיתי".',
+    fine:[60000,140000],sat:-9},
+   {h:'"מה קורה בפארק המים שלנו?" — כתבה חוקרת בעיתון המקומי',
+    s:"מקור אחד סיפק לכתב את כל החומר מסודר לפי תאריכים. הכתבה עלתה גם לפייסבוק.",
+    fine:[20000,50000],sat:-11}],
+  down:[
+   "בסדר. אני מודה. תיקנו. אני משאירה את הקבוצה פתוחה ליתר ביטחון, אבל הייתי שם והיה נעים.",
+   "עדכון הוגן: העדכנתי את הביקורת שלי מכוכב לשלושה. אני יודעת לתת קרדיט כשמגיע.",
+   "אני מארכבת את הקובץ. לא מוחקת. מארכבת."]
+};
+
+function rutiTick(hadBadEvent){
+  const R=S.ruti; let d=0;
+  if(S.sat<45)d+=18; else if(S.sat<55)d+=9;
+  else if(S.sat>72)d-=16; else if(S.sat>62)d-=8;
+  if(hadBadEvent)d+=10;
+  if(S.price>45)d+=6;
+  if(S.googleRating<3.5)d+=7;
+  // compare against the heat at the LAST month close, so mid-month player actions
+  // (a sassy reply, a price hike) count as heating her up too
+  const prevTickHeat = (R.lastTickHeat==null) ? R.heat : R.lastTickHeat;
+  R.heat=clamp(R.heat+d,0,100);
+  // pinned at the top counts as "still rising" — the group shouldn't bleed at peak rage
+  const rising = R.heat > prevTickHeat || R.heat >= 95;
+  R.lastTickHeat = R.heat;
+  const ns=R.heat>=88?4:R.heat>=62?3:R.heat>=36?2:R.heat>=16?1:0;
+  const old=R.stage; R.stage=ns;
+  if(ns>R.everPeaked)R.everPeaked=ns;
+  // the group only recruits while she's heating up; it bleeds members when she cools
+  if(ns>=3){
+    if(!R.members) R.members=ri(24,60);
+    else if(rising) R.members=Math.round(R.members*1.35);
+    else R.members=Math.round(R.members*0.7);
+    if(ns===4 && rising) R.members=Math.max(R.members,ri(180,420));
+  } else if(R.members){
+    R.members=Math.round(R.members*0.55);
+    if(R.members<8) R.members=0;
+  }
+  return {old,now:ns,up:ns>old,down:ns<old};
+}
+
+function cRutiWA(){
+  const s=rnd(RUTI.stage1);
+  const nb=rnd(NEIGHBORS);
+  return el(`<div class="c rutic" data-kind="crowd">
+    <div class="ruti-bar">🕵️‍♀️ ${RUTI.name} · שלב 1<small>שכונת רמת אגוז</small></div>
+    <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name}</span>${s.t}<div class="tm">${tm()} ✓✓</div></div>
+    <div class="bub other"><span class="nm" style="color:${nb.c}">${nb.n}</span>${s.r}<div class="tm">${tm()}</div></div>
+    <div class="ruti-heat"><span>חום</span><div class="tr"><div class="fl" style="width:${S.ruti.heat}%"></div></div><span>${S.ruti.heat}</span></div>
+  </div>`);
+}
+function cRutiReview(){
+  return el(`<div class="c rutic" data-kind="crowd">
+    <div class="ruti-bar">🕵️‍♀️ ${RUTI.name} · שלב 2 — ביקורת<small>Google</small></div>
+    <div class="c-head"><div class="av">🕵️‍♀️</div><div>
+      <div class="c-who">${RUTI.name}</div>
+      <div class="c-meta"><span class="strs" style="color:#d9362b">${starStr(1)}</span> · Local Guide · ${ri(40,120)} ביקורות</div></div></div>
+    <div class="c-body">${rnd(RUTI.stage2)}</div>
+    <div class="ruti-heat"><span>חום</span><div class="tr"><div class="fl" style="width:${S.ruti.heat}%"></div></div><span>${S.ruti.heat}</span></div>
+  </div>`);
+}
+function cRutiGroup(){
+  return el(`<div class="c rutic" data-kind="crowd">
+    <div class="ruti-bar">🕵️‍♀️ ${RUTI.stage3.group}<small>שלב 3</small></div>
+    <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name} · מנהלת</span>${rnd(RUTI.stage3.posts)}<div class="tm">${tm()} ✓✓</div></div>
+    <div class="grp-count">👥 ${S.ruti.members.toLocaleString('he-IL')} חברים בקבוצה · ${ri(4,19)} הצטרפו השבוע</div>
+  </div>`);
+}
+function cRutiEscalate(){
+  const e=rnd(RUTI.stage4);
+  const fine=ri(e.fine[0],e.fine[1]);
+  S.money-=fine; S.sat=clamp(S.sat+e.sat,0,100);
+  return el(`<div class="c t1" data-kind="event" style="border-inline-start-color:var(--ruti)">
+    <div class="kicker" style="color:var(--ruti)">🕵️‍♀️ רותי עש · שלב 4 — הסלמה</div>
+    <div class="headline">${e.h}</div>
+    <div class="subline">${e.s}</div>
+    <div class="impact"><span class="chip b">${money(-fine)}</span><span class="chip b">${e.sat} שביעות רצון</span><span class="chip p">חום ${S.ruti.heat}</span></div>
+  </div>`);
+}
+function cRutiDown(){
+  return el(`<div class="c rutic" data-kind="crowd">
+    <div class="ruti-bar" style="background:linear-gradient(135deg,#059669,#047857)">🕵️‍♀️ ${RUTI.name} · נסוגה שלב</div>
+    <div class="c-head"><div class="av">🕵️‍♀️</div><div><div class="c-who">${RUTI.name}</div>
+      <div class="c-meta">שלב ${S.ruti.stage} · חום ${S.ruti.heat}</div></div></div>
+    <div class="c-body">${rnd(RUTI.down)}</div>
+    <div class="ruti-heat"><span>חום</span><div class="tr"><div class="fl" style="width:${S.ruti.heat}%;background:linear-gradient(90deg,#6ee7b7,#059669)"></div></div><span>${S.ruti.heat}</span></div>
+  </div>`);
+}
+function rutiCard(res){
+  if(res.down && res.now>=0) return cRutiDown();
+  if(res.now===4) return cRutiEscalate();
+  if(res.now===3) return cRutiGroup();
+  if(res.now===2) return cRutiReview();
+  if(res.now===1) return cRutiWA();
+  return null;
+}
+
+/* =============== events =============== */
+const EVENTS_BAD=[
+ {id:"chair",h:'קרב אגרוף על כיסא בצל — "היד שלי הייתה שם קודם!"',
+  s:"קנס ₪72,000 ופוסט זועם בקבוצת הוואטסאפ השכונתית.",chips:[["-₪72,000","b"],["-8 שביעות רצון","b"]],
+  wa:["ראיתם מה היה שם אתמול?! שני מבוגרים בני 50 על כיסא פלסטיק 🤦‍♀️","אני צילמתי הכל. לא מעלה כי הילדים בפריים."],
+  rev:{s:1,t:"אווירה אלימה. הבאתי ילדים, לא לזירה."},
+  staff:{who:"דודו · מציל",t:"הפרדתי ביניהם. הכיסא לא שרד. אני מבקש תוספת סיכון."}},
+ {id:"poop",h:'דגל חום בבריכת הגלים — 400 איש פונו תוך 40 שניות',
+  s:"ריקון ומילוי מחדש של בריכת הגלים כולה. קנס תברואה ₪44,000.",
+  chips:[["-₪44,000","b"],["-6 שביעות רצון","b"]],
+  wa:["אני לא מפרטת מה קרה בבריכת הגלים היום. תבררו לבד. 🤢","היינו שם. הילד שלי בהלם. אני בהלם."],
+  rev:{s:1,t:"הגלים היו נחמדים. מה שצף עליהם פחות."},
+  staff:{who:"מאיה · ניקיון",t:"אני מבקשת רשמית העלאה. רשמית. בכתב. עכשיו."}},
+ {id:"falafel",h:'ילד בן 7 בחדר מיון — "החומוס ההוא לא היה טרי"',
+  s:"דוכן הפלאפל נסגר לבדיקה, וקנס משרד הבריאות ₪66,000.",
+  chips:[["-₪66,000","b"],["-7 שביעות רצון","b"],["דוכן סגור","b"]],
+  wa:["מישהו עוד אכל מהפלאפל שם ביום שישי? שואלת לצורך העניין 🤢","אנחנו אכלנו. אנחנו בסדר. נראה לי."],
+  rev:{s:1,t:"הבן שלי אכל שם צהריים ובילה את הערב בטרם. תבדקו את המקרר שלהם."},
+  staff:{who:"רונית · קופה",t:"אמרתי לו שהחומוס מיום רביעי. הוא אמר 'חומוס לא מתקלקל'. חומוס מתקלקל."}},
+ {id:"slide_kid",h:'"תוציאו אותו משם!" — ילד תקוע באמצע המגלשה 20 דקות',
+  s:"האמא כתבה ביקורת זועמת עם שלוש תמונות מטושטשות.",
+  chips:[["-6 שביעות רצון","b"],["ביטוח ×1.6","b"]],
+  wa:["ראיתם את הפוסט של האמא מהמגלשה? היא לא מוותרת 😬","היא תייגה את משרד הבריאות. בפוסט. בפייסבוק."],
+  rev:{s:1,t:"הבן שלי היה תקוע עשרים דקות באמצע המגלשה. עשרים. דקות. צירפתי תמונות."},
+  staff:{who:"דודו · מציל",t:"טיפסתי לתוך המגלשה. אני. לתוך המגלשה. אני רוצה לדבר על התפקיד שלי."}},
+ {id:"tube_kid",h:"ילד תקוע באבוב מול הזרם — הצלה דרמטית בנהר העצלן",
+  s:"עוד ביקורת שלילית ברשת, הפעם עם אימוג'י בוכה.",chips:[["-5 שביעות רצון","b"]],
+  wa:["הילד באבוב! מישהו צילם את זה? 😂😭"],
+  rev:{s:2,t:"הבת שלי נתקעה באבוב ולא הצליחה לצאת. אף אחד לא שם לב חוץ מבעלי 😢"},
+  staff:{who:"דודו · מציל",t:"האבוב ניצח. שוב. אני שוקל קריירה חדשה."}},
+ {id:"chair_riot",h:'קאטלה אחו-שרמוטה — כיסאות "כתר" עפים באוויר ליד הבריכה',
+  s:"אנשי האבטחה ספגו כמה מכות, ואתם ספגתם קנס ענק ₪210,000.",
+  chips:[["-₪210,000","b"],["-14 שביעות רצון","b"],["ביטוח ×1.6","b"]],
+  wa:["מה שהיה שם היום... כיסאות עפו. ממש עפו באוויר 🪑✈️","יצאתי עם הילדים תוך 30 שניות. לא נשארתי לראות."],
+  rev:{s:1,t:"הגעתי עם משפחה. יצאתי עם חוויה. לא הסוג שרציתי."},
+  staff:{who:"יוסי · אבטחה",t:"אני לא מקבל מספיק בשביל זה. אני לא מקבל חצי ממה שצריך בשביל זה."}},
+ {id:"slide",h:"מגלשה נתקעת עם מבקר בפנים — הצוות הכריז חירום",
+  s:"המגלשה נסגרה ל-4 שבועות לתיקון. הביטוח כבר התקשר.",chips:[["מתקן סגור 4 שב'","b"],["ביטוח ×1.6","b"]],
+  wa:["הילדים ביקשו את המגלשה הגדולה. אמרתי שנחכה שיתקנו אותה 🙃"],
+  rev:{s:1,t:"הבן שלי נתקע במגלשה. הצוות היה נחמד אבל אני עדיין בלחץ."},
+  staff:{who:"אבי · תחזוקה",t:"אמרתי. אמרתי שהמשאבה עושה רעש. יש לי הודעה קולית מפברואר."}},
+ {id:"fire",h:'"מי כיבה את הנרגילה?!" — הבני דודים שרפו פינת ישיבה שלמה',
+  s:"קנס כבאות ₪88,000, ופינת ישיבה שלמה ירדה לטמיון.",
+  chips:[["-₪88,000","b"],["-7 שביעות רצון","b"],["ביטוח ×1.6","b"]],
+  wa:["מישהו יודע מה נשרף שם? ראיתי עשן מהכביש 😳","בני דודים עם נרגילה. תמיד בני דודים עם נרגילה."],
+  rev:{s:2,t:"יפה, אבל ריח של פחמים שרופים לא ממש תורם לאווירה המשפחתית."},
+  staff:{who:"אבי · תחזוקה",t:"בפעם המאה: אין נרגילות. אין. נר-גי-לות."}},
+ {id:"health",h:"פקחי משרד הבריאות בשער — בדיקת פתע!",
+  s:"עבר בשן ובעין. הצוות נושם לרווחה.",chips:[["+3 שביעות רצון","g"]],
+  wa:["ראיתי פקחים בכניסה. מישהו יודע מה קרה?"],rev:null,
+  staff:{who:"רונית · קופה",t:"חייכתי 40 דקות רצוף. הלסת שלי נעולה."}}];
+
+const EVENTS_GOOD=[
+ {id:"celeb",good:true,h:"זמר ידוע צולם על נהר העצלן — הרשתות משתגעות",
+  s:"בום של דירוג ומבקרים.",chips:[["+10 שביעות רצון","g"],["+25% ביקוש","g"]],
+  wa:["וואו ראיתם מי היה שם היום?! 😱😱","הבת שלי לא מפסיקה לצרוח מאז"],
+  rev:{s:5,t:"באנו במקרה באותו יום. חוויה! גם המקום עצמו מעולה."},
+  staff:{who:"דודו · מציל",t:"ביקשתי סלפי. הוא אמר 'אחרי הסיבוב'. הוא לא חזר."}},
+ {id:"news",good:true,h:'"הפנינה של האזור" — כתבה חמה בעיתון המקומי',
+  s:"גל מבקרים נוסף בחודש הקרוב.",chips:[["+12% ביקוש","g"]],
+  wa:["הפארק שלנו בעיתון! 📰 כל הכבוד להם באמת"],
+  rev:{s:5,t:"קראנו את הכתבה ובאנו. לא התאכזבנו."},staff:null},
+ {id:"grant",good:true,h:"המועצה המקומית מעניקה מענק לפארק",
+  s:"מענק של ₪180,000 התקבל בחשבון.",chips:[["+₪180,000","g"]],
+  wa:["מעניין לאן הולך הכסף הזה בדיוק 🤔"],rev:null,
+  staff:{who:"רונית · קופה",t:"אז... יש תקציב למזגן בקופה? שואלת לצורך העניין."}},
+ {id:"influencer_story",good:true,h:'"האמת שזה ממש כיף פה" — משפיענית מוכרת מעלה סטורי לחצי מיליון עוקבים',
+  s:"גל כניסות מהעוקבות שלה לאורך כל השבוע.",chips:[["+15% ביקוש","g"],["+4 שביעות רצון","g"]],
+  wa:["ראיתן את הסטורי שלה מהפארק?! אני נוסעת מחר 😍","היא באמת הייתה שם או שזה ממומן?"],
+  rev:{s:5,t:"באתי בגלל הסטורי. נשארתי בגלל המגלשות. ממליצה!"},
+  staff:{who:"רונית · קופה",t:"היא ביקשה קפה. אמרתי שאין. היא צילמה את זה. זה עלה לסטורי."}},
+ {id:"water_bill",good:true,h:'תאגיד המים מודה בטעות בחיוב — "החודש על חשבוננו"',
+  s:"זיכוי של ₪74,000 התקבל בחשבון בלי שביקשתם.",chips:[["+₪74,000","g"],["חודש מים חינם","g"]],
+  wa:["מישהו יודע למה חשבון המים שלי קפץ החודש? אולי קשור לפארק 🤔"],rev:null,
+  staff:{who:"אבי · תחזוקה",t:"אמרתי לכם שהמונה משוגע. אף אחד לא הקשיב. עכשיו קיבלנו חודש חינם."}},
+ {id:"influencer_friend",good:true,h:"המשפיענית השיקה חברה חדשה בפארק — התיוגים לא נגמרים",
+  s:"עוד גל מבקרים בעקבות התיוג.",chips:[["+10% ביקוש","g"]],
+  wa:["עכשיו יש שתיים מהן שם 😅 המקום הזה נהיה אופנתי","הזמנתי כרטיסים מראש בפעם הראשונה בחיים שלי"],
+  rev:{s:5,t:"המקום נהיה פופולרי מדי אבל עדיין כיף. תזמינו כרטיסים מראש."},
+  staff:{who:"דודו · מציל",t:"יש פה עכשיו אנשים שמצלמים יותר משהם נכנסים למים. אני שומר על טלפונים עכשיו?"}}];
+
+/* CHIDUD 12: complaints know what you built */
+const WA_NOISE=[
+ {t:"מישהו יודע אם יש שם צל היום? אני לא נוסעת שוב לשבת על בטון 😤",cond:()=>!S.park_has.shade},
+ {t:"עדכון לכולן: הוסיפו שמשיות! ישבתי בצל שעתיים ולא נלחמתי על זה 🌴",cond:()=>S.park_has.shade,good:true},
+ {t:"החניה שם זה סיפור בפני עצמו. באתי ב-9:15, חניתי בשכונה הבאה.",cond:()=>!S.park_has.parking},
+ {t:"החניה החדשה שם — פשוט חלום. נכנסתי, חניתי, נכנסנו. 🅿️",cond:()=>S.park_has.parking,good:true},
+ {t:"התור לאוכל שם זה משהו שלא יאומן. הילד שלי גדל בתור.",cond:()=>!S.park_has.food},
+ {t:"פתחו דוכן שני! חיכיתי 4 דקות. ארבע! 🍔",cond:()=>S.park_has.food,good:true},
+ {t:"מוכרים כסאות כתר בסביבה? הפארק כאילו קנה את כל המלאי בארץ 😂"},
+ {t:"מישהי ראתה משקפי שחייה ורודים? של עידו. הוא בוכה מאתמול."},
+ {t:"אחלה מקום אבל תביאו מגבות משלכם, ההשכרה שם זה שוד לאור יום"},
+ {t:"כל הקבוצה נוסעת מחר. תגידו שיש מקום 🙏"},
+ {t:"הפלאפל שם בעצם לא רע בכלל. אמרתי מה שאמרתי."},
+ {t:"היה שם מישהו שהתחיל לצעוק על המציל בגלל אבוב. תיאטרון שלם 🍿"}];
+function pickNoise(){
+  const pool=WA_NOISE.filter(n=>!n.cond||n.cond());
+  return rnd(pool);
+}
+const WA_REPLY=["אותו דבר אמרתי 🙄","+1","הייתי שם שבוע שעבר, היה בסדר גמור","יאללה מגזימים כרגיל",
+  "מסכימה לגמרי","😂😂😂","תעלי תמונה","בסוף כולם נוסעים לשם ומתלוננים"];
+const REVIEWS=[
+ {s:5,t:"הילדים לא רצו לצאת. אפילו קיבלנו כיסא בלי לריב. ממליץ בחום!"},
+ {s:2,t:"יפה, אבל יקר. שילמתי כדי לשבת על הרצפה ליד גדר."},
+ {s:4,t:"מקום נחמד למשפחות. תוסיפו צל ואני נותן חמישה."},
+ {s:3,t:"היה בסדר. המים היו רטובים, כמו שהובטח."},
+ {s:5,t:"באנו ל-3 שעות, נשארנו עד הסגירה. תודה לצוות!"},
+ {s:2,t:"למה אין מקום לשים תיק? למה?"}];
+const STAFF=[
+ {who:"דודו · מציל",t:"היום הצלתי אבוב. לא ילד. אבוב. הוא ברח לי."},
+ {who:"רונית · קופה",t:"בן אדם ניסה לשלם בשלושה שטרות של 20 ולהתווכח על העודף. ניצחתי."},
+ {who:"אבי · תחזוקה",t:"מי הזיז את כל כיסאות הכתר לפינה אחת? זה נראה כמו מחנה פליטים של פלסטיק."},
+ {who:"מאיה · ניקיון",t:"אני מבקשת רשמית שלא יביאו יותר אבטיח שלם לפארק. רשמית."}];
+const TICKER=[
+ ()=>`מזג אוויר: ${rnd(["גל חום","שרב כבד","יום מעונן","חמסין"])} — הביקוש ${rnd(["קפץ","ירד"])} ב-${ri(6,22)}%`,
+ ()=>`${ri(2,9)} ביקורות חדשות בגוגל · ממוצע ${(3+Math.random()*2).toFixed(1)}`,
+ ()=>`${ri(3,28)} אנשים שאלו בוואטסאפ אם יש חניה`,
+ ()=>`דוכן הפלאפל נגמר ב-${tm()}. שוב.`,
+ ()=>`${ri(1,6)} כיסאות כתר נעלמו החודש. אף אחד לא ראה כלום.`];
+const VIRAL=[{cap:'"התור הכי ארוך בישראל" 😭 #פארקמים',v:"1.2M"},
+ {cap:'כשאתה מגיע ב-10:00 וכל הכיסאות תפוסים מ-06:30 🪑💀',v:"840K"},
+ {cap:'הבחור הזה החליק על המגלשה עם כפכפים. כפכפים! 🩴',v:"2.1M"}];
+const DILEMMAS=[
+ {q:"קבוצת בית ספר מבקשת הנחה קבוצתית",
+  ctx:"180 ילדים ביום שלישי. המנהלת אומרת שאם תסכימו הם יבואו כל שנה.",
+  a:"לאשר · -₪38,000",b:"לסרב בנימוס",
+  ra:{sat:5,money:-38000,txt:"אישרת. 180 ילדים, 12 מלווים, ואחת מהן צילמה סטורי מפרגן."},
+  rb:{sat:-2,money:0,txt:"סירבת. המנהלת הבינה. הרכזת פחות."}},
+ {q:"המגלשה הישנה מתחילה לחרוק",
+  ctx:"אבי מהתחזוקה שלח הודעה קולית של 4 דקות. התמצית: 'זה יחזיק, אבל אני לא חותם על זה'.",
+  a:"תיקון זול · ₪27,500",b:"שדרוג יסודי · ₪220,000",
+  ra:{sat:0,money:-27500,txt:"תיקון מהיר. אבי אמר 'בסדר' בטון שלא הרגיע אף אחד."},
+  rb:{sat:5,money:-220000,txt:"שדרוג מלא. המגלשה נראית חדשה ואבי מחייך בפעם הראשונה מאז מרץ."}}];
+
+/* =============== cards =============== */
+function cWA(lines,tight){
+  const p=rnd(NEIGHBORS),p2=rnd(NEIGHBORS.filter(x=>x.n!==p.n));
+  const first=lines[0],rest=lines.slice(1);
+  const c=el(`<div class="c wa" data-kind="crowd">
+    <div class="wa-bar">🏘️ שכונת רמת אגוז — קבוצה<small>${ri(240,410)} משתתפים</small></div>
+    <div class="bub"><span class="nm" style="color:${p.c}">${p.n}</span>${first}<div class="tm">${tm()} ✓✓</div></div>
+  </div>`);
+  if(rest.length&&!tight){
+    rest.forEach(r=>c.appendChild(el(`<div class="bub other"><span class="nm" style="color:${p2.c}">${p2.n}</span>${r}<div class="tm">${tm()}</div></div>`)));
+  }else if(rest.length){
+    const more=el(`<button class="wa-more">💬 עוד ${rest.length} ${rest.length===1?'הודעה':'הודעות'} ↓</button>`);
+    more.addEventListener("click",()=>{
+      rest.forEach(r=>c.insertBefore(el(`<div class="bub other"><span class="nm" style="color:${p2.c}">${p2.n}</span>${r}<div class="tm">${tm()}</div></div>`),more));
+      more.remove();});
+    c.appendChild(more);
+  }
+  c.appendChild(el(`<div class="c-foot"><span class="react">💬 ${ri(4,28)} תגובות</span><span class="react">👍 ${ri(2,31)}</span></div>`));
+  return c;
+}
+function cReview(r,late){
+  r=r||rnd(REVIEWS);
+  const c=el(`<div class="c rev" data-kind="crowd">
+    <div class="g-bar"><span class="g-logo"><i>G</i><i>o</i><i>o</i><i>g</i><i>l</i><i>e</i></span> ביקורת חדשה על ${S.park}</div>
+    ${late?'<div class="late">⏳ מגיב על החודש שעבר</div>':''}
+    <div class="c-head"><div class="av">${rnd(["👤","🧔","👩","🧑","👨‍🦱"])}</div>
+      <div><div class="c-who">${rnd(REVIEWERS)}</div>
+      <div class="c-meta"><span class="strs" style="color:${r.s>=4?'#f0a500':'#d9362b'}">${starStr(r.s)}</span> · ${daysAgo()}</div></div></div>
+    <div class="c-body">${r.t}</div>
+    <div class="c-foot"><button class="btn-mini primary" data-a="nice">🙏 להגיב יפה</button>
+      <button class="btn-mini" data-a="sass">🔥 לענות בסטייל</button></div>`);
+  c.querySelectorAll("[data-a]").forEach(b=>b.addEventListener("click",()=>{
+    const nice=b.dataset.a==="nice";
+    c.querySelector(".c-foot").remove();
+    const txt=nice?"תודה על המשוב, לקחנו ללב ואנחנו כבר עובדים על זה. מקווים לראותכם שוב!"
+      :rnd(["אולי כדאי לבדוק מה עשיתם אתם באותו יום 🙂 בהצלחה.",
+            "מעניין שכל מי שמתלונן על התור מגיע ב-11:00 באוגוסט.",
+            "נשמח לראותכם שוב, הפעם בלי השולחן המתקפל."]);
+    c.appendChild(el(`<div class="owner-reply"><b>תגובת הבעלים · ${S.park}</b>${txt}</div>`));
+    if(nice){S.sat=clamp(S.sat+1,0,100);S.ruti.heat=clamp(S.ruti.heat-5,0,100);
+      toast("+1 שביעות רצון · רותי מתקררת קצת");}
+    else{S.sat=clamp(S.sat-2,0,100);S.googleRating=Math.max(1,+(S.googleRating-0.1).toFixed(1));
+      S.ruti.heat=clamp(S.ruti.heat+12,0,100);
+      toast("🕵️‍♀️ רותי עש שמרה צילום מסך. חום +12");}
+    sync();
+  }));
+  return c;
+}
+function cStaff(s){
+  s=s||rnd(STAFF);
+  return el(`<div class="c staff" data-kind="crowd">
+    <div class="staff-tag">👷 צוות הפארק — קבוצה פנימית</div>
+    <div class="c-head"><div class="av">${rnd(["🧑‍✈️","👷","🧹","💁"])}</div>
+      <div><div class="c-who">${s.who}</div><div class="c-meta">היום · ${tm()}</div></div></div>
+    <div class="c-body">${s.t}</div>
+    <div class="c-foot"><span class="react">😅 ${ri(1,9)}</span><span class="react">👀 ${ri(1,6)}</span></div></div>`);
+}
+function cEvent(e){
+  return el(`<div class="c t1 ${e.good?'good':''}" data-kind="event">
+    <div class="kicker">${e.good?"📰 חדשות טובות":"🚨 מבזק — קרה החודש"}</div>
+    <div class="headline">${e.h}</div><div class="subline">${e.s}</div>
+    <div class="impact">${e.chips.map(c=>`<span class="chip ${c[1]}">${c[0]}</span>`).join("")}</div></div>`);
+}
+const cTicker=()=>el(`<div class="t3" data-kind="noise">${rnd(TICKER)()}</div>`);
+function cViral(){const v=rnd(VIRAL);
+  return el(`<div class="c viral" data-kind="crowd"><div class="vid">🎬</div>
+    <div class="vid-cap">${v.cap}</div><div class="vid-stats">▶ ${v.v} · ${ri(12,88)}K ❤️</div></div>`);}
+function cReport(d){
+  const c=el(`<div class="c report" data-kind="report">
+    <div class="rep-head"><b>📅 סגירת ${MONTHS[d.m]} · שנה ${d.y}</b><span style="font-size:11px;opacity:.9">${S.park}</span></div>
+    <div class="rep-kpi">
+      <div><small>👥 מבקרים</small><b>${(d.vis/1000).toFixed(1)}K</b></div>
+      <div><small>⭐ דירוג</small><b>${d.gr}</b></div>
+      <div><small>💰 רווח</small><b style="color:${d.profit>=0?'var(--good)':'var(--bad)'}">${money(d.profit)}</b></div></div>
+    <button class="rep-toggle">💵 פירוט כספי ▼</button>
+    <div class="rep-lines">
+      <div class="fr"><span>🎟️ כרטיסים (₪${d.price})</span><span>${money(d.tick)}</span></div>
+      <div class="fr"><span>🍔 הסעדה</span><span>${money(d.food)}</span></div>
+      <div class="fr"><span>🧑‍✈️ שכר עובדים</span><span style="color:var(--bad)">${money(-d.pay)}</span></div>
+      <div class="fr"><span>🔧 תחזוקה · ארנונה · ביטוח</span><span style="color:var(--bad)">${money(-d.opex)}</span></div>
+      <div class="fr tot"><span>רווח נקי</span><span style="color:${d.profit>=0?'var(--good)':'var(--bad)'}">${money(d.profit)}</span></div>
+      ${d.away>0?`<div class="fr" style="border-top:1px dashed var(--border);margin-top:5px;padding-top:6px"><span>🚧 נשלחו הביתה</span><span style="color:var(--warn)">${d.away.toLocaleString('he-IL')}</span></div>`:""}
+    </div></div>`);
+  const t=c.querySelector(".rep-toggle"),l=c.querySelector(".rep-lines");
+  t.addEventListener("click",()=>{l.classList.toggle("open");
+    t.textContent=l.classList.contains("open")?"💵 פירוט כספי ▲":"💵 פירוט כספי ▼";});
+  return c;
+}
+function cluster(e){
+  const wrap=document.createElement("div");
+  wrap.appendChild(cEvent(e));
+  const kids=[];
+  if(e.rev) kids.push(cReview(e.rev));
+  if(e.wa&&e.wa.length) kids.push(cWA(e.wa,true));
+  // CHIDUD 11: hold the staff whisper back a month
+  if(e.staff){ if(Math.random()<0.5) kids.push(cStaff(e.staff)); else S.queued.push({type:"staff",data:e.staff}); }
+  if(kids.length){
+    const th=el(`<div class="thread"><div class="thread-lbl">↳ מה קרה בעקבות זה</div></div>`);
+    kids.forEach(k=>th.appendChild(k));
+    wrap.appendChild(th);
+  }
+  return wrap;
+}
+const cQuiet=()=>el(`<div class="quiet" data-kind="event"><b>🙏 חודש שקט</b>
+  <span>אף אחד לא רב על כיסא, אף אחד לא נתקע במגלשה, ואף אחד לא כתב עליכם כלום.<br>
+  תיהנו מזה. זה לא יימשך.</span></div>`);
+
+/* =============== sync =============== */
+function moodOf(){ return clamp(Math.round(S.sat*0.65+(S.googleRating/5*100)*0.35-S.ruti.heat*0.18),0,100); }
+function sync(){
+  document.getElementById("parkName").textContent=S.park;
+  const m=document.getElementById("sMoney");
+  m.querySelector("span").textContent=money(S.money);
+  m.classList.toggle("neg",S.money<0);
+  document.getElementById("sRate").querySelector("span").textContent=S.googleRating.toFixed(1);
+  document.getElementById("revCount").textContent="("+S.reviews+")";
+  document.getElementById("dVis").textContent=(S.visitors/1000).toFixed(1)+"K";
+  document.getElementById("dCap").textContent=S.capacity;
+  document.getElementById("dDem").textContent=S.demand;
+  document.getElementById("dSat").textContent=Math.round(S.sat);
+  document.getElementById("dPrice").textContent="₪"+S.price;
+  document.getElementById("priceLbl").textContent="₪"+S.price;
+  const names=["רגועה","👀 מציצה","⭐ ביקורת","📢 קבוצה","🔥 הסלמה"];
+  document.getElementById("dRuti").textContent=names[S.ruti.stage];
+  const rc=document.getElementById("tsRuti");
+  rc.classList.toggle("on",S.ruti.stage>0);
+  document.getElementById("rutiStage").textContent=S.ruti.stage;
+  // mood meter
+  const mo=moodOf();
+  const f=document.getElementById("moodFill");
+  f.style.width=mo+"%";
+  f.style.background=mo>70?"linear-gradient(90deg,#6ee7b7,#10b981)":mo>45?"linear-gradient(90deg,#fcd34d,#f59e0b)":"linear-gradient(90deg,#fca5a5,#dc2626)";
+  document.getElementById("moodFace").textContent=mo>78?"😍":mo>60?"🙂":mo>42?"😐":mo>25?"😠":"🤬";
+  document.getElementById("moodLbl").textContent=mo>60?"אוהבים אתכם":mo>42?"סבבה":"מתחיל להסריח";
+  const b=document.getElementById("bdgEv");
+  b.textContent=S.unseenEvents; b.classList.toggle("on",S.unseenEvents>0);
+  const w=document.getElementById("warnBar");
+  if(S.demand>S.capacity*1.15){w.style.display="block";
+    w.textContent=`🚧 ${Math.round((S.demand-S.capacity)*30).toLocaleString('he-IL')} אנשים יחזרו הביתה החודש`;}
+  else if(S.money<0){w.style.display="block";w.textContent="⚠️ הפארק בגירעון";}
+  else w.style.display="none";
+  applyFilter();
+}
+
+function openDilemma(){
+  const d=rnd(DILEMMAS); S.dilemmaOpen=true;
+  document.getElementById("btnNext").disabled=true;
+  const slot=document.getElementById("dilSlot");
+  slot.innerHTML=`<div class="dil-pin">📌 מחכה להחלטה שלך — אי אפשר לסגור חודש</div>
+    <div class="dil-q">${d.q}</div><div class="dil-ctx">${d.ctx}</div>
+    <div class="dil-btns"><button class="a">${d.a}</button><button class="b">${d.b}</button></div>`;
+  slot.classList.add("on");
+  const done=r=>{
+    S.sat=clamp(S.sat+r.sat,0,100); S.money+=r.money;
+    slot.classList.remove("on"); slot.innerHTML="";
+    S.dilemmaOpen=false; document.getElementById("btnNext").disabled=false;
+    const sec=feed.querySelector(".month");
+    if(sec) sec.appendChild(el(`<div class="c" data-kind="event"><div class="c-head">
+      <div class="av">🗳️</div><div><div class="c-who">החלטה: ${d.q}</div>
+      <div class="c-meta">${sec.dataset.label||""}</div></div></div>
+      <div class="c-body">${r.txt}</div></div>`));
+    sync();
+  };
+  slot.querySelector(".a").addEventListener("click",()=>done(d.ra));
+  slot.querySelector(".b").addEventListener("click",()=>done(d.rb));
+}
+
+function buildMonthSection(m,y,report){
+  const sec=el(`<div class="month" data-label="${MONTHS[m]} · שנה ${y}">
+    <div class="mhead"><div class="mhead-in"><b>📅 ${MONTHS[m]} · שנה ${y}</b><span class="sum"></span></div></div>
+  </div>`);
+  const items=[]; let evCount=0, hadBad=false;
+
+  items.push(cTicker());
+
+  // CHIDUD 11 — last month's delayed reactions arrive first
+  const q=S.queued.splice(0,S.queued.length);
+  q.forEach(it=>{
+    if(it.type==="staff"){const n=cStaff(it.data);
+      n.insertBefore(el(`<div class="late">⏳ מגיב על החודש שעבר</div>`),n.firstChild);items.push(n);}
+    else items.push(cReview(it.data,true));
+  });
+
+  if(Math.random()<0.8){
+    const good=Math.random()<0.35;
+    const e=good?pickEvent(EVENTS_GOOD,"good"):pickEvent(EVENTS_BAD,"bad");
+    hadBad=!good;
+    items.push(cluster(e)); evCount++; S.unseenEvents++;
+    if(!good&&Math.random()<0.3) items.push(cViral());
+    if(!good&&Math.random()<0.5) S.queued.push({type:"review",data:e.rev||rnd(REVIEWS)});
+  }
+
+  // ---- רותי עש ----
+  const res=rutiTick(hadBad);
+  const rc=rutiCard(res);
+  if(rc && (res.up||res.down||S.ruti.stage>=2||Math.random()<0.6)){
+    items.push(rc);
+    if(res.now===4){ S.unseenEvents++; }
+    if(res.up&&res.now>0) setTimeout(()=>toast(`🕵️‍♀️ רותי עש עלתה לשלב ${res.now}`),400);
+    if(res.down) setTimeout(()=>toast(`🕵️‍♀️ רותי עש נסוגה לשלב ${res.now}`),400);
+  }
+
+  const n=pickNoise();
+  if(Math.random()<0.85) items.push(cWA([n.t,rnd(WA_REPLY),rnd(WA_REPLY)]));
+  if(Math.random()<0.55) items.push(cReview());
+  if(Math.random()<0.5)  items.push(cStaff());
+  if(Math.random()<0.45) items.push(cTicker());
+
+  if(!evCount&&items.length<=2) items.push(cQuiet());
+  items.push(report);
+  items.forEach(x=>sec.appendChild(x));
+
+  sec.querySelector(".sum").innerHTML=
+    `<i>${(report._vis/1000).toFixed(1)}K</i> 👥 · <i style="color:${report._profit>=0?'#16a34a':'#d9362b'}">${money(report._profit)}</i>`;
+  return sec;
+}
+
+function closeMonth(){
+  if(S.dilemmaOpen){toast("קודם תחליט על הדילמה למעלה 👆");return;}
+  const m=S.monthIdx,y=S.year,seas=SEASON[m];
+  const dem=Math.round((50+S.googleRating*125+60)*seas*Math.pow(35/S.price,1.25));
+  const served=Math.round(Math.min(dem,S.capacity)*(0.9+Math.random()*0.18)),vis=served*30;
+  const away=Math.max(0,dem-S.capacity)*30;
+  const tick=vis*S.price,food=vis*5;
+  const pay=Math.round(S.capacity/70)*16000+Math.round(S.capacity/55)*12500;
+  const opex=Math.round(S.capacity*85)+26000+9000;
+  const profit=tick+food-pay-opex;
+  S.money+=profit;S.visitors=vis;S.demand=dem;S.reviews+=ri(1,5);
+  S.googleRating=clamp(+(S.googleRating+(Math.random()-0.48)*0.3).toFixed(1),1,5);
+  // satisfaction drifts toward what the crowd is feeling
+  S.sat=clamp(Math.round(S.sat*0.82+(S.price>45?36:S.price<26?62:54)*0.18),0,100);
+
+  const rep=cReport({m,y,vis,gr:S.googleRating.toFixed(1),profit,price:S.price,tick,food,pay,opex,away});
+  rep._vis=vis;rep._profit=profit;
+  feed.insertBefore(buildMonthSection(m,y,rep),feed.firstChild);
+  feed.scrollTo({top:0,behavior:"smooth"});
+  S.monthIdx++;if(S.monthIdx>11){S.monthIdx=0;S.year++;}
+  sync();
+  if(Math.random()<0.4) setTimeout(openDilemma,700);
+}
+
+function applyFilter(){
+  feed.querySelectorAll(".month").forEach(sec=>{
+    const vis=[...sec.querySelectorAll("[data-kind]")].some(n=>getComputedStyle(n).display!=="none");
+    sec.classList.toggle("empty",!vis);});
+}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on"); feed.dataset.f=t.dataset.f;
+  if(t.dataset.f==="events"||t.dataset.f==="all"){S.unseenEvents=0;}
+  requestAnimationFrame(()=>{applyFilter();
+    const b=document.getElementById("bdgEv");
+    b.textContent=S.unseenEvents;b.classList.toggle("on",S.unseenEvents>0);});
+}));
+
+/* build sheet */
+const sheet=document.getElementById("sheet");
+document.getElementById("btnBuild").addEventListener("click",()=>sheet.classList.add("on"));
+document.getElementById("sheetClose").addEventListener("click",()=>sheet.classList.remove("on"));
+sheet.addEventListener("click",e=>{if(e.target===sheet)sheet.classList.remove("on");});
+document.querySelectorAll(".opt").forEach(o=>o.addEventListener("click",()=>{
+  const k=o.dataset.k; S.park_has[k]=!S.park_has[k];
+  o.classList.toggle("on",S.park_has[k]);
+  if(S.park_has[k]){S.sat=clamp(S.sat+4,0,100);S.ruti.heat=clamp(S.ruti.heat-8,0,100);
+    toast("נבנה! התלונות בנושא הזה יורדות מהפול 🌴");}
+  sync();
+}));
+
+document.getElementById("btnPrice").addEventListener("click",()=>{
+  const steps=[24,28,32,38,45,52];
+  S.price=steps[(steps.indexOf(S.price)+1)%steps.length];
+  if(S.price>45)S.ruti.heat=clamp(S.ruti.heat+8,0,100);
+  sync();
+  const line=S.price>=45?`₪${S.price}?! על מה בדיוק? על הזכות לחפש כיסא? 😤`
+    :S.price<=26?`שמעתי שהורידו ל-₪${S.price}. יאללה כולם מחר, אני מזמינה מונית גדולה 🎉`
+    :`עדכנו מחיר ל-₪${S.price}. סביר בעיניי, אבל אני אומרת את זה בשקט.`;
+  const sec=feed.querySelector(".month");
+  if(sec){
+    sec.appendChild(el(`<div class="t3" data-kind="noise">עדכנת מחיר כרטיס ל-₪${S.price}</div>`));
+    const c=cWA([line],true); sec.appendChild(c);
+    c.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  toast(S.price>45?`₪${S.price} — 🕵️‍♀️ רותי עש שמה לב. חום +8`:`מחיר: ₪${S.price}`);
+});
+document.getElementById("btnNext").addEventListener("click",closeMonth);
+document.getElementById("expBtn").addEventListener("click",e=>{
+  document.getElementById("tsDetail").classList.toggle("open");
+  e.currentTarget.classList.toggle("open");});
+
+(function seed(){
+  const rep=cReport({m:5,y:1,vis:9600,gr:"4.2",profit:88000,price:32,
+    tick:307200,food:48000,pay:196000,opex:71550,away:0});
+  rep._vis=9600;rep._profit=88000;
+  feed.appendChild(buildMonthSection(5,1,rep));
+  S.unseenEvents=0;
+  sync();
+})();
+</script>
+</body>
+</html>
