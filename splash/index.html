@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#17414d">
+<title>ספלאש — סימולטור ניהול פארק מים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #17414d; overflow: hidden; overscroll-behavior: none;
+  }
+  body {
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #game {
+    display: block; width: 100%; height: 100%;
+    background: #17414d;
+    image-rendering: pixelated;      /* גיבוי ל-imageSmoothingEnabled=false */
+    image-rendering: crisp-edges;
+  }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  /* המשחק אנכי בלבד. screen.orientation.lock לא נתמך בכל מקום — זו רשת הביטחון. */
+  #rotate { display: none; }
+  @media (orientation: landscape) and (pointer: coarse) {
+    #game { display: none; }
+    #rotate {
+      display: flex; align-items: center; justify-content: center;
+      position: fixed; inset: 0;
+      color: #f4e9d8; background: #17414d;
+      font: 700 15px Heebo, Arial, sans-serif;
+    }
+  }
+</style>
+</head>
+<body>
+<h1 class="sr-only">ספלאש — סימולטור ניהול פארק מים</h1>
+<canvas id="game" role="img" aria-label="ספלאש — סימולטור ניהול פארק מים. מסך פתיחה: משחק חדש, המשך משחק, ומידע על המשחק."></canvas>
+<div id="rotate">סובב את המכשיר לאנכי 🙂</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

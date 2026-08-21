@@ -1,0 +1,16 @@
+{
+  "name": "splash",
+  "private": true,
+  "version": "0.1.0",
+  "description": "ספלאש — סימולטור ניהול פארק מים ישראלי. פיקסל ארט 16 ביט, קנבס אחד ברזולוציה 180×390.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python -m http.server 8765"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
