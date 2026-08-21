@@ -1,0 +1,602 @@
+/* =========================================================================
+   ספלאש — ערכת נושא "פיקסל" למשחק הקיים
+   =========================================================================
+   כל הקובץ תחום תחת html[data-theme="pixel"].
+   בלי התכונה הזו על תגית ה-html — הקובץ טעון אבל לא משנה כלום.
+   כיבוי/הדלקה: splash/theme-pixel.js  ·  ביטול מלא: README, "חזרה לעיצוב המקורי"
+
+   שלוש השכבות:
+     1. פלטה  — 28 המשתנים של המשחק ממופים לפלטת ספלאש
+     2. צורה  — פינות מרובעות, מסגרות ink, צללים קשיחים
+     3. מרקם  — סצנת הפיקסל כרקע, קווי סריקה, בלי ריכוך
+
+   מה *לא* השתנה בכוונה: זהות הכרטיסים המחקים מותגים (וואטסאפ, ביקורות גוגל,
+   רותי, צוות, ויראלי). ההומור של המשחק תלוי בזיהוי המיידי שלהם, אז הם
+   שומרים על הגוון שלהם ומקבלים רק את הצורה הפיקסלית.
+   ========================================================================= */
+
+html[data-theme="pixel"] {
+  /* ---------- 1. פלטה ---------- */
+  --sky1: #74d8ce;
+  --sky2: #2fb8b4;
+  --bg: var(--sky2);
+  --bg2: #f7efe0;
+  --card: #fdf6e8;
+  --card2: #f0e2c6;
+  --border: #3b2c56;
+  --text: #3b2c56;
+  --dim: #6b5f86;
+  --dim2: #9a86bd;
+  --accent: #1f9fc4;
+  --accent2: #166f9b;
+  --good: #256e42;
+  --bad: #c9482f;
+  --warn: #b06a10;
+  --gold: #a8730c;
+  --coral: #ff7a5c;
+  --coral2: #c9482f;
+  --pink: #e8578f;
+  --leaf: #42a45c;
+  --violet: #9a86bd;
+  --ruti: #6f5f9b;
+  --ruti2: #3b2c56;
+  --slate: #4a4266;
+  --radius: 0px;
+  --radius-sm: 0px;
+
+  /* המשתנים שחולצו מה-JS */
+  --stars-good: #ffcf5c;
+  --mood-hi1: #7ccf6d;  --mood-hi2: #256e42;
+  --mood-mid1: #ffcf5c; --mood-mid2: #b06a10;
+  --mood-low1: #ff9aad; --mood-low2: #c9482f;
+  --heat-g1: #7ccf6d;   --heat-g2: #256e42;
+  --ruti-calm1: #42a45c; --ruti-calm2: #256e42;
+  --ruti-bub: #e6dcf5;   --ruti-nm: #4a3a6b;
+
+  /* פנימיים לערכת הנושא */
+  --ink: #3b2c56;
+  --sun: #ffcf5c;
+  --sand: #f2dcae;
+  --sand2: #d8b585;
+  --aqua: #3fd0e0;
+  --water: #1f9fc4;
+  --leafLt: #7ccf6d;
+  --cream: #f7efe0;
+  --on-page: #f7efe0;   /* רקע העמוד ברטרו כהה — טקסט עליו קרם */
+  --sh: 2px 2px 0 var(--ink);
+  --sh-lg: 3px 3px 0 var(--ink);
+}
+
+/* ---------- 1ב. טיפוגרפיה ---------- */
+/* הרטרו נשאר על פונט המערכת — הכתב שהיה לו מלכתחילה.
+   Rubik הוצא מהמחסנית בכוונה: הוא נטען עכשיו כפונט אמיתי עבור המודרני,
+   ואם הוא יישאר ברשימה הוא ישתלט וישווה בין שתי הערכות.
+   button יורש font-family מהמשחק, אז הגדרה על body מספיקה. */
+html[data-theme="pixel"] body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Assistant, Arial, sans-serif;
+}
+
+/* ---------- 2. צורה: הכל מרובע ---------- */
+html[data-theme="pixel"] *,
+html[data-theme="pixel"] *::before,
+html[data-theme="pixel"] *::after {
+  border-radius: 0 !important;
+  text-shadow: none;
+}
+html[data-theme="pixel"] canvas,
+html[data-theme="pixel"] img,
+html[data-theme="pixel"] svg {
+  image-rendering: pixelated;
+}
+/* בלי מעברים רכים — פיקסל ארט זז בקפיצות */
+html[data-theme="pixel"] .btn,
+html[data-theme="pixel"] .btn-mini,
+html[data-theme="pixel"] .tab,
+html[data-theme="pixel"] .ftab,
+html[data-theme="pixel"] .action-card,
+html[data-theme="pixel"] .item-card,
+html[data-theme="pixel"] .price-step {
+  transition: none !important;
+}
+
+/* ---------- 3. רקע ---------- */
+/* רקע העמוד נשאר *כהה*, כמו במקור.
+   גיליון הסגנון של המשחק מניח את זה: .section-title, .small ועוד צבועים
+   בלבן כי הם יושבים על שמי התכלת. רקע קרם הפך אותם לבלתי נראים (יחס 1.14).
+   כחול עמוק משחזר את היחס המקורי — לבן עליו = 4.8 — ומתקן מחלקה שלמה
+   של אלמנטים בבת אחת, במקום לצבוע כל אחד בנפרד. */
+html[data-theme="pixel"] body {
+  background: var(--accent2);
+}
+html[data-theme="pixel"] #app {
+  background: transparent;
+}
+/* קנבס הסצנה מוזרק על ידי theme-pixel.js.
+   הכלל הבא הוא היחיד בקובץ שאינו תחום תחת [data-theme="pixel"], בכוונה:
+   הוא מסתיר אלמנט שערכת הנושא עצמה יצרה. בלעדיו, כיבוי חי של ערכת הנושא
+   משאיר תמונה של 180×390 יושבת בזרימת העמוד. למשחק אין #pixel-bg משלו,
+   ולכן הכלל לא נוגע בשום דבר מקורי. */
+#pixel-bg { display: none; }
+
+html[data-theme="pixel"] #pixel-bg {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  image-rendering: pixelated;
+  pointer-events: none;
+  opacity: .38;
+}
+html[data-theme="pixel"] #app > * {
+  position: relative;
+  z-index: 1;
+}
+html[data-theme="pixel"] .scene-backdrop::after {
+  background: linear-gradient(to bottom, rgba(59, 44, 86, 0), rgba(59, 44, 86, .55));
+}
+
+/* ---------- 4. טיפוגרפיה ---------- */
+/* מתאר דיו — *רק* לטקסט בהיר שיושב על רקע כהה או על סצנה עמוסה.
+   על טקסט כהה שיושב על כרטיס קרם הצל יוצא באותו צבע של האות עצמה,
+   בהיסט 2px, והאות נראית כפולה ומרוטשת. זה מה שקרה לכותרות האירועים. */
+/* ברטרו רקע העמוד כהה, ולכן הכותרות האלה נשארות קרם עם מתאר.
+   במודרני הרקע תכלת בהיר והן כהות — שני הפכים, אותו אלמנט. */
+html[data-theme="pixel"] .section-title {
+  color: var(--cream);
+}
+html[data-theme="pixel"] .title-xl:not(.on-card),
+html[data-theme="pixel"] .hero-month,
+html[data-theme="pixel"] .section-title,
+html[data-theme="pixel"] .ts-park {
+  text-shadow: 2px 2px 0 var(--ink) !important;
+  letter-spacing: .01em;
+}
+
+/* טקסט כהה על כרטיס — בלי צל בכלל. הכרטיס עצמו כבר מפריד מהרקע. */
+html[data-theme="pixel"] .headline,
+html[data-theme="pixel"] .tour-head,
+html[data-theme="pixel"] .title-xl.on-card,
+html[data-theme="pixel"] .rep-head b,
+html[data-theme="pixel"] .news-title,
+html[data-theme="pixel"] .item-title,
+html[data-theme="pixel"] .event-headline {
+  text-shadow: none !important;
+}
+html[data-theme="pixel"] .subtitle,
+html[data-theme="pixel"] .hero-sub {
+  text-shadow: 1px 1px 0 var(--ink) !important;
+}
+
+/* ---------- 5. כפתורים ---------- */
+html[data-theme="pixel"] .btn,
+html[data-theme="pixel"] .btn-mini,
+html[data-theme="pixel"] .price-step,
+html[data-theme="pixel"] .icon-btn,
+html[data-theme="pixel"] .bb-next,
+html[data-theme="pixel"] .dil-btns button,
+html[data-theme="pixel"] .rep-toggle,
+html[data-theme="pixel"] .tour-foot button {
+  border: 2px solid var(--ink) !important;
+  box-shadow: var(--sh);
+  font-weight: 700;
+}
+html[data-theme="pixel"] .btn:active,
+html[data-theme="pixel"] .btn-mini:active,
+html[data-theme="pixel"] .price-step:active,
+html[data-theme="pixel"] .bb-next:active,
+html[data-theme="pixel"] .action-card:active,
+html[data-theme="pixel"] .item-card:active,
+html[data-theme="pixel"] .dil-btns button:active {
+  box-shadow: none !important;
+  transform: translate(2px, 2px) !important;
+}
+/* טקסט כהה על מילוי בהיר. קרם על קורל נותן יחס ניגודיות 2.24 — לא קריא
+   בגודל של כפתור. דיו על קורל נותן 4.85. במסך הפתיחה הקרם עובד כי המתאר
+   שם עבה יחסית לגודל האות; ב-DOM בגודל 14px המתאר דק מדי כדי להציל. */
+html[data-theme="pixel"] .btn-primary,
+html[data-theme="pixel"] .bb-next {
+  background: var(--coral) !important;
+  color: var(--ink) !important;
+  text-shadow: none !important;
+}
+html[data-theme="pixel"] .btn-accent {
+  background: var(--accent) !important;
+  color: var(--ink) !important;
+  text-shadow: none !important;
+}
+html[data-theme="pixel"] .btn-good,
+html[data-theme="pixel"] .dil-btns .a {
+  background: var(--leafLt) !important;
+  color: var(--ink) !important;
+  border-color: var(--ink) !important;
+}
+html[data-theme="pixel"] .btn-bad {
+  background: var(--bad) !important;
+  color: var(--cream) !important;
+  text-shadow: 1px 1px 0 var(--ink);
+}
+html[data-theme="pixel"] .btn-ghost,
+html[data-theme="pixel"] .dil-btns .b {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+}
+html[data-theme="pixel"] .btn:disabled,
+html[data-theme="pixel"] .bb-next:disabled,
+html[data-theme="pixel"] .price-step:disabled {
+  box-shadow: none;
+  filter: grayscale(.7) brightness(1.04);
+}
+html[data-theme="pixel"] .icon-btn,
+html[data-theme="pixel"] .ts-acts .icon-btn {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  box-shadow: var(--sh);
+}
+
+/* ---------- 6. כרטיסים ופאנלים ---------- */
+html[data-theme="pixel"] .card,
+html[data-theme="pixel"] .kpi,
+html[data-theme="pixel"] .action-card,
+html[data-theme="pixel"] .side-panel,
+html[data-theme="pixel"] .side-stat,
+html[data-theme="pixel"] .item-card,
+html[data-theme="pixel"] .news-card,
+html[data-theme="pixel"] .price-card,
+html[data-theme="pixel"] .cap-card,
+html[data-theme="pixel"] .opt-card,
+html[data-theme="pixel"] .dilslot,
+html[data-theme="pixel"] .gl-item,
+html[data-theme="pixel"] .quiet,
+html[data-theme="pixel"] .feed-empty,
+html[data-theme="pixel"] .mhead-in {
+  background: var(--card);
+  border: 2px solid var(--ink) !important;
+  box-shadow: var(--sh);
+}
+html[data-theme="pixel"] .opt-card.selected,
+html[data-theme="pixel"] .item-card.building {
+  background: var(--card2);
+  box-shadow: var(--sh-lg);
+}
+html[data-theme="pixel"] .banner-bad {
+  background: #ffe4dc;
+  border: 2px solid var(--bad) !important;
+}
+html[data-theme="pixel"] .banner-warn {
+  background: #ffeecb;
+  border: 2px solid var(--warn) !important;
+}
+
+/* ---------- 7. סרגל עליון ותחתון ---------- */
+/* הכרום כהה יותר מהעמוד, אחרת הסרגל נבלע בו */
+html[data-theme="pixel"] .topbar,
+html[data-theme="pixel"] .topstrip {
+  background: var(--ink) !important;
+  color: var(--cream) !important;
+  border-bottom: 3px solid var(--ink);
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+html[data-theme="pixel"] .bottombar {
+  background: var(--card) !important;
+  border-top: 3px solid var(--ink);
+}
+html[data-theme="pixel"] .ts-stat,
+html[data-theme="pixel"] .ts-cell,
+html[data-theme="pixel"] .ts-exp {
+  background: rgba(59, 44, 86, .28) !important;
+  border: 1px solid var(--ink);
+  color: var(--cream) !important;
+}
+html[data-theme="pixel"] .ts-stat.neg {
+  background: var(--bad) !important;
+}
+html[data-theme="pixel"] .ts-ruti {
+  background: var(--ruti) !important;
+  border: 1px solid var(--ink);
+}
+html[data-theme="pixel"] .ts-warnbar {
+  background: var(--bad) !important;
+  border-top: 2px solid var(--ink);
+}
+html[data-theme="pixel"] .bb-icon {
+  color: var(--ink);
+}
+/* כותרת הסרגל העליון יורשת את --text (דיו) ויושבת על כחול עמוק — 2.25.
+   הסרגל כהה, אז כל מה שעליו חייב להיות קרם. */
+html[data-theme="pixel"] .topbar .park-id,
+html[data-theme="pixel"] .topbar > *,
+html[data-theme="pixel"] .topstrip .ts-park {
+  color: var(--cream);
+}
+/* מונה שלבי הסיור: dim2 על קרם = 3.0. dim נותן 5.1. */
+html[data-theme="pixel"] .tour-count,
+html[data-theme="pixel"] .tour-meta {
+  color: var(--dim) !important;
+}
+html[data-theme="pixel"] .bb-icon .bdg,
+html[data-theme="pixel"] .ftab .bdg {
+  background: var(--coral) !important;
+  color: var(--cream) !important;
+  border: 1px solid var(--ink);
+}
+
+/* ---------- 8. גיבור עונתי ---------- */
+html[data-theme="pixel"] .hero {
+  border: 3px solid var(--ink) !important;
+  box-shadow: var(--sh-lg);
+}
+html[data-theme="pixel"] .hero::after {
+  background: linear-gradient(to top, rgba(59, 44, 86, .72), rgba(59, 44, 86, 0));
+}
+/* קווי סריקה — מרקם CRT */
+html[data-theme="pixel"] .hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg, transparent 0 2px, rgba(59, 44, 86, .08) 2px 3px
+  );
+}
+
+/* ---------- 9. סרגלי מדידה ---------- */
+html[data-theme="pixel"] .progress-bar,
+html[data-theme="pixel"] .cap-bar,
+html[data-theme="pixel"] .mood-track,
+html[data-theme="pixel"] .g-bar,
+html[data-theme="pixel"] .ruti-heat .tr {
+  border: 2px solid var(--ink) !important;
+  background: var(--card2) !important;
+}
+/* חלוקה למקטעים — סרגל פיקסלי לא זורם ברצף.
+   המשחק קובע background ב-inline style, שדורס כל background-image שנגדיר כאן,
+   ולכן הפסים מגיעים משכבת ::after ולא מהרקע עצמו. */
+html[data-theme="pixel"] .progress-bar .fill,
+html[data-theme="pixel"] .cap-fill,
+html[data-theme="pixel"] .mood-fill,
+html[data-theme="pixel"] .ruti-heat .fl {
+  position: relative;
+  overflow: hidden;
+}
+html[data-theme="pixel"] .progress-bar .fill::after,
+html[data-theme="pixel"] .cap-fill::after,
+html[data-theme="pixel"] .mood-fill::after,
+html[data-theme="pixel"] .ruti-heat .fl::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg, transparent 0 3px, rgba(59, 44, 86, .28) 3px 4px
+  );
+}
+html[data-theme="pixel"] .cap-fill.over {
+  background: var(--bad) !important;
+}
+
+/* ---------- 10. תגיות, שבבים, כוכבים ---------- */
+html[data-theme="pixel"] .badge,
+html[data-theme="pixel"] .chip,
+html[data-theme="pixel"] .price-tag,
+html[data-theme="pixel"] .staff-tag,
+html[data-theme="pixel"] .grp-count,
+html[data-theme="pixel"] .late,
+html[data-theme="pixel"] .thread-lbl {
+  border: 1px solid var(--ink) !important;
+  box-shadow: none;
+  font-weight: 700;
+}
+html[data-theme="pixel"] .badge-good { background: #d9f0dd !important; color: var(--good) !important; }
+html[data-theme="pixel"] .badge-bad  { background: #ffdcd4 !important; color: var(--bad) !important; }
+html[data-theme="pixel"] .badge-warn { background: #ffeecb !important; color: var(--warn) !important; }
+html[data-theme="pixel"] .badge-gold { background: #ffeecb !important; color: var(--gold) !important; }
+html[data-theme="pixel"] .chip.b { background: #ffdcd4 !important; }
+html[data-theme="pixel"] .chip.g { background: #d9f0dd !important; }
+html[data-theme="pixel"] .chip.p { background: #e6dcf5 !important; }
+html[data-theme="pixel"] .price-tag.cheap { background: #d9f0dd !important; }
+html[data-theme="pixel"] .price-tag.fair  { background: #d3eef5 !important; }
+html[data-theme="pixel"] .price-tag.steep { background: #ffdcd4 !important; }
+
+/* ---------- 11. לשוניות ---------- */
+html[data-theme="pixel"] .tab,
+html[data-theme="pixel"] .ftab {
+  background: var(--card2) !important;
+  border: 2px solid var(--ink) !important;
+  color: var(--ink) !important;
+  box-shadow: var(--sh);
+}
+html[data-theme="pixel"] .tab.active,
+html[data-theme="pixel"] .ftab.on {
+  background: var(--sun) !important;
+  color: var(--ink) !important;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+html[data-theme="pixel"] .ftabs {
+  background: transparent !important;
+}
+
+/* ---------- 12. הפיד ---------- */
+html[data-theme="pixel"] .feed {
+  background: transparent !important;
+}
+html[data-theme="pixel"] .mhead {
+  background: transparent !important;
+}
+html[data-theme="pixel"] .c {
+  background: var(--card);
+  border: 2px solid var(--ink) !important;
+  box-shadow: var(--sh);
+}
+html[data-theme="pixel"] .av {
+  background: var(--card2) !important;
+  border: 1px solid var(--ink);
+}
+html[data-theme="pixel"] .react,
+html[data-theme="pixel"] .owner-reply {
+  background: var(--card2) !important;
+  border: 1px solid var(--ink);
+}
+html[data-theme="pixel"] .t3::before,
+html[data-theme="pixel"] .thread::before {
+  background: var(--ink) !important;
+}
+
+/* --- כרטיסי המותגים: זהות נשמרת, צורה מתפקסלת --- */
+html[data-theme="pixel"] .c.wa      { background: #e2ddd0 !important; }
+html[data-theme="pixel"] .wa-bar    { background: #0d5f57 !important; border-bottom: 2px solid var(--ink); }
+html[data-theme="pixel"] .bub       { background: #cdedb4 !important; border: 1px solid var(--ink) !important; }
+html[data-theme="pixel"] .bub.other { background: var(--cream) !important; }
+html[data-theme="pixel"] .c.rutic   { background: #efe8fa !important; border-color: var(--ruti) !important; }
+html[data-theme="pixel"] .ruti-bar  { border-bottom: 2px solid var(--ink); }
+html[data-theme="pixel"] .c.staff   { background: #3b4a55 !important; }
+html[data-theme="pixel"] .c.staff .av { background: #4d606d !important; }
+html[data-theme="pixel"] .c.viral   { background: #1a1420 !important; }
+html[data-theme="pixel"] .vid       { background: #243b4a !important; border: 2px solid var(--ink); }
+/* טקסט תכלת על לבן-כמעט = 2.31. כחול עמוק על קרם כהה = 4.3. */
+html[data-theme="pixel"] .rep-toggle {
+  background: var(--card2) !important;
+  color: var(--accent2) !important;
+}
+/* .rep-head במקור הוא טקסט לבן על גרדיאנט כהה. אחרי שהרקע הפך לקרם
+   בהיר הטקסט נשאר לבן — יחס ניגודיות 1.2, כלומר בלתי נראה. */
+html[data-theme="pixel"] .rep-head,
+html[data-theme="pixel"] .rep-kpi div {
+  background: var(--card2) !important;
+  border: 1px solid var(--ink);
+}
+html[data-theme="pixel"] .rep-head,
+html[data-theme="pixel"] .rep-head b,
+html[data-theme="pixel"] .rep-head small {
+  color: var(--ink) !important;
+}
+
+/* ---------- 13. שכבות עליונות ---------- */
+html[data-theme="pixel"] .overlay,
+html[data-theme="pixel"] .tour-hole {
+  background: rgba(59, 44, 86, .74) !important;
+}
+html[data-theme="pixel"] .sheet,
+html[data-theme="pixel"] .tour-bubble,
+html[data-theme="pixel"] .toast {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  border: 3px solid var(--ink) !important;
+  box-shadow: var(--sh-lg);
+}
+html[data-theme="pixel"] .sheet-handle {
+  background: var(--ink) !important;
+}
+html[data-theme="pixel"] .tour-arrow i {
+  background: var(--card) !important;
+  border: 2px solid var(--ink);
+}
+
+/* ---------- 14. מילון ---------- */
+html[data-theme="pixel"] .gl-head {
+  background: var(--card2) !important;
+  border-bottom: 2px solid var(--ink);
+}
+html[data-theme="pixel"] .gl-tr.gl-th {
+  background: var(--card2) !important;
+}
+html[data-theme="pixel"] .gl-w {
+  border: 1px solid var(--ink);
+}
+
+/* ---------- 15. בקרת מחיר ---------- */
+html[data-theme="pixel"] .price-slider::-webkit-slider-thumb {
+  background: var(--coral) !important;
+  border: 2px solid var(--ink);
+  box-shadow: none;
+}
+html[data-theme="pixel"] .price-slider::-moz-range-thumb {
+  background: var(--coral) !important;
+  border: 2px solid var(--ink);
+  box-shadow: none;
+}
+html[data-theme="pixel"] .price-value {
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+/* ---------- 16. נקודות התקדמות ---------- */
+html[data-theme="pixel"] .dot {
+  background: rgba(59, 44, 86, .3) !important;
+  border: 1px solid var(--ink);
+}
+html[data-theme="pixel"] .dot.active { background: var(--sun) !important; }
+html[data-theme="pixel"] .dot.done   { background: var(--leafLt) !important; }
+
+/* ---------- 17. מסך הפתיחה ומסך הסיום ---------- */
+/* ברטרו מוצגת סצנת הפיקסל בלבד. ה-SVG של המשחק מוסתר — הוא ממוקם
+   absolute, ולכן ההסתרה לא נוגעת בפריסה. במצב חדשני הוא חוזר כרגיל. */
+html[data-theme="pixel"] .scene-backdrop {
+  display: none;
+}
+
+/* מסך הבית זהה בשתי ערכות הנושא — אותו תוכן, אותם כפתורים, אותם מיקומים.
+   מה שמתחלף הוא העור בלבד: כאן האיור הווקטורי יורד וסצנת הפיקסל עולה
+   במקומו, והטקסט מקבל מתאר במקום צל רך. גובה הכפתורים לא נגזר מכאן
+   בכוונה — כל שינוי גובה יזיז אותם ביחס לעיצוב השני. */
+html[data-theme="pixel"] .home-scene,
+html[data-theme="pixel"] #app-bg {
+  display: none;
+}
+html[data-theme="pixel"] .home-title {
+  color: var(--cream);
+  text-shadow:
+    3px 0 0 var(--ink), -3px 0 0 var(--ink), 0 3px 0 var(--ink), 0 -3px 0 var(--ink),
+    3px 3px 0 var(--ink), -3px -3px 0 var(--ink), 3px -3px 0 var(--ink), -3px 3px 0 var(--ink) !important;
+}
+html[data-theme="pixel"] .home-credit {
+  color: var(--cream);
+  text-shadow: 1px 1px 0 var(--ink), -1px -1px 0 var(--ink), 1px -1px 0 var(--ink), -1px 1px 0 var(--ink);
+}
+html[data-theme="pixel"] .home-cta {
+  box-shadow: 3px 3px 0 var(--ink);
+}
+html[data-theme="pixel"] .home-cta:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+/* במסכים עם סצנה הרקע באטימות מלאה; במסכי המשחק הוא נשאר דהוי
+   כדי לא להתחרות בכרטיסים. */
+html[data-theme="pixel"] body:has(.scene-host) #pixel-bg {
+  opacity: 1;
+}
+
+/* טקסט בהיר מעל סצנה בהירה ועמוסה — מתאר מלא סביב האות, בדיוק כמו
+   במסך הפתיחה של splash. צל בכיוון אחד לא מספיק כאן. */
+html[data-theme="pixel"] .scene-host .title-xl {
+  color: var(--cream) !important;
+  text-shadow:
+    2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 2px 0 var(--ink), 0 -2px 0 var(--ink),
+    2px 2px 0 var(--ink), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink) !important;
+}
+html[data-theme="pixel"] .scene-host .subtitle {
+  color: var(--cream) !important;
+  text-shadow:
+    1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 1px 0 var(--ink), 0 -1px 0 var(--ink),
+    1px 1px 0 var(--ink), -1px -1px 0 var(--ink) !important;
+}
+html[data-theme="pixel"] .logo-hero {
+  filter: drop-shadow(2px 2px 0 var(--ink));
+}
+
+/* ---------- 18. בוחר העיצוב ---------- */
+/* הבוחר עצמו מעוצב בשתי ערכות הנושא; כאן רק ההתאמה הפיקסלית. */
+html[data-theme="pixel"] .theme-pick .btn {
+  font-weight: 700;
+}
+html[data-theme="pixel"] .theme-pick .btn[aria-pressed="true"] {
+  background: var(--sun) !important;
+  color: var(--ink) !important;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}

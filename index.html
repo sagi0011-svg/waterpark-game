@@ -5,25 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b84d6">
 <title>ספלאש בלאגן — סימולציית פארק מים</title>
+<!-- Rubik — הפונט של העיצוב המודרני בלבד. הרטרו נשאר על פונט המערכת.
+     display=swap מציג מיד את פונט המערכת ומחליף כשהפונט מגיע —
+     כך אין רגע של טקסט בלתי נראה, וגם בלי רשת המשחק קריא לגמרי. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- ═══ ערכת נושא "פיקסל" — שתי השורות הבאות הן כל החיבור. ═══
+     למחיקה מלאה: מחק את שתיהן. המשחק חוזר למראה המקורי בלי שריד.
+     לכיבוי זמני: פתח את המשחק עם ?theme=classic  ·  פירוט ב-splash/README.md -->
+<link rel="stylesheet" href="splash/theme-pixel.css">
+<script type="module" src="splash/theme-pixel.js"></script>
+<!-- ═══════════════════════════════════════════════════════════ -->
 <style>
 :root{
-  --sky1:#7bdcff;
-  --sky2:#0b84d6;
+  /* הפלטה נגזרת מאיור מסך הבית: תכלת הבריכה, קורל וצהוב המגלשות,
+     ירוק העצים. כל המסכים חולקים אותה כדי שהמשחק יהיה שפה אחת. */
+  --sky1:#7fdcec;
+  --sky2:#4ec8e0;
   --bg:var(--sky2);
-  --bg2:#f4fbfe;
+  --bg2:#eefafd;
   --card:#ffffff;
-  --card2:#eaf6fb;
-  --border:#d3ecf5;
-  --text:#0a324c;
-  --dim:#5c7a8c;
-  --dim2:#93aebc;
-  --accent:#00bfb3;
-  --accent2:#00969c;
-  --good:#16a34a;
-  --bad:#d9362b;
-  --warn:#c9790a;
-  --gold:#b8790a;
+  --card2:#e6f6fb;
+  --border:#cfeef6;
+  --text:#0d3f56;
+  --dim:#5b8394;
+  --dim2:#93b9c7;
+  /* התכלת מהאיור בהיר מדי לטקסט על לבן (יחס 2.0). הגוונים כאן כהים
+     מספיק לשמש גם כטקסט וגם כמילוי עם טקסט לבן מעליו. */
+  --accent:#0d90ad;
+  --accent2:#0a7089;
+  --good:#2f9350;
+  --bad:#e8543c;
+  --warn:#e0952c;
+  --gold:#c98f14;
   --coral:#ff6b4a;
+  --sun-btn:#ffc93c;
+  /* טקסט שיושב ישירות על רקע העמוד (לא על כרטיס). במודרני העמוד
+     תכלת בהיר ולכן כהה; ברטרו העמוד כחול עמוק ולכן קרם. */
+  --on-page:var(--text);
   --coral2:#ff5252;
   --pink:#ec4fa0;
   --leaf:#3fb950;
@@ -31,15 +51,27 @@
   --ruti:#6d28d9;
   --ruti2:#4c1d95;
   --slate:#3d5a72;
-  --radius:20px;
-  --radius-sm:14px;
+  --radius:22px;
+  --radius-sm:16px;
+  /* צל צבעוני ורך במקום מסגרת אפורה */
+  --shadow-card:0 6px 16px rgba(9,70,96,.13);
+  --shadow-lift:0 10px 24px rgba(9,70,96,.17);
+  /* צבעים שהיו קשיחים בתוך ה-JS. הערכים זהים למקור — הוצאו החוצה
+     כדי ששכבת ערכת נושא תוכל לדרוס אותם. ראה splash/theme-pixel.css */
+  --stars-good:#f0a500;
+  --mood-hi1:#6ee7b7;  --mood-hi2:#10b981;
+  --mood-mid1:#fcd34d; --mood-mid2:#f59e0b;
+  --mood-low1:#fca5a5; --mood-low2:#dc2626;
+  --heat-g1:#6ee7b7;   --heat-g2:#059669;
+  --ruti-calm1:#059669; --ruti-calm2:#047857;
+  --ruti-bub:#ede9fe;   --ruti-nm:#5b21b6;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:var(--sky2);color:var(--text);}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Assistant,Arial,sans-serif;
+  font-family:Rubik,-apple-system,BlinkMacSystemFont,"Segoe UI",Assistant,Arial,sans-serif;
   overscroll-behavior-y:none;
   touch-action:manipulation;
   min-height:100vh;
@@ -194,7 +226,7 @@ h1,h2,h3,p{margin:0;}
 }
 
 /* list section */
-.section-title{font-size:13px;font-weight:800;color:rgba(255,255,255,.9);margin:18px 16px 8px;letter-spacing:.02em;text-shadow:0 1px 4px rgba(0,0,0,.2);}
+.section-title{font-size:13px;font-weight:800;color:var(--text);margin:18px 16px 8px;letter-spacing:.02em;}
 
 /* warning banner */
 .banner{margin:12px 16px 0;padding:12px 14px;border-radius:14px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center;}
@@ -609,7 +641,7 @@ input[type=text]:focus,input[type=number]:focus{border-color:var(--accent);}
 .rep-sat{padding:10px 12px 4px;border-top:1px solid var(--border);}
 .rep-sat .rs-head{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;}
 .rep-sat .sat-row{font-size:12px;padding:3px 0;}
-.rep-toggle{width:100%;background:#f4fafd;padding:8px;font-size:12px;font-weight:700;color:var(--sky2);
+.rep-toggle{width:100%;background:#f4fafd;padding:8px;font-size:12px;font-weight:700;color:var(--accent2);
   border-top:1px solid var(--border);}
 .rep-lines{display:none;padding:4px 12px 10px;} .rep-lines.open{display:block;}
 .fr{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:4px 0;}
@@ -658,6 +690,59 @@ input[type=text]:focus,input[type=number]:focus{border-color:var(--accent);}
   .bb-icon{width:46px;}
   .bb-next{font-size:13.5px;}
 }
+
+/* ---------- שפת העיצוב המודרנית ---------- */
+/* איור מסך הבית ממשיך כרקע דהוי מאחורי כל המסכים, כדי שהמעבר
+   ממסך הבית לתוך המשחק לא ירגיש כמו שני משחקים שונים. */
+#app-bg{position:fixed;inset:0;z-index:0;opacity:.20;pointer-events:none;}
+#app-bg svg{width:100%;height:100%;display:block;}
+#app{background:transparent !important;z-index:1;}
+body{background:var(--bg);}
+
+/* לשונית פעילה: מילוי מלא במקום טקסט תכלת על לבן */
+.ftab.on{background:var(--accent);color:#fff;}
+.ftab.on .bdg{background:#fff;color:var(--accent);}
+
+/* כרטיסים: פינות רכות וצל צבעוני, בלי מסגרת אפורה */
+.card,.item-card,.news-card,.price-card,.cap-card,.opt-card,
+.side-panel,.kpi,.action-card,.c,.gl-item,.quiet,.feed-empty,.mhead-in{
+  border-color:transparent;
+  box-shadow:var(--shadow-card);
+}
+.sheet,.tour-bubble{box-shadow:var(--shadow-lift);}
+.item-card.building,.opt-card.selected{box-shadow:var(--shadow-lift);}
+
+/* ---------- מסך הבית המודרני ---------- */
+/* איור פלאט-וקטור מלא-מסך. SCENE_SVG נשאר במסך הסיום בלבד.
+   המבנה זהה בשתי ערכות הנושא — רק העור מתחלף. */
+.home-scene{position:absolute;inset:0;z-index:0;}
+.home-scene svg{width:100%;height:100%;display:block;}
+.home .scene-content{z-index:1;}
+.home-title{
+  font-size:clamp(46px,15vw,68px);font-weight:900;text-align:center;color:#fff;
+  letter-spacing:.01em;line-height:1.05;
+  text-shadow:0 4px 0 rgba(6,60,92,.22), 0 10px 26px rgba(3,26,40,.28);
+}
+.home .home-actions{margin-top:auto !important;padding-bottom:52px;}
+.home-cta{height:62px;font-size:17px;box-shadow:0 6px 0 rgba(6,60,92,.18);}
+.home-cta:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(6,60,92,.18);}
+.btn-sun{background:var(--sun-btn);color:#5c3d05;}
+.home-credit{
+  position:absolute;left:0;right:0;bottom:calc(16px + var(--safe-bottom));z-index:1;
+  text-align:center;font-size:12px;font-weight:700;letter-spacing:.22em;
+  /* line-height קבוע: לשני העיצובים פונטים שונים, ובלי זה גובה התיבה
+     נגזר ממטריקות הפונט והאלמנטים זזים ב-3-4px בכל החלפה. */
+  line-height:16px;
+  color:rgba(6,60,92,.55);direction:ltr;
+}
+
+/* בוחר סגנון התצוגה — רטרו / חדשני */
+.theme-pick{justify-content:center;}
+/* גובה מפורש: ברטרו הכפתורים מקבלים מסגרת 2px, ובלי גובה קבוע הם
+   גדלים ב-2px ומזיזים את כל הבלוק שמעליהם ביחס לעיצוב השני. */
+.theme-pick .btn{height:38px;}
+.theme-pick-wrap{margin-top:4px;}
+.theme-pick-wrap .small{margin-bottom:8px;line-height:16px;}
 </style>
 </head>
 <body>
@@ -681,6 +766,70 @@ function seasonClass(mIdx){ // 0-based month index
 
 /* illustrated water-park scene, reused as hero art + screen backdrops.
    season variety comes from a CSS filter on the wrapper, not separate art. */
+const HOME_SVG = `<svg viewBox="0 0 400 720" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <rect width="400" height="720" fill="#4ec8e0"/>
+  <g fill="#ffffff" opacity=".92">
+    <ellipse cx="54" cy="86" rx="44" ry="17"/><ellipse cx="88" cy="76" rx="30" ry="19"/>
+    <ellipse cx="336" cy="52" rx="52" ry="19"/><ellipse cx="306" cy="42" rx="30" ry="18"/>
+    <ellipse cx="366" cy="646" rx="56" ry="20"/><ellipse cx="336" cy="636" rx="32" ry="17"/>
+    <ellipse cx="36" cy="680" rx="50" ry="18"/>
+  </g>
+
+  <path d="M200 150 C334 150 388 252 388 384 C388 528 320 616 200 616 C80 616 12 528 12 384 C12 252 66 150 200 150Z" fill="#f5e2bd"/>
+  <path d="M200 180 C318 180 362 264 362 384 C362 508 302 588 200 588 C98 588 38 508 38 384 C38 264 82 180 200 180Z" fill="#2faed2"/>
+  <path d="M200 202 C304 202 342 274 342 384 C342 494 288 566 200 566 C112 566 58 494 58 384 C58 274 96 202 200 202Z" fill="#57cee8"/>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M134 236 C178 254 178 288 134 304 C90 320 90 354 134 370 C178 386 178 420 134 436 C98 449 94 474 128 490" stroke="#d94a32" stroke-width="27"/>
+    <path d="M134 236 C178 254 178 288 134 304 C90 320 90 354 134 370 C178 386 178 420 134 436 C98 449 94 474 128 490" stroke="#ff7a5c" stroke-width="16"/>
+    <path d="M134 236 C178 254 178 288 134 304 C90 320 90 354 134 370 C178 386 178 420 134 436 C98 449 94 474 128 490" stroke="#ffffff" stroke-width="4" opacity=".45"/>
+
+    <path d="M266 250 C222 268 222 302 266 318 C310 334 310 368 266 384 C222 400 222 434 266 450 C300 463 304 488 272 504" stroke="#e0952c" stroke-width="26"/>
+    <path d="M266 250 C222 268 222 302 266 318 C310 334 310 368 266 384 C222 400 222 434 266 450 C300 463 304 488 272 504" stroke="#ffc93c" stroke-width="15"/>
+    <path d="M266 250 C222 268 222 302 266 318 C310 334 310 368 266 384 C222 400 222 434 266 450 C300 463 304 488 272 504" stroke="#ffffff" stroke-width="4" opacity=".45"/>
+
+    <path d="M200 224 C230 244 230 268 200 286 C172 302 172 324 198 340" stroke="#cfdde4" stroke-width="22"/>
+    <path d="M200 224 C230 244 230 268 200 286 C172 302 172 324 198 340" stroke="#ffffff" stroke-width="13"/>
+  </g>
+
+  <g fill="#e8f6fa">
+    <rect x="112" y="216" width="44" height="16" rx="8"/>
+    <rect x="244" y="230" width="44" height="16" rx="8"/>
+    <rect x="180" y="206" width="40" height="14" rx="7"/>
+  </g>
+
+  <g fill="#ffffff" opacity=".7">
+    <ellipse cx="126" cy="498" rx="26" ry="9"/>
+    <ellipse cx="274" cy="512" rx="25" ry="9"/>
+    <ellipse cx="198" cy="348" rx="20" ry="7"/>
+  </g>
+
+  <g fill="#ffffff" opacity=".45">
+    <rect x="72" y="418" width="30" height="6" rx="3"/><rect x="300" y="440" width="26" height="6" rx="3"/>
+    <rect x="160" y="536" width="36" height="6" rx="3"/><rect x="240" y="212" width="22" height="6" rx="3"/>
+  </g>
+
+  <g>
+    <g><circle cx="88" cy="470" r="16" fill="#ff8a5c"/><circle cx="88" cy="470" r="7.5" fill="#57cee8"/><circle cx="88" cy="470" r="4.6" fill="#f3c9a0"/></g>
+    <g><circle cx="308" cy="530" r="15" fill="#ffd05c"/><circle cx="308" cy="530" r="7" fill="#57cee8"/><circle cx="308" cy="530" r="4.4" fill="#c98a5e"/></g>
+    <g><circle cx="86" cy="352" r="14" fill="#6fd6ea"/><circle cx="86" cy="352" r="6.5" fill="#2faed2"/><circle cx="86" cy="352" r="4.2" fill="#f3c9a0"/></g>
+    <g><circle cx="322" cy="330" r="14" fill="#ff6b8a"/><circle cx="322" cy="330" r="6.5" fill="#57cee8"/><circle cx="322" cy="330" r="4.2" fill="#8a5a3c"/></g>
+    <g><circle cx="196" cy="540" r="15" fill="#ffd05c"/><circle cx="196" cy="540" r="7" fill="#57cee8"/><circle cx="196" cy="540" r="4.4" fill="#f3c9a0"/></g>
+    <g><circle cx="316" cy="424" r="13" fill="#ff8a5c"/><circle cx="316" cy="424" r="6" fill="#57cee8"/><circle cx="316" cy="424" r="3.9" fill="#c98a5e"/></g>
+  </g>
+
+  <g>
+    <g><rect x="44" y="204" width="7" height="22" rx="3" fill="#8a6242"/><circle cx="47" cy="194" r="21" fill="#4fae5e"/><circle cx="36" cy="202" r="14" fill="#63c46f"/></g>
+    <g><rect x="128" y="172" width="7" height="20" rx="3" fill="#8a6242"/><circle cx="131" cy="162" r="19" fill="#3f9e57"/><circle cx="142" cy="170" r="13" fill="#5fbf6a"/></g>
+    <g><rect x="254" y="166" width="7" height="20" rx="3" fill="#8a6242"/><circle cx="257" cy="156" r="20" fill="#4fae5e"/><circle cx="246" cy="164" r="13" fill="#63c46f"/></g>
+    <g><rect x="348" y="208" width="7" height="22" rx="3" fill="#8a6242"/><circle cx="351" cy="198" r="21" fill="#3f9e57"/><circle cx="362" cy="206" r="13" fill="#5fbf6a"/></g>
+    <g><rect x="20" y="396" width="7" height="22" rx="3" fill="#8a6242"/><circle cx="23" cy="386" r="20" fill="#4fae5e"/></g>
+    <g><rect x="374" y="408" width="7" height="22" rx="3" fill="#8a6242"/><circle cx="377" cy="398" r="20" fill="#3f9e57"/></g>
+    <g><rect x="88" y="582" width="7" height="20" rx="3" fill="#8a6242"/><circle cx="91" cy="572" r="19" fill="#4fae5e"/><circle cx="102" cy="580" r="12" fill="#63c46f"/></g>
+    <g><rect x="304" y="586" width="7" height="20" rx="3" fill="#8a6242"/><circle cx="307" cy="576" r="19" fill="#3f9e57"/><circle cx="296" cy="584" r="12" fill="#5fbf6a"/></g>
+  </g>
+</svg>`;
+
 const SCENE_SVG = `<svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
   <defs>
     <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
@@ -2136,7 +2285,17 @@ function checkEndConditions(){
 /* =========================================================
    RENDER — root dispatcher
    ========================================================= */
+/* רקע האיור יושב מחוץ ל-#app: render() מרוקן את #app בכל קריאה. */
+function mountAppBg(){
+  if(document.getElementById("app-bg")) return;
+  const app = document.getElementById("app");
+  if(!app || !app.parentNode) return;
+  const bg = el(`<div id="app-bg" aria-hidden="true">${HOME_SVG}</div>`);
+  app.parentNode.insertBefore(bg, app);
+}
+
 function render(){
+  mountAppBg();
   const app = document.getElementById("app");
   // a re-render must not throw the player back to the top of the feed
   const prevFeed = document.querySelector(".feed");
@@ -2168,24 +2327,44 @@ function on(node, ev, fn){ node.addEventListener(ev, fn); return node; }
 /* =========================================================
    WELCOME / CONTINUE
    ========================================================= */
+/* =========================================================
+   THEME PICKER — רטרו / חדשני
+   ========================================================= */
+/* מחזיר null אם שכבת ערכת הנושא לא נטענה. כך מחיקת שתי שורות הטעינה
+   מ-<head> מחזירה את המשחק למצבו המקורי בלי להשאיר שארית בממשק. */
+function themePicker(onDone){
+  if(typeof window.splashTheme !== "function") return null;
+  const cur = window.splashThemeGet ? window.splashThemeGet() : "pixel";
+  const opts = [["pixel","\u{1F47E} רטרו"],["classic","\u{2728} חדשני"]];
+  const row = el(`<div class="theme-pick row gap8">${opts.map(([k,label])=>
+    `<button class="btn btn-sm ${k===cur?'btn-accent':'btn-ghost'}" data-topt="${k}" aria-pressed="${k===cur}">${label}</button>`
+  ).join("")}</div>`);
+  row.querySelectorAll("[data-topt]").forEach(b=>on(b,"click",()=>{
+    const now = window.splashThemeGet ? window.splashThemeGet() : "";
+    if(b.dataset.topt === now) return;
+    window.splashTheme(b.dataset.topt);
+    if(onDone) onDone(); else render();
+  }));
+  return row;
+}
+
 function renderWelcome(){
   const saved = loadGame();
-  const wrap = el(`<div class="screen scene-host">
-    <div class="scene-backdrop">${SCENE_SVG}</div>
-    <div class="scene-content px" style="justify-content:center;padding-top:${saved?60:80}px;display:flex;flex-direction:column;flex:1;">
-      <div class="logo-hero">🏊‍♂️💦</div>
-      <div class="title-xl">סימולציית פארק מים</div>
-      <div class="subtitle">נהלו פארק מים ישראלי — כיסאות כתר, חופש גדול, ותור אינסופי לגלידה.</div>
-      <div class="stack gap12" style="margin-top:34px;"></div>
+  const wrap = el(`<div class="screen scene-host home">
+    <div class="home-scene">${HOME_SVG}</div>
+    <div class="scene-content px" style="justify-content:flex-start;padding-top:${saved?66:78}px;display:flex;flex-direction:column;flex:1;">
+      <div class="home-title">ספלאש</div>
+      <div class="stack gap12 home-actions" style="margin-top:34px;"></div>
     </div>
+    <div class="home-credit">SAGI G HAIM</div>
   </div>`);
   const stack = wrap.querySelector(".stack");
   if(saved){
-    const btnContinue = el(`<button class="btn btn-primary btn-lg btn-block">▶️ המשך משחק — ${saved.parkName}</button>`);
+    const btnContinue = el(`<button class="btn btn-primary btn-lg btn-block home-cta">▶️ המשך משחק — ${saved.parkName}</button>`);
     on(btnContinue,"click",()=>{ G = saved; render(); });
     stack.appendChild(btnContinue);
   }
-  const btnNew = el(`<button class="btn ${saved?'btn-ghost':'btn-primary'} btn-lg btn-block">🆕 משחק חדש</button>`);
+  const btnNew = el(`<button class="btn ${saved?'btn-sun':'btn-primary'} btn-lg btn-block home-cta">🆕 משחק חדש</button>`);
   on(btnNew,"click",()=>{
     if(saved && !confirm("להתחיל משחק חדש? המשחק השמור יימחק.")) return;
     clearSave();
@@ -2193,6 +2372,13 @@ function renderWelcome(){
     render();
   });
   stack.appendChild(btnNew);
+
+  const picker = themePicker();
+  if(picker){
+    const box = el(`<div class="theme-pick-wrap"><div class="small center">סגנון תצוגה</div></div>`);
+    box.appendChild(picker);
+    stack.appendChild(box);
+  }
   return wrap;
 }
 
@@ -2408,9 +2594,9 @@ function renderTopstrip(){
 
   // net sentiment — one number for "how the internet feels about you"
   const mo = moodScore();
-  const fill = mo>70 ? "linear-gradient(90deg,#6ee7b7,#10b981)"
-             : mo>45 ? "linear-gradient(90deg,#fcd34d,#f59e0b)"
-             : "linear-gradient(90deg,#fca5a5,#dc2626)";
+  const fill = mo>70 ? "linear-gradient(90deg,var(--mood-hi1),var(--mood-hi2))"
+             : mo>45 ? "linear-gradient(90deg,var(--mood-mid1),var(--mood-mid2))"
+             : "linear-gradient(90deg,var(--mood-low1),var(--mood-low2))";
   const face = mo>78?"😍":mo>60?"🙂":mo>42?"😐":mo>25?"😠":"🤬";
   const lbl  = mo>60?"אוהבים אתכם":mo>42?"סבבה":"מתחיל להסריח";
   ts.appendChild(el(`<div class="mood">
@@ -2651,7 +2837,7 @@ function cReview(it){
     <div class="g-bar"><span class="g-logo"><i>G</i><i>o</i><i>o</i><i>g</i><i>l</i><i>e</i></span> ביקורת חדשה על ${escapeHtml(G.parkName)}</div>
     <div class="c-head"><div class="av">${p.avatar}</div><div>
       <div class="c-who">${escapeHtml(p.who)}</div>
-      <div class="c-meta"><span class="strs" style="color:${p.stars>=4?'#f0a500':'#d9362b'}">${starStr(p.stars)}</span> · ${p.days}</div>
+      <div class="c-meta"><span class="strs" style="color:${p.stars>=4?'var(--stars-good)':'var(--bad)'}">${starStr(p.stars)}</span> · ${p.days}</div>
     </div></div>
     <div class="c-body">${p.text}</div>
   </div>`);
@@ -2708,7 +2894,7 @@ function cViral(it){
 function cRuti(it){
   const p = it.payload;
   const heatBar = (green)=>`<div class="ruti-heat"><span>חום</span>
-    <div class="tr"><div class="fl" style="width:${p.heat}%${green?';background:linear-gradient(90deg,#6ee7b7,#059669)':''}"></div></div>
+    <div class="tr"><div class="fl" style="width:${p.heat}%${green?';background:linear-gradient(90deg,var(--heat-g1),var(--heat-g2))':''}"></div></div>
     <span>${p.heat}</span></div>`;
 
   if(p.mode==="escalate"){
@@ -2725,7 +2911,7 @@ function cRuti(it){
   }
   if(p.mode==="down"){
     return el(`<div class="c rutic">
-      <div class="ruti-bar" style="background:linear-gradient(135deg,#059669,#047857)">🕵️‍♀️ ${RUTI.name} · נסוגה שלב</div>
+      <div class="ruti-bar" style="background:linear-gradient(135deg,var(--ruti-calm1),var(--ruti-calm2))">🕵️‍♀️ ${RUTI.name} · נסוגה שלב</div>
       <div class="c-head"><div class="av">🕵️‍♀️</div><div>
         <div class="c-who">${RUTI.name}</div>
         <div class="c-meta">שלב ${p.stage} · חום ${p.heat}</div></div></div>
@@ -2735,7 +2921,7 @@ function cRuti(it){
   if(p.mode==="pressure"){
     return el(`<div class="c rutic">
       <div class="ruti-bar">🕵️‍♀️ ${escapeHtml(p.group)}<small>שלב 4 — התיק פתוח</small></div>
-      <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name} · מנהלת</span>${p.text}
+      <div class="bub" style="background:var(--ruti-bub)"><span class="nm" style="color:var(--ruti-nm)">${RUTI.name} · מנהלת</span>${p.text}
         <div class="tm">${p.time} ✓✓</div></div>
       <div class="grp-count">👥 ${(p.members||0).toLocaleString('he-IL')} חברים בקבוצה · הלחץ נמשך</div>
       ${heatBar(false)}</div>`);
@@ -2743,7 +2929,7 @@ function cRuti(it){
   if(p.mode==="group"){
     return el(`<div class="c rutic">
       <div class="ruti-bar">🕵️‍♀️ ${escapeHtml(p.group)}<small>שלב 3</small></div>
-      <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name} · מנהלת</span>${p.text}
+      <div class="bub" style="background:var(--ruti-bub)"><span class="nm" style="color:var(--ruti-nm)">${RUTI.name} · מנהלת</span>${p.text}
         <div class="tm">${p.time} ✓✓</div></div>
       <div class="grp-count">👥 ${(p.members||0).toLocaleString('he-IL')} חברים בקבוצה · ${p.joined} הצטרפו השבוע</div>
       ${heatBar(false)}</div>`);
@@ -2753,14 +2939,14 @@ function cRuti(it){
       <div class="ruti-bar">🕵️‍♀️ ${RUTI.name} · שלב 2 — ביקורת<small>Google</small></div>
       <div class="c-head"><div class="av">🕵️‍♀️</div><div>
         <div class="c-who">${RUTI.name}</div>
-        <div class="c-meta"><span class="strs" style="color:#d9362b">${starStr(1)}</span> · Local Guide · ${p.reviews} ביקורות</div></div></div>
+        <div class="c-meta"><span class="strs" style="color:var(--bad)">${starStr(1)}</span> · Local Guide · ${p.reviews} ביקורות</div></div></div>
       <div class="c-body">${p.text}</div>
       ${heatBar(false)}</div>`);
   }
   // stage 1 — a pointed remark in the neighbourhood group
   return el(`<div class="c rutic">
     <div class="ruti-bar">🕵️‍♀️ ${RUTI.name} · שלב 1<small>שכונת רמת אגוז</small></div>
-    <div class="bub" style="background:#ede9fe"><span class="nm" style="color:#5b21b6">${RUTI.name}</span>${p.text}
+    <div class="bub" style="background:var(--ruti-bub)"><span class="nm" style="color:var(--ruti-nm)">${RUTI.name}</span>${p.text}
       <div class="tm">${p.t1} ✓✓</div></div>
     <div class="bub other"><span class="nm" style="color:${p.replyColor}">${escapeHtml(p.replyWho)}</span>${p.reply}
       <div class="tm">${p.t2}</div></div>
@@ -3029,6 +3215,10 @@ function openMenu(){
         <span>מצב תצוגה</span>
         <button class="btn btn-sm ${G.quickUI?'btn-accent':'btn-ghost'}" id="toggleUI">${G.quickUI?'🐇 מהיר':'🐢 מורחב'}</button>
       </div>
+      <div class="row-between card" id="themeRow" style="padding:12px 16px;">
+        <span>סגנון תצוגה</span>
+        <span id="themeSlot"></span>
+      </div>
       <button class="btn btn-ghost btn-block" id="menuHistory">📊 היסטוריה ודוחות</button>
       <button class="btn btn-ghost btn-block" id="menuNewGame">🆕 משחק חדש</button>
       <button class="btn btn-ghost btn-block" id="menuClose">סגירה</button>
@@ -3036,6 +3226,10 @@ function openMenu(){
   </div></div>`);
   document.body.appendChild(overlay);
   on(overlay.querySelector("#toggleUI"),"click",()=>{ G.quickUI=!G.quickUI; overlay.remove(); render(); });
+  const themeSlot = overlay.querySelector("#themeSlot");
+  const menuPicker = themePicker(()=>{ overlay.remove(); render(); });
+  if(menuPicker) themeSlot.appendChild(menuPicker);
+  else overlay.querySelector("#themeRow").remove();
   on(overlay.querySelector("#menuHistory"),"click",()=>{ overlay.remove(); G.screen="history"; render(); });
   on(overlay.querySelector("#menuNewGame"),"click",()=>{
     if(confirm("להתחיל משחק חדש? ההתקדמות הנוכחית תימחק.")){
@@ -3051,7 +3245,7 @@ function openMenu(){
 function escapeHtml(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
 function sparkline(values, light){
-  if(values.length<2){ return el(`<div class="small" style="color:${light?'rgba(255,255,255,.85)':'var(--dim)'};text-shadow:${light?'0 1px 4px rgba(3,26,40,.3)':'none'};">עוד אין מספיק נתונים.</div>`); }
+  if(values.length<2){ return el(`<div class="small" style="color:${light?'var(--on-page)':'var(--dim)'};">עוד אין מספיק נתונים.</div>`); }
   const w=480,h=60,pad=4;
   const max=Math.max(...values,1), min=Math.min(...values,0);
   const range = (max-min)||1;
@@ -3156,7 +3350,7 @@ function renderBuild(){
   }
 
   if(list.children.length===0){
-    list.appendChild(el(`<div class="center small" style="padding:30px 0;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(3,26,40,.3);">אין פריטים בקטגוריה הזו כרגע.</div>`));
+    list.appendChild(el(`<div class="center small" style="padding:30px 0;color:var(--on-page);">אין פריטים בקטגוריה הזו כרגע.</div>`));
   }
   wrap.appendChild(list);
 
